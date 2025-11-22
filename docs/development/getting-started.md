@@ -304,7 +304,7 @@ npm run serve:ssr:ng-alain
 
 ## 下一步
 
-- 學習 [專案架構](../architecture/overview.md)
+- 學習專案架構（待建立）
 - 閱讀 [編碼規範](../standards/coding-standards.md)
-- 了解 [API 文檔](../api/overview.md)
-- 查看 [部署指南](../deployment/production.md)
+- 了解 API 文檔（待建立）
+- 查看部署指南（待建立）

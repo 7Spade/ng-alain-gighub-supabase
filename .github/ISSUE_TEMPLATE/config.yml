@@ -9,10 +9,3 @@ contact_links:
   - name: 📚 ng-alain Documentation
     url: https://ng-alain.com
     about: Official ng-alain framework documentation
-contact_links:
-  - name: Create new issue
-    url: https://ng-alain.com/issue-helper/index.html#en
-    about: The issue which is not created via issue-helper will be closed immediately.
-  - name: 报告问题
-    url: https://ng-alain.com/issue-helper/index.html#zh
-    about: 注意：不是用 issue-helper 创建的 issue 会被立即关闭。使用问题请加QQ Group：428749721
