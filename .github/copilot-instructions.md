@@ -18,10 +18,12 @@ This repository is based on the **NG-ALAIN** framework, an out-of-box UI solutio
 
 ### Prerequisites
 - Node.js (v20.x recommended, as specified in `.nvmrc`)
-- npm or yarn (yarn is configured as package manager)
+- yarn 4.9.2 (configured as package manager in `package.json`)
 
 ### Installation
 ```bash
+yarn install
+# or if you prefer npm
 npm install
 ```
 
