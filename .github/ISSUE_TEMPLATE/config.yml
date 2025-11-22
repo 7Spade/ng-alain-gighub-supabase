@@ -1,4 +1,14 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/7Spade/ng-alain-gighub-supabase/tree/main/docs
+    about: Check our comprehensive documentation
+  - name: 💬 Discussions
+    url: https://github.com/7Spade/ng-alain-gighub-supabase/discussions
+    about: Ask questions and discuss with the community
+  - name: 📚 ng-alain Documentation
+    url: https://ng-alain.com
+    about: Official ng-alain framework documentation
 contact_links:
   - name: Create new issue
     url: https://ng-alain.com/issue-helper/index.html#en
