@@ -1,29 +1,29 @@
-# Copilot Instructions for ng-gighub
+# Copilot Instructions for ng-alain-gighub-supabase
 
 ## Project Overview
 
-This repository contains an Angular 20.1 application with Server-Side Rendering (SSR) capabilities. The project is built using Angular CLI and includes:
+This repository is based on the **NG-ALAIN** framework, an out-of-box UI solution for enterprise applications built on top of Angular, ng-zorro-antd, and @delon. The project includes:
 
-- **Framework:** Angular 20.1.x
-- **Language:** TypeScript 5.8.x
-- **Styling:** SCSS (Sass)
+- **Framework:** NG-ALAIN 20.1.x (based on Angular 20.3.x)
+- **Language:** TypeScript 5.9.x
+- **Styling:** LESS (not SCSS/Sass)
 - **Build Tool:** Angular CLI with @angular/build
 - **Testing:** Karma + Jasmine
-- **SSR:** @angular/ssr with Express server
-- **Database:** Supabase (PostgreSQL-based backend with Storage)
-- **UI Libraries:** Angular Material, Angular CDK (configured for future use)
-- **Animations:** @angular/animations (configured for future use)
-- **PWA:** @angular/service-worker (configured for future use)
+- **UI Library:** ng-zorro-antd (Ant Design for Angular)
+- **Core Libraries:** @delon suite (abc, acl, auth, cache, chart, form, mock, theme, util)
+- **Additional Libraries:** ngx-tinymce, screenfull
+- **Note:** This project does NOT use SSR, Supabase, or standalone components by default
 
 ## Development Environment Setup
 
 ### Prerequisites
-- Node.js (v20.x recommended)
-- npm (comes with Node.js)
-- Supabase project (for database and backend services)
+- Node.js (v20.x recommended, as specified in `.nvmrc`)
+- yarn 4.9.2 (configured as package manager in `package.json`)
 
 ### Installation
 ```bash
+yarn install
+# or if you prefer npm
 npm install
 ```
 
@@ -32,47 +32,71 @@ npm install
 ### Development Server
 ```bash
 npm start
+# or with HMR (Hot Module Replacement)
+npm run hmr
 # or
 ng serve
 ```
-The application runs on `http://localhost:4200/` by default.
+The application runs on `http://localhost:4200/` by default and will automatically open in your browser with the `-o` flag.
 
 ### Build
 ```bash
 npm run build
 ```
-Production build artifacts are stored in the `dist/` directory.
+Production build artifacts are stored in the `dist/ng-alain/` directory. 
+**Note:** The build uses high memory allocation (8GB) via `ng-high-memory` script.
 
 ### Testing
 ```bash
 npm test
 ```
-Runs unit tests with Karma test runner. Tests should pass before submitting PRs.
+Runs unit tests with Karma test runner in watch mode. Tests should pass before submitting PRs.
 
-### Watch Mode (Development)
+For coverage report without watch mode:
 ```bash
-npm run watch
+npm run test-coverage
 ```
-Runs build in watch mode for development.
 
-### SSR Server
+### Linting
 ```bash
-npm run serve:ssr:ng-gighub
+npm run lint
 ```
-Runs the SSR server after a production build.
+Runs both TypeScript ESLint and LESS style linting.
+
+Individual linting commands:
+```bash
+npm run lint:ts      # TypeScript/JavaScript linting
+npm run lint:style   # LESS style linting
+```
+
+### Other Commands
+```bash
+npm run analyze      # Build with source maps for analysis
+npm run analyze:view # View bundle analysis
+npm run color-less   # Generate color.less theme file
+npm run theme        # Generate theme CSS
+npm run icon         # Generate icon assets
+```
 
 ## Project Structure
 
 ```
 /src
-  /app           - Angular application components, services, and modules
+  /app           - Angular application (components, services, routes)
+    /core        - Core services and guards
+    /layout      - Layout components
+    /routes      - Feature routes/pages
+    /shared      - Shared components and utilities
+  /assets        - Static assets (images, i18n, fonts)
   index.html     - Main HTML template
   main.ts        - Application entry point
-  main.server.ts - Server-side entry point
-  server.ts      - Express server configuration for SSR
-  styles.scss    - Global styles
-/public          - Static assets
+  styles.less    - Global LESS styles
+/public          - Public static assets
+/_mock           - Mock data for development
+/_cli-tpl        - CLI templates for code generation
+/scripts         - Build and utility scripts
 angular.json     - Angular workspace configuration
+ng-alain.json    - NG-ALAIN specific configuration
 tsconfig.*.json  - TypeScript configuration files
 package.json     - Dependencies and scripts
 ```
@@ -84,72 +108,84 @@ package.json     - Dependencies and scripts
 - Use strict TypeScript settings as configured in `tsconfig.json`
 - Prefer `const` over `let` when variables won't be reassigned
 - Use meaningful variable and function names
+- Follow ESLint rules configured in `eslint.config.mjs`
 
 ### Components
 - Component prefix: `app-` (configured in `angular.json`)
-- Use standalone components when appropriate
-- Component style: SCSS files
+- Default component style: LESS files
 - Generate components using Angular CLI: `ng generate component component-name`
+- Or use NG-ALAIN schematics: `ng g ng-alain:component component-name`
 
 ### Styling
-- SCSS is the default styling language
-- Global styles go in `src/styles.scss`
-- Component-specific styles should be co-located with components
-- Maximum component style size: 8kB (error), 4kB (warning) as per budget
+- **LESS is the default and required styling language** (NOT SCSS/Sass)
+- Global styles go in `src/styles.less`
+- Component-specific styles should be co-located with components as `.less` files
+- Maximum component style size: 10kB (error), 6kB (warning) as per budget
+- Use NG-ALAIN theme system for consistent theming
+- Color variables can be customized in `src/assets/color.less`
 
 ### Code Formatting
-- Prettier is configured for HTML files (see `package.json`)
-- HTML files use the Angular parser
-- Follow existing code formatting patterns
+- Prettier is configured for code formatting
+- ESLint handles TypeScript/JavaScript linting with auto-fix enabled
+- Stylelint handles LESS file linting
+- Husky pre-commit hooks ensure code quality with lint-staged
 
 ## Pull Request Requirements
 
 ### Before Submitting a PR
 1. **Build:** Ensure `npm run build` completes successfully
 2. **Tests:** All tests must pass with `npm test`
-3. **Code Quality:** Follow TypeScript and Angular best practices
-4. **No Errors:** Fix all TypeScript compilation errors
+3. **Linting:** Code must pass `npm run lint` (both TypeScript and LESS)
+4. **Code Quality:** Follow TypeScript, Angular, and NG-ALAIN best practices
+5. **No Errors:** Fix all TypeScript compilation errors
 
 ### PR Guidelines
 - Keep changes focused and minimal
 - Update tests when modifying functionality
-- Ensure SSR compatibility if changing server-side code
+- Follow NG-ALAIN component patterns and conventions
+- Ensure proper use of @delon libraries when applicable
 - Verify the application runs correctly with `npm start`
 
 ## Important Notes
 
 ### Build Budgets
 Production builds enforce size budgets:
-- Initial bundle: 1MB max (error), 500kB warning
-- Component styles: 8kB max (error), 4kB warning
+- Initial bundle: 6MB max (error), 2MB warning
+- Component styles: 10kB max (error), 6kB warning
 
-### SSR Considerations
-- This application uses Server-Side Rendering
-- Code must be compatible with both browser and Node.js environments
-- Avoid browser-only APIs in SSR-rendered components (use platform checks)
-- Server entry point: `src/main.server.ts`
-- Express server config: `src/server.ts`
+### NG-ALAIN Specific
+- This project uses NG-ALAIN framework, not vanilla Angular
+- Leverage @delon libraries for common functionality:
+  - `@delon/abc` - Business components
+  - `@delon/acl` - Access Control List
+  - `@delon/auth` - Authentication
+  - `@delon/cache` - Caching
+  - `@delon/chart` - Chart components
+  - `@delon/form` - Dynamic forms
+  - `@delon/mock` - Mock data
+  - `@delon/theme` - Theming system
+  - `@delon/util` - Utilities
+- Follow NG-ALAIN documentation: https://ng-alain.com
 
-### Database & Storage
-- **Backend:** This project uses Supabase as the database and backend service
-- **Database Type:** PostgreSQL (via Supabase)
-- **Storage:** Supabase Storage with comprehensive file management methods in `SupabaseService`
-- **MCP Integration:** Supabase MCP server is configured for database operations
-- When working with database operations, use the Supabase client libraries and follow Supabase best practices
-- Storage operations are SSR-compatible and return appropriate errors on server-side
+### UI Components
+- Use **ng-zorro-antd** components (Ant Design for Angular)
+- Do NOT use Angular Material or Angular CDK (not installed)
+- Follow Ant Design principles for UI/UX consistency
+- ng-zorro-antd documentation: https://ng.ant.design/
 
 ### File Modifications
 - **Angular configuration:** Changes to `angular.json` should be carefully reviewed
+- **NG-ALAIN config:** Modifications to `ng-alain.json` affect theme generation
 - **TypeScript config:** Modifications to `tsconfig.*.json` files should maintain strict type checking
-- **Dependencies:** When adding/updating dependencies, ensure compatibility with Angular 20.1
-  - Angular Material, CDK, Animations, and Service Worker are pre-installed
-  - Use these packages as needed without reinstalling
+- **Dependencies:** When adding/updating dependencies, ensure compatibility with Angular 20.3 and NG-ALAIN 20.1
 
 ## Common Tasks
 
 ### Generate New Component
 ```bash
 ng generate component component-name
+# or using NG-ALAIN schematics
+ng g ng-alain:component component-name
 ```
 
 ### Generate New Service
@@ -157,9 +193,22 @@ ng generate component component-name
 ng generate service service-name
 ```
 
+### Generate NG-ALAIN Module
+```bash
+ng g ng-alain:module module-name
+```
+
+### Update Theme
+```bash
+npm run color-less  # Update color variables
+npm run theme       # Generate theme CSS
+```
+
 ### Update Dependencies
 ```bash
 npm install <package-name>
+# or with yarn
+yarn add <package-name>
 ```
 
 ## Testing Strategy
@@ -168,43 +217,22 @@ npm install <package-name>
 - Test files should be co-located with the code they test (`.spec.ts` files)
 - Aim for meaningful test coverage of business logic
 - Tests run in Chrome (via karma-chrome-launcher)
+- Use `@delon/testing` utilities for testing @delon components
 
-## Database & Backend
+## Mock Data
 
-### Supabase
-This project uses Supabase as the primary database and backend service:
-- **Database:** PostgreSQL with Supabase extensions
-- **Authentication:** Supabase Auth (if applicable)
-- **Storage:** Supabase Storage with comprehensive file management capabilities
-- **Real-time:** Supabase Realtime subscriptions (if applicable)
-
-### Working with Supabase
-- Use the Supabase JavaScript client library for database operations
-- `SupabaseService` provides methods for both database and storage operations
-- Storage operations include: upload, download, delete, move, copy, list files, and URL generation
-- Follow Supabase best practices for queries and data management
-- Ensure proper error handling for database and storage operations
-- Use TypeScript types for database schemas when available
-- Set up appropriate bucket policies and RLS for storage security
-- See `docs/setup/supabase.md` for detailed usage examples
-
-### Angular Material & CDK
-- **Material:** Component library installed for future UI development
-- **CDK:** Component Dev Kit for custom components
-- Imports should be added as needed when using Material components
-
-### Animations
-- `@angular/animations` is installed and ready for use
-- Import animations as needed in components
-- Follow Angular animation best practices
-
-### Service Worker (PWA)
-- `@angular/service-worker` is installed for Progressive Web App capabilities
-- Configure as needed for offline functionality and caching
+- Mock data is stored in `/_mock` directory
+- Use `@delon/mock` for API mocking during development
+- Mock rules are registered in the mock module
+- Enable/disable mocking in environment files
 
 ## Additional Resources
 
+- [NG-ALAIN Documentation](https://ng-alain.com)
+- [NG-ALAIN GitHub](https://github.com/ng-alain/ng-alain)
+- [ng-zorro-antd Documentation](https://ng.ant.design/)
+- [@delon Components](https://ng-alain.com/components)
 - [Angular Documentation](https://angular.dev)
 - [Angular CLI Reference](https://angular.dev/tools/cli)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Supabase Documentation](https://supabase.com/docs)
+- [LESS Documentation](https://lesscss.org/)
