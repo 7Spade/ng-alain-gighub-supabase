@@ -1,184 +1,110 @@
 # ng-alain-gighub-supabase 專案文檔
 
-歡迎來到 ng-alain-gighub-supabase 專案文檔中心。本目錄包含完整的專案文檔，幫助您快速上手和深入了解專案。
+此資料夾包含 ng-alain-gighub-supabase 專案的完整技術文件。
 
-## 📚 文檔結構
-
-### 🚀 快速開始
-
-- [環境設置](./setup/environment.md) - 開發環境配置指南
-- [Supabase 設置](./setup/supabase.md) - 資料庫和後端服務配置
-- [開發入門](./development/getting-started.md) - 開始開發的第一步
-
-### 🏗️ 架構文檔
-
-> 待建立
-
-- 專案架構概述 - 整體架構設計
-- 資料庫架構 - 資料庫設計與模型
-- 前端架構 - Angular 應用架構
-- SSR 架構 - 服務端渲染實作
-
-### 💻 開發指南
-
-- [開發入門](./development/getting-started.md) - 開發工作流程
-
-> 待建立：測試指南、除錯技巧、效能優化
-
-### 📋 標準規範
-
-- [編碼規範](./standards/coding-standards.md) - **必讀** 企業級程式碼標準
-- [命名規範](./standards/naming-conventions.md) - **必讀** 統一命名約定
-- [程式碼風格指南](./standards/style-guide.md) - 程式碼風格細則
-
-> 待建立：API 設計規範
-
-### 🔄 工作流程
-
-- [Git 工作流程](./workflow/git-workflow.md) - Git 分支策略與提交規範
-- [貢獻指南](./workflow/contribution.md) - 如何為專案做出貢獻
-
-> 待建立：程式碼審查流程、發布流程
-
-### 📖 API 文檔
-
-> 待建立
-
-- API 概述 - API 架構與設計
-- 使用者 API - 使用者相關 API
-- 認證 API - 身份驗證與授權
-- 資料 API - 資料存取 API
-
-### 🚢 部署文檔
-
-> 待建立
-
-- 生產環境部署 - 生產環境部署指南
-- CI/CD 配置 - 持續整合與部署
-- 監控與日誌 - 應用監控設置
-- 故障排除 - 常見部署問題
-
-## 🎯 核心概念
-
-### 技術棧
-
-- **前端框架**: Angular 20.1.x
-- **UI 框架**: ng-alain + ng-zorro-antd
-- **後端服務**: Supabase (PostgreSQL + Storage)
-- **SSR**: @angular/ssr + Express
-- **語言**: TypeScript 5.8.x
-- **樣式**: LESS/SCSS
-- **狀態管理**: RxJS
-- **測試**: Karma + Jasmine
-
-### 專案特色
-
-1. **企業級架構**
-   - 模組化設計
-   - 清晰的目錄結構
-   - 關注點分離
-
-2. **開發體驗**
-   - Hot Module Replacement (HMR)
-   - 完整的 TypeScript 支援
-   - 自動化 linting 和格式化
-
-3. **效能優化**
-   - 延遲載入 (Lazy Loading)
-   - OnPush 變更檢測
-   - 建構優化
-
-4. **品質保證**
-   - 單元測試
-   - E2E 測試
-   - 程式碼審查流程
-
-## 📌 快速連結
-
-### 新手必讀
-
-1. [環境設置](./setup/environment.md)
-2. [開發入門](./development/getting-started.md)
-3. [編碼規範](./standards/coding-standards.md)
-4. [命名規範](./standards/naming-conventions.md)
-5. [Git 工作流程](./workflow/git-workflow.md)
-
-### 開發者常用
-
-- [Supabase 設置](./setup/supabase.md)
-- [開發入門](./development/getting-started.md)
-- [貢獻指南](./workflow/contribution.md)
-
-### 維護者必讀
-
-> 待建立：程式碼審查、發布流程、部署指南
-
-## 🔧 開發工具
-
-### 推薦 IDE 擴展 (VSCode)
-
-- Angular Language Service
-- ESLint
-- Prettier
-- GitLens
-- Angular Snippets
-- Path Intellisense
-
-### 命令速查
-
-```bash
-# 開發服務器
-npm start
-
-# 建構專案
-npm run build
-
-# 執行測試
-npm test
-
-# 程式碼檢查
-npm run lint
-
-# 格式化程式碼
-npx prettier --write "src/**/*.{ts,html,scss,json}"
-```
-
-## 📝 文檔貢獻
-
-發現文檔錯誤或需要改進？歡迎貢獻！
-
-1. Fork 專案
-2. 編輯 Markdown 檔案
-3. 提交 Pull Request
-
-詳見 [貢獻指南](./workflow/contribution.md)。
-
-## 🆘 獲取幫助
-
-### 遇到問題？
-
-1. 搜尋現有 [Issues](https://github.com/7Spade/ng-alain-gighub-supabase/issues)
-2. 查看故障排除文檔（待建立）
-3. 建立新 Issue
-
-### 討論與建議
-
-- [GitHub Discussions](https://github.com/7Spade/ng-alain-gighub-supabase/discussions)
-- 提交 Feature Request
-
-## 📜 授權
-
-本專案使用 MIT 授權。詳見 [LICENSE](../LICENSE) 檔案。
-
-## 🙏 致謝
-
-本專案基於 [ng-alain](https://github.com/ng-alain/ng-alain) 開發，感謝 ng-alain 團隊的貢獻。
+This folder contains the complete technical documentation for the ng-alain-gighub-supabase project.
 
 ---
 
-**最後更新**: 2024-11
+## 📚 文件結構 | Documentation Structure
 
-**文檔版本**: 1.0.0
+### 🗄️ [Supabase 企業級整合文件](./supabase/)
 
-**專案版本**: 20.1.0
+完整的 Supabase 後端整合文件，包括：
+
+- **[架構設計](./supabase/architecture/)** - 系統架構、資料庫設計、認證架構
+- **[開發指南](./supabase/development/)** - 環境設定、開發規範、測試策略
+- **[部署文件](./supabase/deployment/)** - 環境配置、CI/CD、資料庫遷移
+- **[安全性](./supabase/security/)** - RLS 策略、身份驗證、資料加密
+- **[最佳實踐](./supabase/best-practices/)** - 資料庫設計、查詢優化、效能調校
+- **[API 參考](./supabase/api-reference/)** - Supabase Client 使用、型別定義
+
+**開始使用 | Get Started**: [Supabase 文件首頁](./supabase/README.md)
+
+---
+
+## 🚀 快速連結 | Quick Links
+
+### 新手入門 | Getting Started
+- [環境設定指南](./supabase/development/setup.md)
+- [整體架構概覽](./supabase/architecture/overview.md)
+- [Supabase Client 基礎](./supabase/api-reference/supabase-client.md)
+
+### 開發必讀 | Development Essentials
+- [RLS 安全策略](./supabase/security/rls.md)
+- [資料庫架構設計](./supabase/architecture/database.md)
+- [查詢優化技巧](./supabase/best-practices/query-optimization.md)
+
+### 部署與維運 | Deployment & Operations
+- [環境配置管理](./supabase/deployment/environments.md)
+- [CI/CD 整合](./supabase/deployment/cicd.md)
+- [資料庫遷移策略](./supabase/deployment/migrations.md)
+
+---
+
+## 📝 文件貢獻 | Contributing to Documentation
+
+我們歡迎對文件的改進！請遵循以下規範：
+
+We welcome documentation improvements! Please follow these guidelines:
+
+### 撰寫規範 | Writing Guidelines
+
+1. **雙語撰寫**: 使用繁體中文為主，關鍵術語附英文
+2. **程式碼範例**: 必須包含完整可執行的範例
+3. **圖表說明**: 使用 Mermaid 語法繪製架構圖
+4. **版本標記**: 每個文件都要標註版本號與更新日期
+
+### 提交流程 | Submission Process
+
+```bash
+# 1. 建立文件分支
+git checkout -b docs/improve-xxx
+
+# 2. 編輯文件
+# 編輯 docs/ 下的相關文件
+
+# 3. 提交變更
+git add docs/
+git commit -m "docs: improve xxx documentation"
+
+# 4. 推送並開啟 PR
+git push origin docs/improve-xxx
+```
+
+---
+
+## 📊 文件狀態 | Documentation Status
+
+| 類別 | Category | 狀態 | Status | 完成度 | Completion |
+|------|----------|------|--------|--------|------------|
+| Supabase 架構設計 | Architecture | ✅ 已完成核心文件 | Core docs completed | 80% |
+| Supabase 開發指南 | Development | ✅ 已完成核心文件 | Core docs completed | 80% |
+| Supabase 部署文件 | Deployment | 🚧 施工中 | Under construction | 40% |
+| Supabase 安全性 | Security | ✅ 已完成核心文件 | Core docs completed | 80% |
+| Supabase 最佳實踐 | Best Practices | ⚠️ 部分完成 | Partially completed | 60% |
+| Supabase API 參考 | API Reference | ⚠️ 部分完成 | Partially completed | 60% |
+
+---
+
+## 🔄 更新日誌 | Changelog
+
+### v1.0.0 (2025-11-22)
+- ✨ 建立完整 Supabase 文件架構（6 大類別）
+- ✅ 完成核心文件：整體架構、環境設定、RLS 策略
+- 📚 建立 24+ 個文件骨架供未來擴充
+- 🎨 採用中英雙語、Mermaid 圖表、企業級標準
+
+---
+
+## 📞 需要協助？ | Need Help?
+
+- **專案 Issues**: [GitHub Issues](https://github.com/7Spade/ng-alain-gighub-supabase/issues)
+- **Supabase 官方**: [supabase.com/docs](https://supabase.com/docs)
+- **ng-alain 官方**: [ng-alain.com](https://ng-alain.com)
+
+---
+
+**最後更新 | Last Updated**: 2025-11-22  
+**維護團隊 | Maintained by**: 7Spade Development Team
 
