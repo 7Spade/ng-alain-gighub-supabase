@@ -201,6 +201,248 @@ instructions: |
   - 與 GitHub / Supabase 互動：用 github MCP、supabase MCP。
   - 要時間：用 time MCP。
   - 回覆時保持條列、精簡、以繁體中文解說，程式碼用 TypeScript / HTML / SCSS 為主。
+
+  ---
+
+  # 企業級代碼標準（強制執行）
+
+  ## 1. 編碼規範（Coding Standards）
+
+  所有代碼必須符合專案 [編碼規範](../../docs/standards/coding-standards.md)：
+
+  ### TypeScript 規範
+  - **嚴格模式**：啟用 TypeScript strict mode
+  - **禁止 any**：除非有充分理由且添加註釋，否則禁止使用 `any` 類型
+  - **使用 const**：優先使用 `const`，只在需要重新賦值時使用 `let`
+  - **類型推斷**：在明顯情況可省略類型註解，但公開 API 必須有明確類型
+  - **參數限制**：避免超過 3 個參數，多個參數使用物件封裝
+
+  ### Angular 規範
+  - **元件命名**：使用 PascalCase，以 `Component` 結尾
+  - **元件選擇器**：使用 kebab-case，使用 `app-` 前綴
+  - **生命週期**：按順序實作，明確實作介面
+  - **變更檢測**：優先使用 OnPush 策略
+  - **依賴注入**：使用 `providedIn: 'root'` 提供單例服務
+
+  ### RxJS 規範
+  - **訂閱管理**：優先使用 `async` pipe，必須手動訂閱時確保取消訂閱
+  - **操作符**：正確使用 debounceTime、distinctUntilChanged、switchMap 等
+
+  ## 2. 命名規範（Naming Conventions）
+
+  嚴格遵守專案 [命名規範](../../docs/standards/naming-conventions.md)：
+
+  ### 通用原則
+  - **使用英文**：所有命名使用英文，避免拼音或中英混合
+  - **見名知意**：命名清楚表達用途
+  - **保持一致**：同一概念在整個專案使用相同命名
+
+  ### TypeScript 命名
+  - **變數和常數**：
+    - 變數：camelCase（`userName`, `isUserActive`）
+    - 常數：UPPER_SNAKE_CASE（`MAX_RETRY_COUNT`, `API_BASE_URL`）
+  - **函數和方法**：
+    - 使用動詞開頭：`getUserById()`, `calculateTotal()`, `isUserActive()`
+    - 常見前綴：get, set, fetch, load, save, update, delete, create, is, has, can, handle, on
+  - **類別和介面**：PascalCase（`UserService`, `ProductDetail`）
+  - **Type Alias 和 Enum**：PascalCase（`UserRole`, `HttpMethod`）
+
+  ### Angular 命名
+  - **元件**：`{Feature}{Type}Component`（`UserListComponent`, `ProductDetailComponent`）
+  - **服務**：`{Feature}Service`（`UserService`, `AuthenticationService`）
+  - **指令**：`{Feature}Directive`（`HighlightDirective`）
+  - **管道**：`{Feature}Pipe`（`DateFormatPipe`）
+  - **Guards**：`{Feature}Guard`（`AuthGuard`）
+  - **Interceptors**：`{Feature}Interceptor`（`AuthInterceptor`）
+
+  ### 檔案命名
+  - 元件：`{name}.component.ts`, `{name}.component.html`, `{name}.component.scss`
+  - 服務：`{name}.service.ts`
+  - 模型：`{name}.model.ts`, `{name}.interface.ts`
+
+  ### CSS/LESS 命名
+  - 使用 kebab-case：`user-card`, `product-list`
+  - 推薦 BEM 命名法：`.user-card__header`, `.user-card--highlighted`
+
+  ## 3. 代碼品質標準
+
+  ### 程式碼審查檢查清單
+  所有提交的代碼必須通過以下檢查：
+  - [ ] 代碼符合命名規範
+  - [ ] 沒有使用 `any` 類型（除非有充分理由）
+  - [ ] 有適當的錯誤處理
+  - [ ] RxJS 訂閱已正確管理
+  - [ ] 有必要的單元測試
+  - [ ] 符合可訪問性標準
+  - [ ] 沒有安全性漏洞
+  - [ ] 效能考量已實施
+
+  ### 測試要求
+  - **測試覆蓋率**：目標 80% 以上
+  - **所有公開 API** 必須有測試
+  - **關鍵業務邏輯** 必須有測試
+  - 測試命名清晰：`should return user when ID is valid`
+
+  ### 安全性標準
+  - **XSS 防護**：使用 Angular 內建安全機制，避免使用 innerHTML
+  - **敏感資料**：不在前端儲存敏感資料
+  - **API 金鑰**：使用環境變數管理，不暴露在前端
+  - **HTTPS**：所有 API 請求使用 HTTPS
+
+  ### 效能標準
+  - **延遲載入**：使用路由延遲載入功能模組
+  - **OnPush 策略**：元件使用 OnPush 變更檢測
+  - **TrackBy**：ngFor 使用 trackBy 優化
+  - **記憶化**：使用 memoization 快取計算結果
+
+  ## 4. 工作流程標準
+
+  嚴格遵守 [Git 工作流程](../../docs/workflow/git-workflow.md)：
+
+  ### 分支策略
+  - **main**：生產環境，永遠穩定
+  - **develop**：開發整合分支
+  - **feature/**：功能分支（`feature/{issue-number}-{description}`）
+  - **bugfix/**：錯誤修復（`bugfix/{issue-number}-{description}`）
+  - **hotfix/**：緊急修復（`hotfix/{version}-{description}`）
+
+  ### 提交訊息規範
+  格式：`<type>(<scope>): <subject>`
+  - **feat**: 新功能
+  - **fix**: 錯誤修復
+  - **docs**: 文檔變更
+  - **style**: 程式碼格式調整
+  - **refactor**: 重構
+  - **perf**: 效能優化
+  - **test**: 測試相關
+  - **build**: 建構變更
+  - **ci**: CI 配置變更
+  - **chore**: 其他變更
+
+  範例：
+  ```
+  feat(auth): add JWT authentication
+  fix(ui): correct button alignment in modal
+  docs(api): update user API documentation
+  ```
+
+  ## 5. 文檔標準
+
+  所有代碼變更必須更新相關文檔：
+
+  ### JSDoc 註釋
+  為公開 API 提供完整的 JSDoc 註釋：
+  ```typescript
+  /**
+   * 根據 ID 獲取使用者資料
+   * @param userId - 使用者唯一識別碼
+   * @returns 使用者資料的 Observable
+   * @throws {Error} 當使用者不存在時
+   */
+  getUserById(userId: string): Observable<User> {
+    // ...
+  }
+  ```
+
+  ### 程式碼註釋
+  - 解釋「為什麼」而不是「做什麼」
+  - 複雜邏輯需要註釋
+  - 保持註釋簡潔
+
+  ### 文檔更新
+  - 新功能需要更新 API 文檔
+  - 架構變更需要更新架構文檔
+  - 流程變更需要更新工作流程文檔
+
+  ## 6. 代碼生成指導原則
+
+  當你生成或修改代碼時，必須：
+
+  1. **遵循所有上述規範**
+  2. **提供完整的類型註解**
+  3. **包含必要的錯誤處理**
+  4. **添加適當的註釋**
+  5. **確保測試覆蓋**
+  6. **考慮效能影響**
+  7. **檢查安全性問題**
+  8. **更新相關文檔**
+
+  ### 代碼生成範例
+
+  ✅ **正確範例**：
+  ```typescript
+  import { Injectable } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+  import { Observable, throwError } from 'rxjs';
+  import { catchError, map } from 'rxjs/operators';
+
+  import { User } from '../models/user.model';
+  import { ApiResponse } from '../models/api-response.model';
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UserService {
+    private readonly apiUrl = '/api/users';
+
+    constructor(private http: HttpClient) {}
+
+    /**
+     * 根據 ID 獲取使用者資料
+     * @param userId - 使用者唯一識別碼
+     * @returns 使用者資料的 Observable
+     */
+    getUserById(userId: string): Observable<User> {
+      if (!userId) {
+        return throwError(() => new Error('User ID is required'));
+      }
+
+      return this.http.get<ApiResponse<User>>(`${this.apiUrl}/${userId}`).pipe(
+        map(response => response.data),
+        catchError(error => {
+          console.error('Failed to fetch user:', error);
+          return throwError(() => new Error('Unable to fetch user data'));
+        })
+      );
+    }
+  }
+  ```
+
+  ❌ **錯誤範例**：
+  ```typescript
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UserService {
+    constructor(private http: HttpClient) {}
+
+    getUser(id: any) {
+      return this.http.get(`/api/users/${id}`);
+    }
+  }
+  ```
+
+  ## 7. 代碼審查標準
+
+  在提供代碼建議前，確認：
+
+  - [ ] 符合所有命名規範
+  - [ ] 使用強型別，無 `any`
+  - [ ] 有適當錯誤處理
+  - [ ] 有必要的註釋
+  - [ ] 考慮了效能影響
+  - [ ] 檢查了安全性
+  - [ ] 可以通過 linting
+  - [ ] 有測試覆蓋
+
+  ## 參考文檔
+
+  詳細規範請參閱：
+  - [完整編碼規範](../../docs/standards/coding-standards.md)
+  - [命名規範詳解](../../docs/standards/naming-conventions.md)
+  - [Git 工作流程](../../docs/workflow/git-workflow.md)
+  - [貢獻指南](../../docs/workflow/contribution.md)
+
 ---
 
 # My Agent
@@ -210,5 +452,7 @@ instructions: |
 - 以 sequential-thinking 分解任務，確保每一步都有明確目標與工具。
 - 使用 software-planning-tool 做系統與功能設計（domain model、架構圖、流程圖級別的規劃）。
 - 整合 github、supabase、redis、time 等 MCP，實際對照專案與資料庫狀態。
+- **強制執行企業級代碼標準**，確保所有生成的代碼符合專案規範。
 - 提供符合 Angular 20 + SSR + Supabase 最佳實務的具體程式碼與測試建議。
 - 協助你從「需求 → 設計 → 實作 → 驗證」形成一致的開發流程。
+- 確保所有代碼符合命名規範、編碼標準和企業級品質要求。

@@ -1,13 +1,181 @@
-# Documentation
+# ng-alain-gighub-supabase 專案文檔
 
-此資料夾用於存放專案文件。
+歡迎來到 ng-alain-gighub-supabase 專案文檔中心。本目錄包含完整的專案文檔，幫助您快速上手和深入了解專案。
 
-## 開發初始化狀態
+## 📚 文檔結構
 
-此資料夾已清空並準備好開始新的文件結構。
+### 🚀 快速開始
+
+- [環境設置](./setup/environment.md) - 開發環境配置指南
+- [Supabase 設置](./setup/supabase.md) - 資料庫和後端服務配置
+- [開發入門](./development/getting-started.md) - 開始開發的第一步
+
+### 🏗️ 架構文檔
+
+- [專案架構概述](./architecture/overview.md) - 整體架構設計
+- [資料庫架構](./architecture/database-schema.md) - 資料庫設計與模型
+- [前端架構](./architecture/frontend.md) - Angular 應用架構
+- [SSR 架構](./architecture/ssr.md) - 服務端渲染實作
+
+### 💻 開發指南
+
+- [開發入門](./development/getting-started.md) - 開發工作流程
+- [測試指南](./development/testing.md) - 單元測試、整合測試、E2E 測試
+- [除錯技巧](./development/debugging.md) - 常見問題排查
+- [效能優化](./development/performance.md) - 效能調優建議
+
+### 📋 標準規範
+
+- [編碼規範](./standards/coding-standards.md) - **必讀** 企業級程式碼標準
+- [命名規範](./standards/naming-conventions.md) - **必讀** 統一命名約定
+- [程式碼風格指南](./standards/style-guide.md) - 程式碼風格細則
+- [API 設計規範](./standards/api-design.md) - RESTful API 設計標準
+
+### 🔄 工作流程
+
+- [Git 工作流程](./workflow/git-workflow.md) - Git 分支策略與提交規範
+- [貢獻指南](./workflow/contribution.md) - 如何為專案做出貢獻
+- [程式碼審查](./workflow/code-review.md) - 程式碼審查流程與標準
+- [發布流程](./workflow/release-process.md) - 版本發布步驟
+
+### 📖 API 文檔
+
+- [API 概述](./api/overview.md) - API 架構與設計
+- [使用者 API](./api/user-api.md) - 使用者相關 API
+- [認證 API](./api/auth-api.md) - 身份驗證與授權
+- [資料 API](./api/data-api.md) - 資料存取 API
+
+### 🚢 部署文檔
+
+- [生產環境部署](./deployment/production.md) - 生產環境部署指南
+- [CI/CD 配置](./deployment/cicd.md) - 持續整合與部署
+- [監控與日誌](./deployment/monitoring.md) - 應用監控設置
+- [故障排除](./deployment/troubleshooting.md) - 常見部署問題
+
+## 🎯 核心概念
+
+### 技術棧
+
+- **前端框架**: Angular 20.1.x
+- **UI 框架**: ng-alain + ng-zorro-antd
+- **後端服務**: Supabase (PostgreSQL + Storage)
+- **SSR**: @angular/ssr + Express
+- **語言**: TypeScript 5.8.x
+- **樣式**: LESS/SCSS
+- **狀態管理**: RxJS
+- **測試**: Karma + Jasmine
+
+### 專案特色
+
+1. **企業級架構**
+   - 模組化設計
+   - 清晰的目錄結構
+   - 關注點分離
+
+2. **開發體驗**
+   - Hot Module Replacement (HMR)
+   - 完整的 TypeScript 支援
+   - 自動化 linting 和格式化
+
+3. **效能優化**
+   - 延遲載入 (Lazy Loading)
+   - OnPush 變更檢測
+   - 建構優化
+
+4. **品質保證**
+   - 單元測試
+   - E2E 測試
+   - 程式碼審查流程
+
+## 📌 快速連結
+
+### 新手必讀
+
+1. [環境設置](./setup/environment.md)
+2. [開發入門](./development/getting-started.md)
+3. [編碼規範](./standards/coding-standards.md)
+4. [命名規範](./standards/naming-conventions.md)
+5. [Git 工作流程](./workflow/git-workflow.md)
+
+### 開發者常用
+
+- [Supabase 設置](./setup/supabase.md)
+- [專案架構](./architecture/overview.md)
+- [測試指南](./development/testing.md)
+- [貢獻指南](./workflow/contribution.md)
+
+### 維護者必讀
+
+- [程式碼審查](./workflow/code-review.md)
+- [發布流程](./workflow/release-process.md)
+- [部署指南](./deployment/production.md)
+
+## 🔧 開發工具
+
+### 推薦 IDE 擴展 (VSCode)
+
+- Angular Language Service
+- ESLint
+- Prettier
+- GitLens
+- Angular Snippets
+- Path Intellisense
+
+### 命令速查
+
+```bash
+# 開發服務器
+npm start
+
+# 建構專案
+npm run build
+
+# 執行測試
+npm test
+
+# 程式碼檢查
+npm run lint
+
+# 格式化程式碼
+npx prettier --write "src/**/*.{ts,html,scss,json}"
+```
+
+## 📝 文檔貢獻
+
+發現文檔錯誤或需要改進？歡迎貢獻！
+
+1. Fork 專案
+2. 編輯 Markdown 檔案
+3. 提交 Pull Request
+
+詳見 [貢獻指南](./workflow/contribution.md)。
+
+## 🆘 獲取幫助
+
+### 遇到問題？
+
+1. 搜尋現有 [Issues](https://github.com/7Spade/ng-alain-gighub-supabase/issues)
+2. 查看 [故障排除文檔](./deployment/troubleshooting.md)
+3. 建立新 Issue
+
+### 討論與建議
+
+- [GitHub Discussions](https://github.com/7Spade/ng-alain-gighub-supabase/discussions)
+- 提交 Feature Request
+
+## 📜 授權
+
+本專案使用 MIT 授權。詳見 [LICENSE](../LICENSE) 檔案。
+
+## 🙏 致謝
+
+本專案基於 [ng-alain](https://github.com/ng-alain/ng-alain) 開發，感謝 ng-alain 團隊的貢獻。
 
 ---
 
-**Last Updated**: 2025-01-XX  
-**Status**: 開發初始化
+**最後更新**: 2024-11
+
+**文檔版本**: 1.0.0
+
+**專案版本**: 20.1.0
 
