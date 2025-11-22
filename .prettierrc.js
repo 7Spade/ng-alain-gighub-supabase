@@ -9,5 +9,29 @@ module.exports = {
   bracketSpacing: true,
   proseWrap: 'preserve',
   trailingComma: 'none',
-  endOfLine: 'lf'
+  endOfLine: 'lf',
+  // Enterprise standards
+  overrides: [
+    {
+      files: '*.ts',
+      options: {
+        parser: 'typescript',
+        singleQuote: true,
+        trailingComma: 'none'
+      }
+    },
+    {
+      files: '*.html',
+      options: {
+        parser: 'angular',
+        htmlWhitespaceSensitivity: 'strict'
+      }
+    },
+    {
+      files: ['*.json', '*.yml', '*.yaml'],
+      options: {
+        tabWidth: 2
+      }
+    }
+  ]
 };

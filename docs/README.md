@@ -1,4 +1,4 @@
-# Documentation
+# ng-alain-gighub-supabase 專案文檔
 
 此資料夾包含 ng-alain-gighub-supabase 專案的完整技術文件。
 
