@@ -173,5 +173,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+export * from './organization.repository';
+export * from './organization-member.repository';
 export * from './team.repository';
 export * from './team-member.repository';

@@ -12,14 +12,16 @@
 
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AccountRepository, AccountType, AccountStatus } from '@core';
+import { AccountType, AccountStatus } from '@core';
+import { OrganizationRepository, OrganizationMemberRepository } from '@core';
 import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrganizationService {
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly organizationRepo = inject(OrganizationRepository);
+  private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
 
   // State
   private organizationsState = signal<OrganizationBusinessModel[]>([]);
@@ -39,7 +41,7 @@ export class OrganizationService {
    * @returns {Promise<OrganizationModel | null>} Organization or null
    */
   async findById(id: string): Promise<OrganizationBusinessModel | null> {
-    const account = await firstValueFrom(this.accountRepo.findById(id));
+    const account = await firstValueFrom(this.organizationRepo.findById(id));
     if (account && (account as any).type === AccountType.ORGANIZATION) {
       return account as OrganizationBusinessModel;
     }
@@ -54,7 +56,7 @@ export class OrganizationService {
    * @returns {Promise<OrganizationBusinessModel[]>} Organizations created by user
    */
   async getUserCreatedOrganizations(authUserId: string): Promise<OrganizationBusinessModel[]> {
-    const orgs = await firstValueFrom(this.accountRepo.findCreatedOrganizations(authUserId));
+    const orgs = await firstValueFrom(this.organizationRepo.findCreatedByUser(authUserId));
     return orgs as OrganizationBusinessModel[];
   }
 
@@ -63,11 +65,18 @@ export class OrganizationService {
    * Find organizations user has joined
    *
    * @param {string} accountId - Account ID
-   * @returns {Promise<OrganizationModel[]>} Organizations user has joined
+   * @returns {Promise<OrganizationBusinessModel[]>} Organizations user has joined
    */
   async getUserJoinedOrganizations(accountId: string): Promise<OrganizationBusinessModel[]> {
-    // TODO: Implement when organization_members repository is ready
-    return [];
+    const memberships = await firstValueFrom(this.organizationMemberRepo.findByAccount(accountId));
+    const orgIds = memberships.map(m => (m as any).organizationId);
+
+    if (orgIds.length === 0) {
+      return [];
+    }
+
+    const orgs = await firstValueFrom(this.organizationRepo.findByIds(orgIds));
+    return orgs.filter(org => org && (org as any).type === AccountType.ORGANIZATION) as OrganizationBusinessModel[];
   }
 
   /**
@@ -79,15 +88,14 @@ export class OrganizationService {
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
     const insertData = {
-      type: AccountType.ORGANIZATION,
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
       status: request.status || AccountStatus.ACTIVE
     };
 
-    const account = await firstValueFrom(this.accountRepo.create(insertData as any));
-      return account as OrganizationBusinessModel;
+    const account = await firstValueFrom(this.organizationRepo.create(insertData));
+    return account as OrganizationBusinessModel;
   }
 
   /**
@@ -96,11 +104,11 @@ export class OrganizationService {
    *
    * @param {string} id - Organization ID
    * @param {UpdateOrganizationRequest} request - Update request
-   * @returns {Promise<OrganizationModel>} Updated organization
+   * @returns {Promise<OrganizationBusinessModel>} Updated organization
    */
   async updateOrganization(id: string, request: UpdateOrganizationRequest): Promise<OrganizationBusinessModel> {
-    const account = await firstValueFrom(this.accountRepo.update(id, request as any));
-      return account as OrganizationBusinessModel;
+    const account = await firstValueFrom(this.organizationRepo.update(id, request as any));
+    return account as OrganizationBusinessModel;
   }
 
   /**
@@ -108,11 +116,11 @@ export class OrganizationService {
    * Soft delete organization (set status to DELETED)
    *
    * @param {string} id - Organization ID
-   * @returns {Promise<OrganizationModel>} Updated organization
+   * @returns {Promise<OrganizationBusinessModel>} Updated organization
    */
   async softDeleteOrganization(id: string): Promise<OrganizationBusinessModel> {
-    const account = await firstValueFrom(this.accountRepo.softDelete(id));
-      return account as OrganizationBusinessModel;
+    const account = await firstValueFrom(this.organizationRepo.softDelete(id));
+    return account as OrganizationBusinessModel;
   }
 
   /**
@@ -120,11 +128,11 @@ export class OrganizationService {
    * Restore deleted organization
    *
    * @param {string} id - Organization ID
-   * @returns {Promise<OrganizationModel>} Updated organization
+   * @returns {Promise<OrganizationBusinessModel>} Updated organization
    */
   async restoreOrganization(id: string): Promise<OrganizationBusinessModel> {
-    const account = await firstValueFrom(this.accountRepo.restore(id));
-      return account as OrganizationBusinessModel;
+    const account = await firstValueFrom(this.organizationRepo.restore(id));
+    return account as OrganizationBusinessModel;
   }
 
   /**
