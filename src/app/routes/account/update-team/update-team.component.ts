@@ -16,7 +16,7 @@ import { SHARED_IMPORTS } from '@shared';
 import { UpdateTeamRequest, Team } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { WorkspaceContextFacade } from '@core';
+import { TeamFacade } from '@core';
 
 @Component({
   selector: 'app-update-team',
@@ -27,7 +27,7 @@ import { WorkspaceContextFacade } from '@core';
 })
 export class UpdateTeamComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -93,7 +93,7 @@ export class UpdateTeamComponent implements OnInit {
       };
 
       // 更新團隊（通過 Facade）
-      const updatedTeam = await this.workspaceContext.updateTeam(this.team['id'] as string, request);
+      const updatedTeam = await this.teamFacade.updateTeam(this.team['id'] as string, request);
 
       this.msg.success('團隊更新成功！');
 

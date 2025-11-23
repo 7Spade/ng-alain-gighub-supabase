@@ -19,7 +19,7 @@ import { CreateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { SupabaseAuthService } from '@core';
-import { WorkspaceContextFacade } from '@core';
+import { OrganizationFacade } from '@core';
 
 @Component({
   selector: 'app-create-organization',
@@ -32,7 +32,7 @@ export class CreateOrganizationComponent {
   private readonly fb = inject(FormBuilder);
   private readonly accountService = inject(AccountService);
   private readonly supabaseAuth = inject(SupabaseAuthService);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly organizationFacade = inject(OrganizationFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -71,7 +71,7 @@ export class CreateOrganizationComponent {
         email: formValue.email?.trim() || undefined,
         avatar: formValue.avatar?.trim() || undefined
       };
-      const organization = await this.workspaceContext.createOrganization(request);
+      const organization = await this.organizationFacade.createOrganization(request);
 
       this.msg.success('組織創建成功！');
 

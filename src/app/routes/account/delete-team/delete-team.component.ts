@@ -14,7 +14,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, 
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { WorkspaceContextFacade } from '@core';
+import { TeamFacade } from '@core';
 import { Team } from '@shared';
 
 @Component({
@@ -25,7 +25,7 @@ import { Team } from '@shared';
   imports: SHARED_IMPORTS
 })
 export class DeleteTeamComponent implements OnInit {
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -61,7 +61,7 @@ export class DeleteTeamComponent implements OnInit {
 
     try {
       // 刪除團隊（通過 Facade）
-      await this.workspaceContext.deleteTeam(this.team['id'] as string);
+      await this.teamFacade.deleteTeam(this.team['id'] as string);
 
       this.msg.success('團隊已刪除！');
 

@@ -19,7 +19,7 @@ import { CreateTeamRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { SupabaseAuthService } from '@core';
-import { WorkspaceContextFacade } from '@core';
+import { TeamFacade, WorkspaceContextFacade } from '@core';
 
 @Component({
   selector: 'app-create-team',
@@ -33,6 +33,7 @@ export class CreateTeamComponent {
   private readonly teamRepo = inject(TeamRepository);
   private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -87,23 +88,10 @@ export class CreateTeamComponent {
         avatar: formValue.avatar?.trim() || undefined
       };
 
-      // 創建團隊
-      const team = await firstValueFrom(
-        this.teamRepo.create({
-          organizationId: request.organizationId,
-          name: request.name,
-          description: request.description || null,
-          avatar: request.avatar || null
-        } as any)
-      );
+      // 創建團隊（通過 Facade）
+      const team = await this.teamFacade.createTeam(request);
 
       this.msg.success('團隊創建成功！');
-
-      // 重新載入工作區數據以更新團隊列表
-      const currentUser = await firstValueFrom(this.supabaseAuth.getUser());
-      if (currentUser?.id) {
-        await this.workspaceContext.loadWorkspaceData(currentUser.id);
-      }
 
       // 關閉模態框並返回創建的團隊
       this.modal.close(team);

@@ -16,7 +16,7 @@ import { SHARED_IMPORTS } from '@shared';
 import { UpdateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { WorkspaceContextFacade } from '@core';
+import { OrganizationFacade } from '@core';
 import { Account } from '@shared';
 
 @Component({
@@ -28,7 +28,7 @@ import { Account } from '@shared';
 })
 export class UpdateOrganizationComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly organizationFacade = inject(OrganizationFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -93,7 +93,7 @@ export class UpdateOrganizationComponent implements OnInit {
         email: formValue.email?.trim() || undefined,
         avatar: formValue.avatar?.trim() || undefined
       };
-      const updatedOrganization = await this.workspaceContext.updateOrganization(this.organization['id'] as string, request);
+      const updatedOrganization = await this.organizationFacade.updateOrganization(this.organization['id'] as string, request);
 
       this.msg.success('組織更新成功！');
 
