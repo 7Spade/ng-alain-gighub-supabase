@@ -1,11 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { WorkspaceContextFacade } from '@core';
 import { I18nPipe, SettingsService, User } from '@delon/theme';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
 import { environment } from '@env/environment';
+import { AccountService } from '@shared';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -80,10 +83,10 @@ import { HeaderUserComponent } from './widgets/user.component';
         <header-user />
       </layout-default-header-item>
       <ng-template #asideUserTpl>
-        <div nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" class="alain-default__aside-user">
+        <div nz-dropdown nzTrigger="click" nzPlacement="topLeft" [nzDropdownMenu]="userMenu" class="alain-default__aside-user">
           <nz-avatar class="alain-default__aside-user-avatar" [nzSrc]="user.avatar" />
           <div class="alain-default__aside-user-info">
-            <strong>{{ user.name }}</strong>
+            <strong>{{ contextLabel() || user.name }}</strong>
             <p class="mb0">{{ user.email }}</p>
           </div>
         </div>
@@ -91,6 +94,54 @@ import { HeaderUserComponent } from './widgets/user.component';
           <ul nz-menu>
             <li nz-menu-item routerLink="/pro/account/center">{{ 'menu.account.center' | i18n }}</li>
             <li nz-menu-item routerLink="/pro/account/settings">{{ 'menu.account.settings' | i18n }}</li>
+            @if (currentUserAccountId()) {
+              <li nz-menu-divider></li>
+              <li
+                nz-menu-item
+                (click)="switchToCurrentUser()"
+                [nzDisabled]="workspaceContext.switching()"
+                [class.ant-menu-item-selected]="
+                  workspaceContext.contextType() === 'user' && workspaceContext.contextId() === currentUserAccountId()
+                "
+              >
+                @if (workspaceContext.switching()) {
+                  <i nz-icon nzType="loading" class="mr-sm"></i>
+                } @else {
+                  <i nz-icon nzType="user" class="mr-sm"></i>
+                }
+                <span>{{ getUserAccountName() }}</span>
+              </li>
+            }
+            @if (allOrganizations().length > 0) {
+              <li nz-menu-divider></li>
+              @for (org of allOrganizations(); track $index) {
+                <li nz-menu-item (click)="switchToOrg(org)" [nzDisabled]="workspaceContext.switching()">
+                  @if (workspaceContext.switching()) {
+                    <i nz-icon nzType="loading" class="mr-sm"></i>
+                  } @else {
+                    <i nz-icon nzType="team" class="mr-sm"></i>
+                  }
+                  <span>{{ getOrgName(org) }}</span>
+                </li>
+                @if (hasTeams(org)) {
+                  @for (team of getTeams(org); track $index) {
+                    <li
+                      nz-menu-item
+                      (click)="switchToTeam(team)"
+                      [nzDisabled]="workspaceContext.switching()"
+                      style="padding-left: 32px;"
+                    >
+                      @if (workspaceContext.switching()) {
+                        <i nz-icon nzType="loading" class="mr-sm"></i>
+                      } @else {
+                        <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
+                      }
+                      <span>{{ getTeamName(team) }}</span>
+                    </li>
+                  }
+                }
+              }
+            }
           </ul>
         </nz-dropdown-menu>
       </ng-template>
@@ -112,6 +163,7 @@ import { HeaderUserComponent } from './widgets/user.component';
     NzMenuModule,
     NzDropDownModule,
     NzAvatarModule,
+    NzDividerModule,
     SettingDrawerModule,
     ThemeBtnComponent,
     HeaderSearchComponent,
@@ -126,15 +178,84 @@ import { HeaderUserComponent } from './widgets/user.component';
     HeaderUserComponent
   ]
 })
-export class LayoutBasicComponent {
+export class LayoutBasicComponent implements OnInit {
   private readonly settings = inject(SettingsService);
+  private readonly accountService = inject(AccountService);
+  readonly workspaceContext = inject(WorkspaceContextFacade);
+
+  // 使用 WorkspaceContextFacade 的 signals
+  readonly allOrganizations = this.workspaceContext.allOrganizations;
+  readonly teamsByOrganization = this.workspaceContext.teamsByOrganization;
+  readonly currentUserAccountId = this.workspaceContext.currentUserAccountId;
+  readonly currentUserAccount = this.workspaceContext.currentUserAccount;
+  readonly contextLabel = this.workspaceContext.contextLabel;
+
   options: LayoutDefaultOptions = {
     logoExpanded: `./assets/logo-full.svg`,
     logoCollapsed: `./assets/logo.svg`
   };
   searchToggleStatus = false;
   showSettingDrawer = !environment.production;
+  
   get user(): User {
     return this.settings.user;
+  }
+
+  ngOnInit(): void {
+    // WorkspaceContextFacade 会自动加载数据，无需手动调用
+  }
+
+  // Helper methods for template to access properties safely
+  getUserAccountName(): string {
+    const account = this.currentUserAccount() as Record<string, unknown>;
+    return (account?.['name'] as string) || '個人視角';
+  }
+
+  getOrgName(org: unknown): string {
+    return ((org as Record<string, unknown>)?.['name'] as string) || '';
+  }
+
+  getOrgId(org: unknown): string {
+    return ((org as Record<string, unknown>)?.['id'] as string) || '';
+  }
+
+  switchToCurrentUser(): void {
+    const userId = this.currentUserAccountId();
+    if (userId) {
+      this.workspaceContext.switchToUser(userId);
+    }
+  }
+
+  switchToOrg(org: unknown): void {
+    const id = this.getOrgId(org);
+    if (id) {
+      this.workspaceContext.switchToOrganization(id);
+    }
+  }
+
+  hasTeams(org: unknown): boolean {
+    const orgId = this.getOrgId(org);
+    const teams = this.teamsByOrganization().get(orgId);
+    return !!(teams && teams.length > 0);
+  }
+
+  getTeams(org: unknown): unknown[] {
+    const orgId = this.getOrgId(org);
+    return this.teamsByOrganization().get(orgId) || [];
+  }
+
+  getTeamName(team: unknown): string {
+    return ((team as Record<string, unknown>)?.['name'] as string) || '';
+  }
+
+  getTeamId(team: unknown): string {
+    return ((team as Record<string, unknown>)?.['id'] as string) || '';
+  }
+
+  switchToTeam(team: unknown): void {
+    const id = this.getTeamId(team);
+    if (id) {
+      this.workspaceContext.switchToTeam(id);
+    }
   }
 }

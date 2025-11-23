@@ -33,7 +33,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
           <i nz-icon nzType="team" class="mr-sm"></i>
           管理組織
         </div>
-        <div nz-menu-item routerLink="/accounts/org/create">
+        <div nz-menu-item routerLink="/accounts/create/organization">
           <i nz-icon nzType="plus-circle" class="mr-sm"></i>
           建立組織
         </div>
