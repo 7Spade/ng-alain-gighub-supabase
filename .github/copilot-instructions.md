@@ -240,9 +240,9 @@ When working with automated coding agents (e.g., GitHub Copilot for Pull Request
 
 ### Testing Requirements for Agents
 
-- **Run existing tests first**: `npm test` to understand baseline
+- **Run existing tests first**: Run `npm test` to understand baseline test status
 - **Create tests for new functionality**: Follow existing test patterns in `.spec.ts` files
-- **Verify test coverage**: Use `npm run test-coverage` for coverage reports
+- **Verify test coverage**: Run `npm run test-coverage` for coverage reports
 - **Fix test failures**: Do not ignore failing tests; fix them or understand why they fail
 
 ### Code Quality Checks for Agents
