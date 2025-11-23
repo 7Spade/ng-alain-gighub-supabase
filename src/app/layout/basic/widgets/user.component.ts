@@ -29,6 +29,15 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
           {{ 'menu.account.trigger' | i18n }}
         </div>
         <li nz-menu-divider></li>
+        <div nz-menu-item routerLink="/accounts/org">
+          <i nz-icon nzType="team" class="mr-sm"></i>
+          管理組織
+        </div>
+        <div nz-menu-item routerLink="/accounts/org/create">
+          <i nz-icon nzType="plus-circle" class="mr-sm"></i>
+          建立組織
+        </div>
+        <li nz-menu-divider></li>
         <div nz-menu-item (click)="logout()">
           <i nz-icon nzType="logout" class="mr-sm"></i>
           {{ 'menu.account.logout' | i18n }}
