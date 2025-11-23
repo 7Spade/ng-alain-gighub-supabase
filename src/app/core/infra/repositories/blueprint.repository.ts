@@ -111,18 +111,22 @@ export class BlueprintRepository extends BaseRepository<Blueprint, BlueprintInse
   /**
    * Search blueprints by name or description
    *
+   * Note: Full-text search implementation requires custom query.
+   * This method currently passes searchTerm through filters,
+   * but actual implementation depends on Supabase text search setup.
+   * 
+   * TODO: Implement proper full-text search using Supabase .textSearch() method
+   * or PostgreSQL full-text search functions
+   *
    * @param {string} searchTerm - Search term
    * @param {QueryOptions} [options] - Query options
    * @returns {Observable<Blueprint[]>} Array of matching blueprints
    */
   search(searchTerm: string, options?: QueryOptions): Observable<Blueprint[]> {
+    // TODO: Implement full-text search
+    // Example: Use Supabase .textSearch() or PostgreSQL ts_vector
     return this.findAll({
-      ...options,
-      filters: {
-        ...options?.filters,
-        // Full-text search will be handled by Supabase query
-        textSearch: searchTerm
-      }
+      ...options
     });
   }
 }

@@ -58,7 +58,9 @@ export class WorkspaceService {
       activeCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.ACTIVE).length,
       archivedCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.ARCHIVED).length,
       templateCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.TEMPLATE).length,
-      totalMemberCount: 0 // Will be calculated when workspace_members are loaded
+      // TODO: Calculate from workspace_members when loaded
+      // Will be implemented when WorkspaceMemberService is added
+      totalMemberCount: 0
     };
   });
 
