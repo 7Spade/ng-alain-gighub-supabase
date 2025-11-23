@@ -16,7 +16,8 @@ import { DA_SERVICE_TOKEN } from '@delon/auth';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { WorkspaceContextFacade, AccountService } from '@core';
+import { WorkspaceContextFacade } from '@core';
+import { AccountService } from '@shared';
 
 @Component({
   selector: 'header-context-switcher',
@@ -56,12 +57,12 @@ import { WorkspaceContextFacade, AccountService } from '@core';
         @if (userAccounts().length > 0) {
           <div nz-submenu nzTitle="個人帳戶" nzIcon="user">
             <ul nz-menu>
-              @for (account of userAccounts(); track account.id) {
+              @for (account of userAccounts(); track getAccountId(account)) {
                 <li
                   nz-menu-item
-                  (click)="workspaceContext.switchToUser(account.id)"
+                  (click)="workspaceContext.switchToUser(getAccountId(account))"
                   [class.ant-menu-item-selected]="
-                    workspaceContext.contextType() === 'user' && workspaceContext.contextId() === account.id
+                    workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)
                   "
                 >
                   <i nz-icon nzType="user" class="mr-sm"></i>
@@ -76,12 +77,12 @@ import { WorkspaceContextFacade, AccountService } from '@core';
         @if (organizationAccounts().length > 0) {
           <div nz-submenu nzTitle="組織帳戶" nzIcon="team">
             <ul nz-menu>
-              @for (account of organizationAccounts(); track account.id) {
+              @for (account of organizationAccounts(); track getAccountId(account)) {
                 <li
                   nz-menu-item
-                  (click)="workspaceContext.switchToOrganization(account.id)"
+                  (click)="workspaceContext.switchToOrganization(getAccountId(account))"
                   [class.ant-menu-item-selected]="
-                    workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === account.id
+                    workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(account)
                   "
                 >
                   <i nz-icon nzType="team" class="mr-sm"></i>
@@ -96,16 +97,16 @@ import { WorkspaceContextFacade, AccountService } from '@core';
         @if (userTeams().length > 0) {
           <div nz-submenu nzTitle="團隊帳戶" nzIcon="usergroup-add">
             <ul nz-menu>
-              @for (org of organizationAccounts(); track org.id) {
-                @if (teamsByOrganization().has(org.id) && teamsByOrganization().get(org.id)!.length > 0) {
+              @for (org of organizationAccounts(); track getAccountId(org)) {
+                @if (teamsByOrganization().has(getAccountId(org)) && teamsByOrganization().get(getAccountId(org))!.length > 0) {
                   <li nz-submenu [nzTitle]="getAccountName(org)" nzIcon="team">
                     <ul nz-menu>
-                      @for (team of teamsByOrganization().get(org.id)!; track team.id) {
+                      @for (team of teamsByOrganization().get(getAccountId(org))!; track getTeamId(team)) {
                         <li
                           nz-menu-item
-                          (click)="workspaceContext.switchToTeam(team.id)"
+                          (click)="workspaceContext.switchToTeam(getTeamId(team))"
                           [class.ant-menu-item-selected]="
-                            workspaceContext.contextType() === 'team' && workspaceContext.contextId() === team.id
+                            workspaceContext.contextType() === 'team' && workspaceContext.contextId() === getTeamId(team)
                           "
                         >
                           <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
@@ -150,7 +151,7 @@ export class HeaderContextSwitcherComponent {
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
 
   // Use WorkspaceContextFacade signals
-  readonly userAccounts = computed(() => this.accountService.userAccounts());
+  readonly userAccounts = computed(() => this.accountService.userAccounts() as any[]);
   readonly organizationAccounts = this.workspaceContext.allOrganizations;
   readonly userTeams = this.workspaceContext.userTeams;
   readonly teamsByOrganization = this.workspaceContext.teamsByOrganization;
@@ -168,16 +169,34 @@ export class HeaderContextSwitcherComponent {
   });
 
   /**
+   * Get account ID with type safety
+   * 獲取帳戶 ID（類型安全）
+   */
+  getAccountId(account: any): string {
+    return (account['id'] as string) || '';
+  }
+
+  /**
+   * Get team ID with type safety
+   * 獲取團隊 ID（類型安全）
+   */
+  getTeamId(team: any): string {
+    return (team['id'] as string) || '';
+  }
+
+  /**
    * Get account name with fallback
+   * 獲取帳戶名稱（帶回退）
    */
   getAccountName(account: any): string {
-    return account.name || account.email || '未命名帳戶';
+    return account['name'] || account['email'] || '未命名帳戶';
   }
 
   /**
    * Get team name with fallback
+   * 獲取團隊名稱（帶回退）
    */
   getTeamName(team: any): string {
-    return team.name || '未命名團隊';
+    return team['name'] || '未命名團隊';
   }
 }
