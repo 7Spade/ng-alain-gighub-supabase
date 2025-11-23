@@ -5,20 +5,17 @@
  * Create team component
  *
  * Allows users to create a new team within an organization.
- * Integrated with TeamRepository and WorkspaceContextFacade.
+ * Uses TeamFacade and WorkspaceContextFacade for all business operations.
  *
  * @module routes/account
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
 import { SHARED_IMPORTS } from '@shared';
-import { TeamRepository } from '@core';
 import { CreateTeamRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { SupabaseAuthService } from '@core';
 import { TeamFacade, WorkspaceContextFacade } from '@core';
 
 @Component({
@@ -30,8 +27,6 @@ import { TeamFacade, WorkspaceContextFacade } from '@core';
 })
 export class CreateTeamComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly teamRepo = inject(TeamRepository);
-  private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
   private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);

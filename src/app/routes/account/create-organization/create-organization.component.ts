@@ -5,20 +5,17 @@
  * Create organization component
  *
  * Allows users to create a new organization account.
- * Integrated with AccountService and WorkspaceContextFacade.
+ * Uses OrganizationFacade for all business operations.
  *
  * @module routes/account
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
 import { SHARED_IMPORTS } from '@shared';
-import { AccountService } from '@shared';
 import { CreateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { SupabaseAuthService } from '@core';
 import { OrganizationFacade } from '@core';
 
 @Component({
@@ -30,8 +27,6 @@ import { OrganizationFacade } from '@core';
 })
 export class CreateOrganizationComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly accountService = inject(AccountService);
-  private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly organizationFacade = inject(OrganizationFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
