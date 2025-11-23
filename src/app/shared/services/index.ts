@@ -61,5 +61,7 @@
 // Export your services here
 // Example: export * from './feature/feature.service';
 
+export * from './account';
+
 // Temporary export to make this a valid module
 export const SERVICES_MODULE = 'services';

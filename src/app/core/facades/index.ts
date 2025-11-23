@@ -68,5 +68,7 @@
 // Export your facades here
 // Example: export * from './some.facade';
 
+export * from './account';
+
 // Temporary export to make this a valid module
 export const FACADES_MODULE = 'facades';
