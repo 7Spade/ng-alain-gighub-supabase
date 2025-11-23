@@ -7,3 +7,4 @@
 
 export * from './database.types';
 export * from './supabase.types';
+export * from './account';

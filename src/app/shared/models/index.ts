@@ -5,3 +5,4 @@
  */
 
 export * from './supabase.models';
+export * from './account';
