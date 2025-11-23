@@ -1,0 +1,12 @@
+<page-header [title]="'藍圖管理'">
+  <ng-template #action>
+    <button nz-button nzType="primary" (click)="createBlueprint()">
+      <span nz-icon nzType="plus"></span>
+      建立藍圖
+    </button>
+  </ng-template>
+</page-header>
+
+<nz-card>
+  <st #st [data]="blueprints" [columns]="columns" [page]="{ show: true, showSize: true }"></st>
+</nz-card>

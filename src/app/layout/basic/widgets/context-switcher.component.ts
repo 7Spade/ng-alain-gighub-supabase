@@ -10,13 +10,13 @@
  * @module layout/basic/widgets
  */
 
-import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
+import { WorkspaceContextFacade, AccountService } from '@core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { WorkspaceContextFacade, AccountService } from '@core';
 
 @Component({
   selector: 'header-context-switcher',
@@ -60,9 +60,7 @@ import { WorkspaceContextFacade, AccountService } from '@core';
                 <li
                   nz-menu-item
                   (click)="workspaceContext.switchToUser(account.id)"
-                  [class.ant-menu-item-selected]="
-                    workspaceContext.contextType() === 'user' && workspaceContext.contextId() === account.id
-                  "
+                  [class.ant-menu-item-selected]="workspaceContext.contextType() === 'user' && workspaceContext.contextId() === account.id"
                 >
                   <i nz-icon nzType="user" class="mr-sm"></i>
                   <span>{{ getAccountName(account) }}</span>

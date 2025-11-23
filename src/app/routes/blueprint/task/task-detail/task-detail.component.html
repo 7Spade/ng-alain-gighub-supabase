@@ -1,0 +1,29 @@
+<page-header [title]="isNew ? '建立任務' : '任務詳情'">
+  <ng-template #action>
+    <button nz-button (click)="goBack()">
+      <span nz-icon nzType="arrow-left"></span>
+      返回列表
+    </button>
+    <button nz-button nzType="primary" (click)="save()">
+      <span nz-icon nzType="save"></span>
+      儲存
+    </button>
+  </ng-template>
+</page-header>
+
+<nz-card>
+  <div class="content">
+    <p>任務詳情頁面</p>
+    <p>藍圖 ID: {{ blueprintId }}</p>
+    <p>任務 ID: {{ taskId }}</p>
+    <p>模式: {{ isNew ? '新建' : '編輯' }}</p>
+    
+    <!-- 預留：任務表單 -->
+    <nz-alert
+      nzType="info"
+      nzMessage="待實作"
+      nzDescription="此處將整合任務編輯表單，並連接 Supabase 資料庫"
+      nzShowIcon
+    ></nz-alert>
+  </div>
+</nz-card>
