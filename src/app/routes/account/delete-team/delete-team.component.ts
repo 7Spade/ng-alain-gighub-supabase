@@ -14,8 +14,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, 
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { TeamFacade } from '@core';
-import { Team } from '@shared';
+import { TeamFacade, Team } from '@core';
 
 @Component({
   selector: 'app-delete-team',
