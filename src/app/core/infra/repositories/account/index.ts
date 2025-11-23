@@ -9,6 +9,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { Database, AccountType, AccountStatus, AccountQueryOptions } from '../../types';
 import { BaseRepository } from '../base.repository';
 

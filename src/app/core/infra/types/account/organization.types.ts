@@ -61,4 +61,3 @@ export interface OrganizationMemberQueryOptions {
   /** 按角色過濾 | Filter by role */
   role?: OrganizationMemberRole;
 }
-

@@ -62,7 +62,7 @@ export class UserLoginComponent {
     email.updateValueAndValidity();
     password.markAsDirty();
     password.updateValueAndValidity();
-    
+
     if (email.invalid || password.invalid) {
       return;
     }
@@ -70,38 +70,40 @@ export class UserLoginComponent {
     this.loading = true;
     this.cdr.detectChanges();
 
-    this.supabaseAuth.signIn({
-      email: this.form.value.email!,
-      password: this.form.value.password!
-    }).subscribe({
-      next: ({ data, error }) => {
-        if (error) {
-          this.error = error.message || 'Login failed. Please check your credentials.';
+    this.supabaseAuth
+      .signIn({
+        email: this.form.value.email!,
+        password: this.form.value.password!
+      })
+      .subscribe({
+        next: ({ data, error }) => {
+          if (error) {
+            this.error = error.message || 'Login failed. Please check your credentials.';
+            this.loading = false;
+            this.cdr.detectChanges();
+            return;
+          }
+
+          if (data) {
+            // Clear route reuse information
+            this.reuseTabService?.clear();
+
+            // Reload startup service (user-specific app data)
+            this.startupSrv.load().subscribe(() => {
+              let url = this.tokenService.referrer!.url || '/';
+              if (url.includes('/passport')) {
+                url = '/';
+              }
+              this.router.navigateByUrl(url);
+            });
+          }
+        },
+        error: err => {
+          this.error = 'An unexpected error occurred. Please try again.';
+          console.error('Login error:', err);
           this.loading = false;
           this.cdr.detectChanges();
-          return;
         }
-
-        if (data) {
-          // Clear route reuse information
-          this.reuseTabService?.clear();
-          
-          // Reload startup service (user-specific app data)
-          this.startupSrv.load().subscribe(() => {
-            let url = this.tokenService.referrer!.url || '/';
-            if (url.includes('/passport')) {
-              url = '/';
-            }
-            this.router.navigateByUrl(url);
-          });
-        }
-      },
-      error: (err) => {
-        this.error = 'An unexpected error occurred. Please try again.';
-        console.error('Login error:', err);
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 }

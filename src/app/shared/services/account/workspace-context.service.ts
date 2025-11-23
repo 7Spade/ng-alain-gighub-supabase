@@ -11,8 +11,9 @@
 
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ContextType, ContextState } from '@core';
-import { Account, TeamModel, OrganizationModel } from '../../models/account';
+
 import { WorkspaceDataService } from './workspace-data.service';
+import { TeamModel } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'

@@ -7,8 +7,7 @@
  * @module shared/models/account
  */
 
-import { Database, AccountType, AccountStatus } from '@core';
-import { Bot } from '@core';
+import { AccountType, AccountStatus, Bot } from '@core';
 
 /**
  * Bot entity type (camelCase)

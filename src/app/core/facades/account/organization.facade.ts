@@ -11,10 +11,16 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { OrganizationService, UserService, WorkspaceDataService } from '@shared';
-import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '@shared';
 import { OrganizationMemberRole, SupabaseService } from '@core';
+import { DA_SERVICE_TOKEN } from '@delon/auth';
+import {
+  OrganizationService,
+  UserService,
+  WorkspaceDataService,
+  OrganizationBusinessModel,
+  CreateOrganizationRequest,
+  UpdateOrganizationRequest
+} from '@shared';
 
 @Injectable({
   providedIn: 'root'
@@ -70,11 +76,7 @@ export class OrganizationFacade {
       // RLS policies require the organization to have no members yet.
       // If this fails, the organization will be unusable (no owner).
       try {
-        await this.organizationService.addOrganizationMember(
-          organizationId,
-          userAccountId,
-          OrganizationMemberRole.OWNER
-        );
+        await this.organizationService.addOrganizationMember(organizationId, userAccountId, OrganizationMemberRole.OWNER);
       } catch (memberError) {
         // Step 5: Rollback - soft delete the organization if member creation fails
         try {

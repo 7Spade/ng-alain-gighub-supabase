@@ -7,8 +7,7 @@
  * @module shared/models/account
  */
 
-import { Database, AccountType, AccountStatus } from '@core';
-import { UserAccount } from '@core';
+import { AccountType, AccountStatus, UserAccount } from '@core';
 
 /**
  * User entity type (camelCase)
@@ -47,4 +46,3 @@ export interface UpdateUserAccountRequest {
   avatar?: string;
   status?: AccountStatus;
 }
-

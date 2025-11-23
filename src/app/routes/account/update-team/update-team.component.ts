@@ -12,11 +12,10 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SHARED_IMPORTS } from '@shared';
-import { UpdateTeamRequest } from '@shared';
+import { TeamFacade, Team } from '@core';
+import { SHARED_IMPORTS, UpdateTeamRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { TeamFacade, Team } from '@core';
 
 @Component({
   selector: 'app-update-team',
@@ -117,4 +116,3 @@ export class UpdateTeamComponent implements OnInit {
     this.modal.destroy();
   }
 }
-

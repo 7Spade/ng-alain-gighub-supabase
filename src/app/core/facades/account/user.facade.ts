@@ -12,8 +12,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { UserService, WorkspaceDataService } from '@shared';
-import { UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
+import { UserService, WorkspaceDataService, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
 
 @Injectable({
   providedIn: 'root'

@@ -12,6 +12,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { Database, OrganizationMemberRole, OrganizationMemberQueryOptions } from '../../types';
 import { BaseRepository } from '../base.repository';
 
@@ -126,4 +127,3 @@ export class OrganizationMemberRepository extends BaseRepository<OrganizationMem
     return this.findOne({ organizationId, accountId, role: OrganizationMemberRole.ADMIN }).pipe(map(member => member !== null));
   }
 }
-

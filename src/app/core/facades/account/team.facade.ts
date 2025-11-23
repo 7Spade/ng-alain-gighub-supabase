@@ -12,8 +12,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { TeamService, WorkspaceDataService } from '@shared';
-import { TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+import { TeamService, WorkspaceDataService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
 
 @Injectable({
   providedIn: 'root'

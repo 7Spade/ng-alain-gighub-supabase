@@ -12,11 +12,10 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SHARED_IMPORTS } from '@shared';
-import { CreateOrganizationRequest } from '@shared';
+import { OrganizationFacade } from '@core';
+import { SHARED_IMPORTS, CreateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { OrganizationFacade } from '@core';
 
 @Component({
   selector: 'app-create-organization',

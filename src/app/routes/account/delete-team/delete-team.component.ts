@@ -11,10 +11,10 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { TeamFacade, Team } from '@core';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { TeamFacade, Team } from '@core';
 
 @Component({
   selector: 'app-delete-team',
@@ -84,4 +84,3 @@ export class DeleteTeamComponent implements OnInit {
     this.modal.destroy();
   }
 }
-

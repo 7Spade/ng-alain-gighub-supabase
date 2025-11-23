@@ -11,9 +11,9 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
+import { AccountType, AccountStatus, OrganizationMemberRole, OrganizationRepository, OrganizationMemberRepository } from '@core';
 import { firstValueFrom } from 'rxjs';
-import { AccountType, AccountStatus, OrganizationMemberRole } from '@core';
-import { OrganizationRepository, OrganizationMemberRepository } from '@core';
+
 import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '../../models/account';
 
 @Injectable({
@@ -111,11 +111,7 @@ export class OrganizationService {
    * @param {OrganizationMemberRole} role - Member role
    * @returns {Promise<void>}
    */
-  async addOrganizationMember(
-    organizationId: string,
-    accountId: string,
-    role: OrganizationMemberRole
-  ): Promise<void> {
+  async addOrganizationMember(organizationId: string, accountId: string, role: OrganizationMemberRole): Promise<void> {
     await firstValueFrom(
       this.organizationMemberRepo.create({
         organizationId,
