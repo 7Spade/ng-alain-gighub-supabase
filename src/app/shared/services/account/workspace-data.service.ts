@@ -11,9 +11,7 @@
 
 import { Injectable, inject, signal } from '@angular/core';
 import { Account, OrganizationBusinessModel, TeamBusinessModel } from '../../models/account';
-import { AccountService } from './account.service';
-import { OrganizationService } from './organization.service';
-import { TeamService } from './team.service';
+import { AccountService, OrganizationService, TeamService } from './index';
 
 @Injectable({
   providedIn: 'root'
