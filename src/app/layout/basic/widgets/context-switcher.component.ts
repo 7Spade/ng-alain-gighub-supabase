@@ -388,11 +388,10 @@ export class HeaderContextSwitcherComponent {
    *
    * @param event - The keyboard event
    */
-  onContextTriggerKeyPress(event: Record<string, unknown>): void {
-    if (event['key'] === 'Enter' || event['key'] === ' ') {
-      if (typeof event['preventDefault'] === 'function') {
-        (event['preventDefault'] as () => void)();
-      }
+  onContextTriggerKeyPress(event: Event): void {
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+      event.preventDefault();
       this.dropdownVisibleState.update(v => !v);
     }
   }
