@@ -7,8 +7,7 @@
  * @module shared/models/account
  */
 
-import { Team, TeamMember } from '@core';
-import { TeamMemberRole } from '@core';
+import { Team, TeamMember, TeamMemberRole } from '@core';
 
 /**
  * Team entity type (camelCase)
@@ -72,4 +71,3 @@ export interface AddTeamMemberRequest {
   accountId: string;
   role: TeamMemberRole;
 }
-

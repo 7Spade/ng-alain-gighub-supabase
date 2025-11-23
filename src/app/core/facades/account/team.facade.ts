@@ -12,8 +12,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { TeamService, WorkspaceDataService } from '@shared';
-import { TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+import { TeamService, WorkspaceDataService, ErrorHandlerService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +21,7 @@ export class TeamFacade {
   private readonly teamService = inject(TeamService);
   private readonly dataService = inject(WorkspaceDataService);
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   // Proxy team service signals
   readonly teams = this.teamService.teams;
@@ -34,6 +34,7 @@ export class TeamFacade {
    *
    * @param {CreateTeamRequest} request - Create request
    * @returns {Promise<TeamBusinessModel>} Created team
+   * @throws {Error} User-friendly error message
    */
   async createTeam(request: CreateTeamRequest): Promise<TeamBusinessModel> {
     try {
@@ -47,8 +48,9 @@ export class TeamFacade {
 
       return team;
     } catch (error) {
-      console.error('[TeamFacade] Failed to create team:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'create', '團隊');
+      this.errorHandler.logError('TeamFacade', 'create team', error);
+      throw new Error(errorMessage);
     }
   }
 
@@ -59,6 +61,7 @@ export class TeamFacade {
    * @param {string} id - Team ID
    * @param {UpdateTeamRequest} request - Update request
    * @returns {Promise<TeamBusinessModel>} Updated team
+   * @throws {Error} User-friendly error message
    */
   async updateTeam(id: string, request: UpdateTeamRequest): Promise<TeamBusinessModel> {
     try {
@@ -72,8 +75,9 @@ export class TeamFacade {
 
       return team;
     } catch (error) {
-      console.error('[TeamFacade] Failed to update team:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'update', '團隊');
+      this.errorHandler.logError('TeamFacade', 'update team', error);
+      throw new Error(errorMessage);
     }
   }
 
@@ -83,6 +87,7 @@ export class TeamFacade {
    *
    * @param {string} id - Team ID
    * @returns {Promise<void>} Void
+   * @throws {Error} User-friendly error message
    */
   async deleteTeam(id: string): Promise<void> {
     try {
@@ -94,8 +99,9 @@ export class TeamFacade {
         await this.dataService.loadWorkspaceData(token['user']['id']);
       }
     } catch (error) {
-      console.error('[TeamFacade] Failed to delete team:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'delete', '團隊');
+      this.errorHandler.logError('TeamFacade', 'delete team', error);
+      throw new Error(errorMessage);
     }
   }
 

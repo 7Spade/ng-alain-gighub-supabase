@@ -7,9 +7,7 @@
  * @module shared/models/account
  */
 
-import { Database, AccountType, AccountStatus } from '@core';
-import { Organization, OrganizationMember } from '@core';
-import { OrganizationMemberRole } from '@core';
+import { Database, AccountType, AccountStatus, Organization, OrganizationMember, OrganizationMemberRole } from '@core';
 
 /**
  * Organization entity type (camelCase)

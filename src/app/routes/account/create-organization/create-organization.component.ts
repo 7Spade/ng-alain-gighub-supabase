@@ -5,21 +5,17 @@
  * Create organization component
  *
  * Allows users to create a new organization account.
- * Integrated with AccountService and WorkspaceContextFacade.
+ * Integrated with OrganizationFacade.
  *
  * @module routes/account
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
-import { SHARED_IMPORTS } from '@shared';
-import { AccountService } from '@shared';
-import { CreateOrganizationRequest } from '@shared';
+import { OrganizationFacade } from '@core';
+import { SHARED_IMPORTS, CreateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { SupabaseAuthService } from '@core';
-import { OrganizationFacade } from '@core';
 
 @Component({
   selector: 'app-create-organization',
@@ -30,12 +26,9 @@ import { OrganizationFacade } from '@core';
 })
 export class CreateOrganizationComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly accountService = inject(AccountService);
-  private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly organizationFacade = inject(OrganizationFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   loading = false;
   form: FormGroup = this.fb.group({
@@ -60,30 +53,21 @@ export class CreateOrganizationComponent {
     }
 
     this.loading = true;
-    this.cdr.markForCheck();
-
     try {
       const formValue = this.form.value;
-
-      // 創建組織（通過 Facade）
       const request: CreateOrganizationRequest = {
         name: formValue.name.trim(),
         email: formValue.email?.trim() || undefined,
         avatar: formValue.avatar?.trim() || undefined
       };
+
       const organization = await this.organizationFacade.createOrganization(request);
-
       this.msg.success('組織創建成功！');
-
-      // 關閉模態框並返回創建的組織
       this.modal.close(organization);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '創建組織失敗';
-      this.msg.error(errorMessage);
-      console.error('[CreateOrganizationComponent] Failed to create organization:', error);
+      this.msg.error(error instanceof Error ? error.message : '創建組織失敗');
     } finally {
       this.loading = false;
-      this.cdr.markForCheck();
     }
   }
 

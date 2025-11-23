@@ -11,10 +11,19 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
+import {
+  AccountType,
+  AccountStatus,
+  OrganizationMemberRole,
+  AccountRepository,
+  SupabaseService,
+  OrganizationRepository,
+  OrganizationMemberRepository
+} from '@core';
 import { firstValueFrom } from 'rxjs';
-import { AccountType, AccountStatus, OrganizationMemberRole, AccountRepository, SupabaseService } from '@core';
-import { OrganizationRepository, OrganizationMemberRepository } from '@core';
+
 import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '../../models/account';
+import { ErrorHandlerService } from '../error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +33,7 @@ export class OrganizationService {
   private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
   private readonly accountRepo = inject(AccountRepository);
   private readonly supabaseService = inject(SupabaseService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   // State
   private organizationsState = signal<OrganizationBusinessModel[]>([]);

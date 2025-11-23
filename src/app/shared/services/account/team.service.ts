@@ -11,15 +11,18 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { TeamRepository } from '@core';
+import { firstValueFrom } from 'rxjs';
+
 import { TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '../../models/account';
+import { ErrorHandlerService } from '../error-handler.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeamService {
   private readonly teamRepo = inject(TeamRepository);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   // State
   private teamsState = signal<TeamBusinessModel[]>([]);

@@ -12,8 +12,14 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { OrganizationService, WorkspaceDataService } from '@shared';
-import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '@shared';
+import {
+  OrganizationService,
+  WorkspaceDataService,
+  ErrorHandlerService,
+  OrganizationBusinessModel,
+  CreateOrganizationRequest,
+  UpdateOrganizationRequest
+} from '@shared';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +28,7 @@ export class OrganizationFacade {
   private readonly organizationService = inject(OrganizationService);
   private readonly dataService = inject(WorkspaceDataService);
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   // Proxy organization service signals
   readonly organizations = this.organizationService.organizations;
@@ -34,6 +41,7 @@ export class OrganizationFacade {
    *
    * @param {CreateOrganizationRequest} request - Create request
    * @returns {Promise<OrganizationBusinessModel>} Created organization
+   * @throws {Error} User-friendly error message
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
     try {
@@ -47,8 +55,9 @@ export class OrganizationFacade {
 
       return organization;
     } catch (error) {
-      console.error('[OrganizationFacade] Failed to create organization:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'create', '組織');
+      this.errorHandler.logError('OrganizationFacade', 'create organization', error);
+      throw new Error(errorMessage);
     }
   }
 
@@ -59,6 +68,7 @@ export class OrganizationFacade {
    * @param {string} id - Organization ID
    * @param {UpdateOrganizationRequest} request - Update request
    * @returns {Promise<OrganizationBusinessModel>} Updated organization
+   * @throws {Error} User-friendly error message
    */
   async updateOrganization(id: string, request: UpdateOrganizationRequest): Promise<OrganizationBusinessModel> {
     try {
@@ -72,8 +82,9 @@ export class OrganizationFacade {
 
       return organization;
     } catch (error) {
-      console.error('[OrganizationFacade] Failed to update organization:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'update', '組織');
+      this.errorHandler.logError('OrganizationFacade', 'update organization', error);
+      throw new Error(errorMessage);
     }
   }
 
@@ -83,6 +94,7 @@ export class OrganizationFacade {
    *
    * @param {string} id - Organization ID
    * @returns {Promise<OrganizationBusinessModel>} Deleted organization
+   * @throws {Error} User-friendly error message
    */
   async deleteOrganization(id: string): Promise<OrganizationBusinessModel> {
     try {
@@ -96,8 +108,9 @@ export class OrganizationFacade {
 
       return organization;
     } catch (error) {
-      console.error('[OrganizationFacade] Failed to delete organization:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'delete', '組織');
+      this.errorHandler.logError('OrganizationFacade', 'delete organization', error);
+      throw new Error(errorMessage);
     }
   }
 
