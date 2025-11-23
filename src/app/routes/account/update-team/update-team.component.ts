@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade } from '@core';
-import { SHARED_IMPORTS, UpdateTeamRequest, Team } from '@shared';
+import { SHARED_IMPORTS, UpdateTeamRequest, TeamBusinessModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -31,8 +31,8 @@ export class UpdateTeamComponent implements OnInit {
   private readonly msg = inject(NzMessageService);
 
   loading = signal(false);
-  team!: Team;
-  teamParam?: Team;
+  team!: TeamBusinessModel;
+  teamParam?: TeamBusinessModel;
 
   form: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],

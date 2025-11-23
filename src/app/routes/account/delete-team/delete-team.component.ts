@@ -12,7 +12,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { TeamFacade } from '@core';
-import { SHARED_IMPORTS, Team } from '@shared';
+import { SHARED_IMPORTS, TeamBusinessModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -29,8 +29,8 @@ export class DeleteTeamComponent implements OnInit {
   private readonly msg = inject(NzMessageService);
 
   loading = signal(false);
-  team!: Team;
-  teamParam?: Team;
+  team!: TeamBusinessModel;
+  teamParam?: TeamBusinessModel;
 
   ngOnInit(): void {
     const config = this.modal.getConfig() as any;
