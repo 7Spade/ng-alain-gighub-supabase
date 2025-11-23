@@ -14,6 +14,11 @@ export const environment = {
     refreshTokenEnabled: true,
     refreshTokenType: 'auth-refresh'
   },
+  supabase: {
+    url: 'https://your-project.supabase.co',
+    anonKey: 'your-anon-key-here',
+    serviceRoleKey: 'your-service-role-key-here'
+  },
   providers: [provideMockConfig({ data: MOCKDATA })],
   interceptorFns: [mockInterceptor]
 } as Environment;
