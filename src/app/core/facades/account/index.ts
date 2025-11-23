@@ -11,5 +11,6 @@
 export * from './workspace-context.facade';
 
 // Business domain facades (業務域門面 - 扁平化導出)
+export * from './user.facade';
 export * from './organization.facade';
 export * from './team.facade';
