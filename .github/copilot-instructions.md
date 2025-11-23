@@ -226,6 +226,59 @@ yarn add <package-name>
 - Mock rules are registered in the mock module
 - Enable/disable mocking in environment files
 
+## Guidelines for Copilot Coding Agents
+
+When working with automated coding agents (e.g., GitHub Copilot for Pull Requests), follow these specific guidelines:
+
+### Agent Workflow
+
+1. **Analyze First**: Before making changes, review the relevant code sections and understand the existing patterns
+2. **Minimal Changes**: Make the smallest possible changes to achieve the goal
+3. **Test Early**: Run tests immediately after making changes to catch issues early
+4. **Iterative Development**: Make incremental changes and validate after each step
+5. **Code Review**: Always request a code review before finalizing changes
+
+### Testing Requirements for Agents
+
+- **Run existing tests first**: `npm test` to understand baseline
+- **Create tests for new functionality**: Follow existing test patterns in `.spec.ts` files
+- **Verify test coverage**: Use `npm run test-coverage` for coverage reports
+- **Fix test failures**: Do not ignore failing tests; fix them or understand why they fail
+
+### Code Quality Checks for Agents
+
+Before submitting changes, ensure:
+1. `npm run lint` passes without errors
+2. `npm run build` completes successfully
+3. `npm test` passes all tests
+4. No TypeScript compilation errors
+5. All code follows the coding conventions documented above
+
+### Security Considerations for Agents
+
+- Never commit secrets, API keys, or sensitive data
+- Follow Angular security best practices (sanitization, etc.)
+- Use `@angular/platform-browser` `DomSanitizer` when dealing with dynamic content
+- Validate and sanitize all user inputs
+- Be cautious with `innerHTML` and similar DOM manipulation
+
+### Error Handling for Agents
+
+- Use try-catch blocks for asynchronous operations
+- Provide meaningful error messages
+- Handle HTTP errors appropriately using Angular's `HttpClient` error handling
+- Use Angular's error handling services where applicable
+- Log errors appropriately for debugging
+
+### Code Review Expectations for Agents
+
+When creating PRs, ensure:
+- PR description clearly explains what was changed and why
+- Changes are focused on the issue being addressed
+- No unrelated changes are included
+- Breaking changes are clearly documented
+- Migration guides provided if needed
+
 ## Additional Resources
 
 - [NG-ALAIN Documentation](https://ng-alain.com)
