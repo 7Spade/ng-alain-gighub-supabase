@@ -70,5 +70,8 @@
 
 export * from './account';
 
+// Blueprint Container facade
+export * from './blueprint.facade';
+
 // Temporary export to make this a valid module
 export const FACADES_MODULE = 'facades';
