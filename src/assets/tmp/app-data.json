@@ -3,11 +3,6 @@
     "name": "NG-ALAIN",
     "description": "Ng-zorro admin panel front-end framework"
   },
-  "user": {
-    "name": "Admin",
-    "avatar": "./assets/tmp/img/avatar.jpg",
-    "email": "cipchk@qq.com"
-  },
   "menu": [
     {
       "text": "主导航",

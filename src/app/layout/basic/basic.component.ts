@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { I18nPipe, SettingsService, User } from '@delon/theme';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
@@ -10,6 +11,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 
+import { SupabaseAuthService } from '@core';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { HeaderClearStorageComponent } from './widgets/clear-storage.component';
 import { HeaderFullScreenComponent } from './widgets/fullscreen.component';
 import { HeaderI18nComponent } from './widgets/i18n.component';
@@ -77,10 +80,10 @@ import { HeaderUserComponent } from './widgets/user.component';
       </layout-default-header-item>
       <ng-template #asideUserTpl>
         <div nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" class="alain-default__aside-user">
-          <nz-avatar class="alain-default__aside-user-avatar" [nzSrc]="user.avatar" />
+          <nz-avatar class="alain-default__aside-user-avatar" [nzSrc]="user().avatar" />
           <div class="alain-default__aside-user-info">
-            <strong>{{ user.name }}</strong>
-            <p class="mb0">{{ user.email }}</p>
+            <strong>{{ user().name }}</strong>
+            <p class="mb0">{{ user().email }}</p>
           </div>
         </div>
         <nz-dropdown-menu #userMenu="nzDropdownMenu">
@@ -123,13 +126,35 @@ import { HeaderUserComponent } from './widgets/user.component';
 })
 export class LayoutBasicComponent {
   private readonly settings = inject(SettingsService);
+  private readonly supabaseAuth = inject(SupabaseAuthService);
+
   options: LayoutDefaultOptions = {
     logoExpanded: `./assets/logo-full.svg`,
     logoCollapsed: `./assets/logo.svg`
   };
   searchToggleStatus = false;
   showSettingDrawer = !environment.production;
-  get user(): User {
-    return this.settings.user;
-  }
+
+  // 從 Supabase 獲取當前用戶
+  private readonly supabaseUser = toSignal<SupabaseUser | null>(this.supabaseAuth.currentUser$, { initialValue: null });
+
+  // 將 Supabase User 映射為 ng-alain User 格式
+  readonly user = computed<User>(() => {
+    const supabaseUser = this.supabaseUser();
+
+    if (!supabaseUser) {
+      // 如果沒有 Supabase 用戶，回退到 SettingsService 的用戶數據
+      return this.settings.user;
+    }
+
+    // 映射 Supabase User 到 ng-alain User 格式
+    const metadata = supabaseUser.user_metadata || {};
+    const email = supabaseUser.email || '';
+
+    return {
+      name: metadata['full_name'] || metadata['name'] || email.split('@')[0] || 'User',
+      email: email,
+      avatar: metadata['avatar_url'] || metadata['avatar'] || './assets/tmp/img/avatar.jpg'
+    };
+  });
 }
