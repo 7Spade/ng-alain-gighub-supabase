@@ -11,8 +11,11 @@
 
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ContextType, ContextState } from '@core';
-import { Account, TeamModel, OrganizationModel } from '../../models/account';
+
 import { WorkspaceDataService } from './workspace-data.service';
+// Types are only used in JSDoc comments
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { Account, TeamModel, OrganizationModel } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'

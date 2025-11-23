@@ -10,7 +10,7 @@
  * @module core/facades/account
  */
 
-import { Injectable, computed, effect, inject } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
 import { WorkspaceContextService, WorkspaceDataService, AccountService } from '@shared';
 

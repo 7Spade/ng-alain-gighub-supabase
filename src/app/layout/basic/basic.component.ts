@@ -11,6 +11,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 import { HeaderClearStorageComponent } from './widgets/clear-storage.component';
+import { HeaderContextSwitcherComponent } from './widgets/context-switcher.component';
 import { HeaderFullScreenComponent } from './widgets/fullscreen.component';
 import { HeaderI18nComponent } from './widgets/i18n.component';
 import { HeaderIconComponent } from './widgets/icon.component';
@@ -50,6 +51,9 @@ import { HeaderUserComponent } from './widgets/user.component';
       </layout-default-header-item>
       <layout-default-header-item direction="right" hidden="mobile">
         <header-icon />
+      </layout-default-header-item>
+      <layout-default-header-item direction="right" hidden="mobile">
+        <header-context-switcher />
       </layout-default-header-item>
       <layout-default-header-item direction="right" hidden="mobile">
         <div layout-default-header-item-trigger nz-dropdown [nzDropdownMenu]="settingsMenu" nzTrigger="click" nzPlacement="bottomRight">
@@ -118,6 +122,7 @@ import { HeaderUserComponent } from './widgets/user.component';
     HeaderI18nComponent,
     HeaderClearStorageComponent,
     HeaderFullScreenComponent,
+    HeaderContextSwitcherComponent,
     HeaderUserComponent
   ]
 })

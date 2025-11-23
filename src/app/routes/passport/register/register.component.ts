@@ -87,7 +87,7 @@ export class UserRegisterComponent {
 
   async submit(): Promise<void> {
     this.error = '';
-    
+
     // Mark all controls as dirty and validate
     const { email, password, confirm } = this.form.controls;
     email.markAsDirty();
@@ -96,7 +96,7 @@ export class UserRegisterComponent {
     password.updateValueAndValidity();
     confirm.markAsDirty();
     confirm.updateValueAndValidity();
-    
+
     if (this.form.invalid) {
       return;
     }
@@ -106,32 +106,34 @@ export class UserRegisterComponent {
 
     const passwordValue = String(this.form.controls.password.value);
 
-    this.supabaseAuth.signUp({
-      email: this.form.value.email!,
-      password: passwordValue
-    }).subscribe({
-      next: ({ data, error }) => {
-        this.loading = false;
+    this.supabaseAuth
+      .signUp({
+        email: this.form.value.email!,
+        password: passwordValue
+      })
+      .subscribe({
+        next: ({ error }) => {
+          this.loading = false;
 
-        if (error) {
-          // Common error: "Failed to fetch" indicates missing or invalid Supabase credentials
-          // See docs/SUPABASE_SETUP.md for configuration instructions
-          this.error = error.message || 'Registration failed. Please check your Supabase configuration.';
+          if (error) {
+            // Common error: "Failed to fetch" indicates missing or invalid Supabase credentials
+            // See docs/SUPABASE_SETUP.md for configuration instructions
+            this.error = error.message || 'Registration failed. Please check your Supabase configuration.';
+            this.cdr.detectChanges();
+            return;
+          }
+
+          // Navigate to registration result page
+          this.router.navigate(['passport', 'register-result'], { queryParams: { email: this.form.value.email } });
+        },
+        error: err => {
+          // "Failed to fetch" usually means Supabase URL/key is not configured
+          // Check docs/SUPABASE_SETUP.md for setup instructions
+          this.error = 'Unable to connect to authentication service. Please check configuration.';
+          console.error('Registration error:', err);
+          this.loading = false;
           this.cdr.detectChanges();
-          return;
         }
-
-        // Navigate to registration result page
-        this.router.navigate(['passport', 'register-result'], { queryParams: { email: this.form.value.email } });
-      },
-      error: (err) => {
-        // "Failed to fetch" usually means Supabase URL/key is not configured
-        // Check docs/SUPABASE_SETUP.md for setup instructions
-        this.error = 'Unable to connect to authentication service. Please check configuration.';
-        console.error('Registration error:', err);
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 }

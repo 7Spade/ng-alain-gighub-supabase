@@ -10,8 +10,9 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { AccountRepository, TeamRepository, TeamMemberRepository, AccountType, AccountStatus } from '@core';
+import { firstValueFrom } from 'rxjs';
+
 import { Account, OrganizationModel, TeamModel, CreateAccountRequest, UpdateAccountRequest } from '../../models/account';
 
 @Injectable({
@@ -45,6 +46,7 @@ export class AccountService {
     return orgs as OrganizationModel[];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getUserJoinedOrganizations(accountId: string): Promise<OrganizationModel[]> {
     // TODO: Implement when organization_members repository is ready
     return [];

@@ -10,8 +10,9 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { Account, OrganizationModel, TeamModel } from '../../models/account';
+
 import { AccountService } from './account.service';
+import { Account, OrganizationModel, TeamModel } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
