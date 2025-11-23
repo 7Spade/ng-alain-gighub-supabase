@@ -14,3 +14,6 @@ export * from './account';
 // Blueprint Container types
 export * from './blueprint.types';
 export * from './workspace.types';
+
+// Task Module types
+export * from './task.types';

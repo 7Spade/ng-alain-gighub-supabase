@@ -12,3 +12,6 @@ export * from './account';
 // Blueprint Container models
 export * from './blueprint.models';
 export * from './workspace.models';
+
+// Task Module models
+export * from './task.models';

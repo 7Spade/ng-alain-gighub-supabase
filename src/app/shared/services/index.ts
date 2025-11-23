@@ -68,5 +68,8 @@ export * from './account';
 export * from './blueprint';
 export * from './workspace';
 
+// Task Module services
+export * from './task';
+
 // Temporary export to make this a valid module
 export const SERVICES_MODULE = 'services';
