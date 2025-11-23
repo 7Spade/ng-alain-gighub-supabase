@@ -12,7 +12,7 @@
 
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AccountType, AccountStatus, OrganizationMemberRole, AccountRepository, SupabaseService } from '@core';
+import { AccountType, AccountStatus, OrganizationMemberRole } from '@core';
 import { OrganizationRepository, OrganizationMemberRepository } from '@core';
 import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '../../models/account';
 
@@ -22,8 +22,6 @@ import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizatio
 export class OrganizationService {
   private readonly organizationRepo = inject(OrganizationRepository);
   private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
-  private readonly accountRepo = inject(AccountRepository);
-  private readonly supabaseService = inject(SupabaseService);
 
   // State
   private organizationsState = signal<OrganizationBusinessModel[]>([]);
@@ -82,27 +80,17 @@ export class OrganizationService {
   }
 
   /**
-   * 創建組織
-   * Create organization
+   * 創建組織（僅創建組織實體）
+   * Create organization (only creates the organization entity)
+   *
+   * Note: This method only creates the organization entity.
+   * The Facade layer is responsible for coordinating the creation
+   * of the organization with its initial owner membership.
    *
    * @param {CreateOrganizationRequest} request - Create request
-   * @returns {Promise<OrganizationModel>} Created organization
+   * @returns {Promise<OrganizationBusinessModel>} Created organization
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
-    // 1. 獲取當前用戶的 auth_user_id
-    const user = await this.supabaseService.getUser();
-    if (!user || !user.id) {
-      throw new Error('User not authenticated');
-    }
-
-    // 2. 獲取當前用戶的 account_id
-    const userAccount = await firstValueFrom(this.accountRepo.findByAuthUserId(user.id));
-    if (!userAccount) {
-      throw new Error('User account not found');
-    }
-    const userAccountId = userAccount['id'] as string;
-
-    // 3. 創建組織
     const insertData = {
       name: request.name,
       email: request.email || null,
@@ -111,35 +99,30 @@ export class OrganizationService {
     };
 
     const organization = await firstValueFrom(this.organizationRepo.create(insertData));
-    const organizationId = organization['id'] as string;
-
-    // 4. 創建 organization_members 記錄，將創建者設為 owner
-    // 這必須在創建組織後立即執行，因為 RLS 策略要求組織還沒有任何成員
-    // 如果創建成員記錄失敗，組織將無法使用（沒有 owner），所以我們必須拋出異常
-    try {
-      await firstValueFrom(
-        this.organizationMemberRepo.create({
-          organizationId,
-          accountId: userAccountId,
-          role: OrganizationMemberRole.OWNER
-        } as any)
-      );
-    } catch (error) {
-      // 如果創建成員記錄失敗，嘗試軟刪除剛創建的組織
-      try {
-        await firstValueFrom(this.organizationRepo.softDelete(organizationId));
-        console.warn(`[OrganizationService] Rolled back organization creation due to member creation failure: ${organizationId}`);
-      } catch (rollbackError) {
-        console.error('[OrganizationService] Failed to rollback organization creation:', rollbackError);
-      }
-
-      // 拋出異常，讓調用者知道創建失敗
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create organization member';
-      console.error('[OrganizationService] Failed to create organization member:', error);
-      throw new Error(`Failed to create organization: ${errorMessage}`);
-    }
-
     return organization as OrganizationBusinessModel;
+  }
+
+  /**
+   * 為組織添加成員
+   * Add member to organization
+   *
+   * @param {string} organizationId - Organization ID
+   * @param {string} accountId - Account ID to add
+   * @param {OrganizationMemberRole} role - Member role
+   * @returns {Promise<void>}
+   */
+  async addOrganizationMember(
+    organizationId: string,
+    accountId: string,
+    role: OrganizationMemberRole
+  ): Promise<void> {
+    await firstValueFrom(
+      this.organizationMemberRepo.create({
+        organizationId,
+        accountId,
+        role
+      } as any)
+    );
   }
 
   /**

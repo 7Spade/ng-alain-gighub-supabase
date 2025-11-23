@@ -12,16 +12,19 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { OrganizationService, WorkspaceDataService } from '@shared';
+import { OrganizationService, UserService, WorkspaceDataService } from '@shared';
 import { OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '@shared';
+import { OrganizationMemberRole, SupabaseService } from '@core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrganizationFacade {
   private readonly organizationService = inject(OrganizationService);
+  private readonly userService = inject(UserService);
   private readonly dataService = inject(WorkspaceDataService);
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
+  private readonly supabaseService = inject(SupabaseService);
 
   // Proxy organization service signals
   readonly organizations = this.organizationService.organizations;
@@ -29,17 +32,65 @@ export class OrganizationFacade {
   readonly error = this.organizationService.error;
 
   /**
-   * 創建組織
-   * Create organization
+   * 創建組織（協調完整的組織創建流程）
+   * Create organization (coordinates the full organization creation flow)
+   *
+   * This method orchestrates:
+   * 1. Getting the current authenticated user
+   * 2. Getting the user's account ID
+   * 3. Creating the organization
+   * 4. Adding the creator as owner
+   * 5. Handling rollback if member creation fails
+   * 6. Reloading workspace data
    *
    * @param {CreateOrganizationRequest} request - Create request
    * @returns {Promise<OrganizationBusinessModel>} Created organization
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
     try {
-      const organization = await this.organizationService.createOrganization(request);
+      // Step 1: Get current authenticated user
+      const user = await this.supabaseService.getUser();
+      if (!user || !user.id) {
+        throw new Error('User not authenticated');
+      }
 
-      // 重新載入工作區數據
+      // Step 2: Get user's account ID
+      const userAccount = await this.userService.findByAuthUserId(user.id);
+      if (!userAccount || !userAccount['id']) {
+        throw new Error('User account not found');
+      }
+      const userAccountId = userAccount['id'] as string;
+
+      // Step 3: Create organization
+      const organization = await this.organizationService.createOrganization(request);
+      const organizationId = organization['id'] as string;
+
+      // Step 4: Add creator as owner
+      // This must be done immediately after organization creation because
+      // RLS policies require the organization to have no members yet.
+      // If this fails, the organization will be unusable (no owner).
+      try {
+        await this.organizationService.addOrganizationMember(
+          organizationId,
+          userAccountId,
+          OrganizationMemberRole.OWNER
+        );
+      } catch (memberError) {
+        // Step 5: Rollback - soft delete the organization if member creation fails
+        try {
+          await this.organizationService.softDeleteOrganization(organizationId);
+          console.warn(`[OrganizationFacade] Rolled back organization creation due to member creation failure: ${organizationId}`);
+        } catch (rollbackError) {
+          console.error('[OrganizationFacade] Failed to rollback organization creation:', rollbackError);
+        }
+
+        // Throw error to inform caller
+        const errorMessage = memberError instanceof Error ? memberError.message : 'Failed to create organization member';
+        console.error('[OrganizationFacade] Failed to create organization member:', memberError);
+        throw new Error(`Failed to create organization: ${errorMessage}`);
+      }
+
+      // Step 6: Reload workspace data to reflect the new organization
       const token = this.tokenService.get();
       if (token?.['user']?.['id']) {
         await this.dataService.loadWorkspaceData(token['user']['id']);
