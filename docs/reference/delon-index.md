@@ -1,5 +1,10 @@
 # DELON-Index 索引
 
+> **注意**: 本文件提供 @delon 套件的快速索引。詳細的套件文檔請參考：
+> - **官方文檔**: https://ng-alain.com/components/
+> - **GitHub**: https://github.com/ng-alain/delon
+> - **API 文檔**: https://ng-alain.com/api/
+
 ## 📑 目錄
 
 - [📋 目錄](#-目錄)

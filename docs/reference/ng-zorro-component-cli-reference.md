@@ -1,5 +1,10 @@
 # NG-ZORRO-ANTD 組件清單與 CLI 指令
 
+> **注意**: 本文件提供 ng-zorro-antd 組件的快速參考。詳細的組件文檔請參考：
+> - **官方文檔**: https://ng.ant.design/components/
+> - **@delon 組件**: https://ng-alain.com/components/
+> - **GitHub**: https://github.com/NG-ZORRO/ng-zorro-antd
+
 ## 📑 目錄
 
 - [📋 目錄](#-目錄)
