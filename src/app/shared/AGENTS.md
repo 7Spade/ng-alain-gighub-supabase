@@ -184,27 +184,27 @@ import { CommonModule } from '@angular/common'; // ❌ 已在 SHARED_IMPORTS 中
 ## 📚 相關 Cursor 規則
 
 ### 模組特定規則
-- [Shared 模組特定規範](../../../.cursor/rules/shared-specific.mdc) ⭐ 自動應用
+- [Shared 模組特定規範](../../.cursor/rules/shared-specific.mdc) ⭐ 自動應用
 
 ### 通用規則（自動應用）
-- [Angular 20 最佳實踐](../../../.cursor/rules/angular.mdc)
-- [TypeScript 類型安全](../../../.cursor/rules/typescript.mdc)
-- [共享模組優先使用](../../../.cursor/rules/shared-imports.mdc) ⭐ 必讀
-- [代碼質量](../../../.cursor/rules/code-quality.mdc)
-- [可訪問性](../../../.cursor/rules/accessibility.mdc)
+- [Angular 20 最佳實踐](../../.cursor/rules/angular.mdc)
+- [TypeScript 類型安全](../../.cursor/rules/typescript.mdc)
+- [共享模組優先使用](../../.cursor/rules/shared-imports.mdc) ⭐ 必讀
+- [代碼質量](../../.cursor/rules/code-quality.mdc)
+- [可訪問性](../../.cursor/rules/accessibility.mdc)
 
 ## 🔗 相關文檔
 
 ### 必讀文檔
-- [完整開發規範](../../../AGENTS.md) - AI 助手總覽
-- [SHARED_IMPORTS 使用指南](../../../docs/37-SHARED_IMPORTS-使用指南.md) ⭐⭐⭐
-- [開發最佳實踐指南](../../../docs/42-開發最佳實踐指南.md)
+- [完整開發規範](../../AGENTS.md) - AI 助手總覽
+- [SHARED_IMPORTS 使用指南](../../docs/reference/shared-imports-guide.md) ⭐⭐⭐
+- [開發最佳實踐指南](../../docs/guides/development-best-practices.md)
 
 ### 參考文檔
-- [開發工作流程](../../../docs/35-開發工作流程.md)
-- [架構說明](../../../docs/fyi-architecture.md) - 分層架構設計
-- [開發脈絡](../../../docs/fyi-development.md) - 技術選型
-- [上下文脈絡](../../../docs/fyi-context.md) - Domain 用語
+- [開發工作流程](../../docs/workflow/contribution.md)
+- [架構說明](../../docs/architecture/README.md) - 分層架構設計
+- [開發脈絡](../../docs/development/getting-started.md) - 技術選型
+- [上下文脈絡](../../docs/README.md) - Domain 用語
 
 ## 💡 AI 助手使用建議
 
@@ -224,10 +224,10 @@ import { CommonModule } from '@angular/common'; // ❌ 已在 SHARED_IMPORTS 中
 6. 遵循 .cursor/rules/shared-specific.mdc 規範
 ```
 
-- --
+---
 
-**最後更新**：2025-11-20
-**架構版本**：v2.0
-**維護者**：開發團隊
+**最後更新**：2025-01-20  
+**架構版本**：v2.0  
+**維護者**：開發團隊  
 **適用**：GitHub Copilot Agent Mode
 
