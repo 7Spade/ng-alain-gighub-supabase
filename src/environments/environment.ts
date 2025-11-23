@@ -15,9 +15,9 @@ export const environment = {
     refreshTokenType: 'auth-refresh'
   },
   supabase: {
-    url: 'https://your-project.supabase.co',
-    anonKey: 'your-anon-key-here',
-    serviceRoleKey: 'your-service-role-key-here'
+    url: process.env['NEXT_PUBLIC_SUPABASE_URL'] || 'https://xxycyrsgzjlphohqjpsh.supabase.co',
+    anonKey: process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] || 'your-anon-key-here',
+    serviceRoleKey: process.env['SUPABASE_SERVICE_ROLE_KEY'] || 'your-service-role-key-here'
   },
   providers: [provideMockConfig({ data: MOCKDATA })],
   interceptorFns: [mockInterceptor]

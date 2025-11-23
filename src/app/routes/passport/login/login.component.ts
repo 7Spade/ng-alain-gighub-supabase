@@ -104,30 +104,4 @@ export class UserLoginComponent {
       }
     });
   }
-
-  /**
-   * OAuth 登入 (GitHub Provider)
-   * OAuth login with GitHub
-   */
-  loginWithGithub(): void {
-    this.loading = true;
-    this.cdr.detectChanges();
-
-    this.supabaseAuth.signInWithProvider('github').subscribe({
-      next: ({ error }) => {
-        if (error) {
-          this.error = error.message || 'OAuth login failed.';
-          this.loading = false;
-          this.cdr.detectChanges();
-        }
-        // Note: OAuth redirects user away, so loading state will be cleared on return
-      },
-      error: (err) => {
-        this.error = 'An unexpected error occurred with OAuth login.';
-        console.error('OAuth error:', err);
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
 }

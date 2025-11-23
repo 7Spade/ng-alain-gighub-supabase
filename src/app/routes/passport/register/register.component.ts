@@ -114,7 +114,9 @@ export class UserRegisterComponent {
         this.loading = false;
 
         if (error) {
-          this.error = error.message || 'Registration failed. Please try again.';
+          // Common error: "Failed to fetch" indicates missing or invalid Supabase credentials
+          // See docs/SUPABASE_SETUP.md for configuration instructions
+          this.error = error.message || 'Registration failed. Please check your Supabase configuration.';
           this.cdr.detectChanges();
           return;
         }
@@ -123,7 +125,9 @@ export class UserRegisterComponent {
         this.router.navigate(['passport', 'register-result'], { queryParams: { email: this.form.value.email } });
       },
       error: (err) => {
-        this.error = 'An unexpected error occurred during registration.';
+        // "Failed to fetch" usually means Supabase URL/key is not configured
+        // Check docs/SUPABASE_SETUP.md for setup instructions
+        this.error = 'Unable to connect to authentication service. Please check configuration.';
         console.error('Registration error:', err);
         this.loading = false;
         this.cdr.detectChanges();
