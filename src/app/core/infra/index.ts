@@ -1,6 +1,6 @@
 /**
  * Core Infrastructure Module
- * 
+ *
  * Exports all infrastructure components including types, repositories, and Supabase services.
  */
 

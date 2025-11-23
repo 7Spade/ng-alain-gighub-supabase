@@ -1,11 +1,12 @@
 /**
  * Supabase Type Definitions
- * 
+ *
  * Contains type definitions for Supabase-specific interfaces and types
  * including authentication, storage, and client-related types.
  */
 
 import { Session, User, AuthError, Provider, SupabaseClient } from '@supabase/supabase-js';
+
 import { Database } from './database.types';
 
 /**
@@ -194,19 +195,19 @@ export interface SortOptions {
  * 過濾操作符類型
  * Filter operator type
  */
-export type FilterOperator = 
-  | 'eq' 
-  | 'neq' 
-  | 'gt' 
-  | 'gte' 
-  | 'lt' 
-  | 'lte' 
-  | 'like' 
-  | 'ilike' 
-  | 'is' 
-  | 'in' 
-  | 'contains' 
-  | 'containedBy' 
+export type FilterOperator =
+  | 'eq'
+  | 'neq'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'like'
+  | 'ilike'
+  | 'is'
+  | 'in'
+  | 'contains'
+  | 'containedBy'
   | 'overlaps';
 
 /**

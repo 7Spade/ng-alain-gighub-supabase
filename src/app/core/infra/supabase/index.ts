@@ -1,6 +1,6 @@
 /**
  * Supabase Infrastructure Module
- * 
+ *
  * Exports all Supabase infrastructure services.
  * These services provide low-level access to Supabase functionality.
  */

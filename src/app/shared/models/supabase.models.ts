@@ -1,9 +1,9 @@
 /**
  * Supabase Business Models
- * 
+ *
  * 業務模型定義，從資料庫類型轉換為業務層使用的模型
  * Business model definitions, converting database types to business layer models
- * 
+ *
  * Features:
  * - camelCase naming convention
  * - Business-specific enumerations
@@ -144,7 +144,7 @@ export interface PaginationRequest {
 /**
  * 從 Supabase User 轉換為 UserModel
  * Convert Supabase User to UserModel
- * 
+ *
  * @param {SupabaseUser} user - Supabase user
  * @returns {UserModel} User model
  */
@@ -166,7 +166,7 @@ export function toUserModel(user: SupabaseUser): UserModel {
 /**
  * 從 Supabase Session 轉換為 SessionModel
  * Convert Supabase Session to SessionModel
- * 
+ *
  * @param {Session} session - Supabase session
  * @returns {SessionModel} Session model
  */
@@ -184,41 +184,41 @@ export function toSessionModel(session: Session): SessionModel {
 /**
  * 檔案大小格式化
  * Format file size
- * 
+ *
  * @param {number} bytes - File size in bytes
  * @returns {string} Formatted file size
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+
+  return `${Math.round((bytes / Math.pow(k, i)) * 100) / 100} ${sizes[i]}`;
 }
 
 /**
  * 根據副檔名獲取檔案類型
  * Get file type by extension
- * 
+ *
  * @param {string} fileName - File name
  * @returns {FileType} File type
  */
 export function getFileType(fileName: string): FileType {
   const extension = fileName.split('.').pop()?.toLowerCase();
-  
+
   const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
   const documentExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
   const videoExtensions = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv'];
   const audioExtensions = ['mp3', 'wav', 'flac', 'aac', 'ogg'];
   const archiveExtensions = ['zip', 'rar', '7z', 'tar', 'gz'];
-  
+
   if (extension && imageExtensions.includes(extension)) return FileType.IMAGE;
   if (extension && documentExtensions.includes(extension)) return FileType.DOCUMENT;
   if (extension && videoExtensions.includes(extension)) return FileType.VIDEO;
   if (extension && audioExtensions.includes(extension)) return FileType.AUDIO;
   if (extension && archiveExtensions.includes(extension)) return FileType.ARCHIVE;
-  
+
   return FileType.OTHER;
 }

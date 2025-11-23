@@ -1,19 +1,19 @@
 /**
  * Supabase Upload Directive
- * 
+ *
  * 檔案上傳指令，簡化 Supabase Storage 檔案上傳操作
  * File upload directive to simplify Supabase Storage file upload operations
- * 
+ *
  * Features:
  * - Drag and drop support
  * - File type validation
  * - File size validation
  * - Upload progress tracking
  * - Auto upload on file selection
- * 
+ *
  * @example
  * ```html
- * <div 
+ * <div
  *   appSupabaseUpload
  *   [bucket]="'avatars'"
  *   [path]="userId + '/avatar.png'"
@@ -26,15 +26,7 @@
  * ```
  */
 
-import { 
-  Directive, 
-  ElementRef, 
-  EventEmitter, 
-  HostListener, 
-  Input, 
-  Output, 
-  inject 
-} from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, Output, inject } from '@angular/core';
 import { SupabaseStorageService } from '@core';
 import { firstValueFrom } from 'rxjs';
 
@@ -64,7 +56,7 @@ export class SupabaseUploadDirective {
   /**
    * Accepted file types (e.g., 'image/*', '.pdf')
    */
-  @Input() accept: string = '*/*';
+  @Input() accept = '*/*';
 
   /**
    * Maximum file size in bytes
@@ -74,40 +66,41 @@ export class SupabaseUploadDirective {
   /**
    * Auto upload on file selection
    */
-  @Input() autoUpload: boolean = true;
+  @Input() autoUpload = true;
 
   /**
    * Upsert flag (overwrite existing file)
    */
-  @Input() upsert: boolean = false;
+  @Input() upsert = false;
 
   /**
    * Upload success event
    */
-  @Output() uploaded = new EventEmitter<UploadResult>();
+  @Output() readonly uploaded = new EventEmitter<UploadResult>();
 
   /**
    * Upload error event
    */
-  @Output() error = new EventEmitter<Error>();
+  @Output() readonly error = new EventEmitter<Error>();
 
   /**
    * Upload progress event (0-100)
    */
-  @Output() progress = new EventEmitter<number>();
+  @Output() readonly progress = new EventEmitter<number>();
 
   /**
    * File selection event
    */
-  @Output() fileSelected = new EventEmitter<File>();
+  @Output() readonly fileSelected = new EventEmitter<File>();
 
   @HostListener('click')
   onClick(): void {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = this.accept;
-    input.onchange = (event: any) => {
-      const file = event.target?.files?.[0];
+    input.onchange = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const file = target?.files?.[0];
       if (file) {
         this.handleFile(file);
       }
@@ -144,7 +137,7 @@ export class SupabaseUploadDirective {
   /**
    * 處理檔案上傳
    * Handle file upload
-   * 
+   *
    * @private
    * @param {File} file - File to upload
    */
@@ -185,7 +178,7 @@ export class SupabaseUploadDirective {
 
       if (result.data) {
         const publicUrl = this.storageService.getPublicUrl(this.bucket, result.data.path);
-        
+
         this.progress.emit(100);
         this.uploaded.emit({
           path: result.data.path,
@@ -200,7 +193,7 @@ export class SupabaseUploadDirective {
   /**
    * 驗證檔案類型
    * Validate file type
-   * 
+   *
    * @private
    * @param {File} file - File to validate
    * @returns {boolean} True if valid
@@ -211,7 +204,7 @@ export class SupabaseUploadDirective {
     }
 
     const acceptTypes = this.accept.split(',').map(type => type.trim());
-    
+
     return acceptTypes.some(type => {
       if (type.startsWith('.')) {
         // File extension check

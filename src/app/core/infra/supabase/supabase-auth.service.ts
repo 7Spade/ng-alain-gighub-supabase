@@ -1,20 +1,20 @@
 /**
  * Supabase Authentication Service
- * 
+ *
  * 整合 Supabase Auth 與 @delon/auth 的認證服務
  * Authentication service integrating Supabase Auth with @delon/auth
- * 
+ *
  * Features:
  * - Email/password authentication (phone authentication removed as per requirements)
  * - Session management with @delon/auth TokenService sync
  * - OAuth provider support
  * - Password reset functionality
  * - Replaces Auth0 integration
- * 
+ *
  * @example
  * ```typescript
  * constructor(private authService: SupabaseAuthService) {}
- * 
+ *
  * async login() {
  *   const { data, error } = await this.authService.signIn({
  *     email: 'user@example.com',
@@ -29,16 +29,9 @@ import { Router } from '@angular/router';
 import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
+
 import { SupabaseService } from './supabase.service';
-import {
-  SignInCredentials,
-  SignUpCredentials,
-  AuthResponse,
-  AuthState,
-  Session,
-  User,
-  Provider
-} from '../types/supabase.types';
+import { SignInCredentials, SignUpCredentials, AuthResponse, AuthState, Session, User, Provider } from '../types/supabase.types';
 
 @Injectable({
   providedIn: 'root'
@@ -70,12 +63,12 @@ export class SupabaseAuthService {
   /**
    * 初始化認證狀態監聽器
    * Initialize authentication state listener
-   * 
+   *
    * @private
    */
   private initializeAuthListener(): void {
     const client = this.supabaseService.getClient();
-    
+
     // 監聽認證狀態變化
     // Listen to auth state changes
     client.auth.onAuthStateChange((event, session) => {
@@ -90,12 +83,12 @@ export class SupabaseAuthService {
   /**
    * 檢查當前 session
    * Check current session
-   * 
+   *
    * @private
    */
   private async checkSession(): Promise<void> {
     const session = await this.supabaseService.getSession();
-    
+
     if (session) {
       this.syncSessionToDelonAuth(session);
       this.authStateSubject.next(AuthState.SIGNED_IN);
@@ -109,7 +102,7 @@ export class SupabaseAuthService {
   /**
    * 處理認證狀態變化
    * Handle authentication state changes
-   * 
+   *
    * @private
    * @param {string} event - Auth event type
    * @param {Session | null} session - Current session
@@ -151,7 +144,7 @@ export class SupabaseAuthService {
   /**
    * 同步 Supabase Session 到 @delon/auth TokenService
    * Sync Supabase Session to @delon/auth TokenService
-   * 
+   *
    * @private
    * @param {Session} session - Supabase session
    */
@@ -169,7 +162,7 @@ export class SupabaseAuthService {
   /**
    * 清除 @delon/auth 認證資訊
    * Clear @delon/auth authentication info
-   * 
+   *
    * @private
    */
   private clearDelonAuth(): void {
@@ -179,13 +172,13 @@ export class SupabaseAuthService {
   /**
    * 使用 Email 和密碼登入
    * Sign in with email and password
-   * 
+   *
    * @param {SignInCredentials} credentials - Login credentials
    * @returns {Observable<AuthResponse<Session>>} Authentication response
    */
   signIn(credentials: SignInCredentials): Observable<AuthResponse<Session>> {
     const client = this.supabaseService.getClient();
-    
+
     return from(
       client.auth.signInWithPassword({
         email: credentials.email,
@@ -202,13 +195,13 @@ export class SupabaseAuthService {
   /**
    * 註冊新使用者
    * Sign up new user
-   * 
+   *
    * @param {SignUpCredentials} credentials - Signup credentials
    * @returns {Observable<AuthResponse<User>>} Authentication response
    */
   signUp(credentials: SignUpCredentials): Observable<AuthResponse<User>> {
     const client = this.supabaseService.getClient();
-    
+
     return from(
       client.auth.signUp({
         email: credentials.email,
@@ -226,12 +219,12 @@ export class SupabaseAuthService {
   /**
    * 登出
    * Sign out
-   * 
+   *
    * @returns {Observable<{ error: any | null }>} Logout response
    */
   signOut(): Observable<{ error: any | null }> {
     const client = this.supabaseService.getClient();
-    
+
     return from(client.auth.signOut()).pipe(
       tap(() => {
         this.clearDelonAuth();
@@ -242,13 +235,13 @@ export class SupabaseAuthService {
   /**
    * 使用 OAuth 提供商登入
    * Sign in with OAuth provider
-   * 
+   *
    * @param {Provider} provider - OAuth provider (google, github, etc.)
    * @returns {Observable<{ error: any | null }>} Authentication response
    */
   signInWithProvider(provider: Provider): Observable<{ error: any | null }> {
     const client = this.supabaseService.getClient();
-    
+
     return from(
       client.auth.signInWithOAuth({
         provider,
@@ -262,13 +255,13 @@ export class SupabaseAuthService {
   /**
    * 重設密碼請求
    * Request password reset
-   * 
+   *
    * @param {string} email - User email
    * @returns {Observable<{ error: any | null }>} Reset response
    */
   resetPassword(email: string): Observable<{ error: any | null }> {
     const client = this.supabaseService.getClient();
-    
+
     return from(
       client.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`
@@ -279,16 +272,14 @@ export class SupabaseAuthService {
   /**
    * 更新密碼
    * Update password
-   * 
+   *
    * @param {string} newPassword - New password
    * @returns {Observable<AuthResponse<User>>} Update response
    */
   updatePassword(newPassword: string): Observable<AuthResponse<User>> {
     const client = this.supabaseService.getClient();
-    
-    return from(
-      client.auth.updateUser({ password: newPassword })
-    ).pipe(
+
+    return from(client.auth.updateUser({ password: newPassword })).pipe(
       map(({ data, error }) => ({
         data: data.user,
         error
@@ -299,7 +290,7 @@ export class SupabaseAuthService {
   /**
    * 獲取當前 session
    * Get current session
-   * 
+   *
    * @returns {Observable<Session | null>} Current session
    */
   getSession(): Observable<Session | null> {
@@ -309,7 +300,7 @@ export class SupabaseAuthService {
   /**
    * 獲取當前使用者
    * Get current user
-   * 
+   *
    * @returns {Observable<User | null>} Current user
    */
   getUser(): Observable<User | null> {
@@ -319,7 +310,7 @@ export class SupabaseAuthService {
   /**
    * 檢查是否已登入
    * Check if user is authenticated
-   * 
+   *
    * @returns {boolean} True if authenticated
    */
   isAuthenticated(): boolean {
