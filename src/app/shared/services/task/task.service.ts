@@ -270,6 +270,10 @@ export class TaskService {
 
   /**
    * Recalculate progress for parent tasks (recursive)
+   * 
+   * Note: This is a simplified implementation for the base structure.
+   * In production, progress calculation should be handled by database triggers
+   * or a dedicated background job to ensure consistency across the tree.
    */
   private async recalculateParentProgress(task: TaskModel): Promise<void> {
     if (!task.parentId) {
@@ -289,13 +293,16 @@ export class TaskService {
       const totalCount = children.length;
       const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
-      // Update parent
-      await this.updateTask(parent.id, {
-        // Update will trigger recalculation for grandparent recursively
-      });
-
-      // Note: Actual progress update should be done in database
-      // This is a simplified version for the base structure
+      // Update parent with calculated progress
+      // Note: In production, this should be a database-level update
+      // to avoid race conditions and ensure atomicity
+      
+      // TODO: Implement database-level progress calculation
+      // For now, we skip the update to avoid infinite recursion
+      // and rely on future database triggers
+      
+      // Recursively update grandparent
+      await this.recalculateParentProgress(parent);
     } catch (error) {
       console.error('Failed to recalculate parent progress:', error);
     }
