@@ -1,5 +1,11 @@
 # ng-alain-gighub 文檔總覽與索引
 
+> **注意**: 本文件為歷史文檔索引，部分引用的文件已被移除（如 archive/, ng-zorro-index/, delon-index/）。
+> 請參考最新的文檔目錄結構。對於組件庫文檔，請直接訪問官方文檔：
+> - **NG-ZORRO**: https://ng.ant.design/
+> - **@delon**: https://ng-alain.com/
+> - **Supabase**: [../supabase/](../supabase/)
+
 > **目的**: 提供 ng-alain-gighub 專案的完整文檔導航和索引，幫助開發者和 AI Agents 快速定位所需文檔。
 
 ## 目標讀者 (Audience)

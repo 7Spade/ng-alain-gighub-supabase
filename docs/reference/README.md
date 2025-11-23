@@ -65,14 +65,13 @@
   - CLI 產生指令
   - 快速參考
   - 常用範例
-
-### 套件索引 (Package Index)
+  - 官方文檔: https://ng.ant.design/
 
 - **delon-index.md** - @delon 套件索引
   - @delon/* 套件總覽
   - 快速索引
   - 使用指引
-  - 詳見 [delon-index/](../delon-index/)
+  - 官方文檔: https://ng-alain.com/
 
 ### 術語與詞彙 (Glossary)
 
@@ -142,10 +141,10 @@
 
 | 技術 | 參考文檔 |
 |------|---------|
-| Angular 20+ | [delon-index/](../delon-index/), [ng-zorro-index/](../ng-zorro-index/) |
-| NG-ZORRO | ng-zorro-component-cli-reference.md, [ng-zorro-index/README.md](../ng-zorro-index/README.md) |
-| @delon/* | delon-index.md, [delon-index/README.md](../delon-index/README.md) |
-| Supabase | api-documentation.md, sql-schema-definition.md |
+| Angular 20+ | [Angular 官方文檔](https://angular.dev) |
+| NG-ZORRO | ng-zorro-component-cli-reference.md, [官方文檔](https://ng.ant.design/) |
+| @delon/* | delon-index.md, [官方文檔](https://ng-alain.com/) |
+| Supabase | api-documentation.md, sql-schema-definition.md, [../supabase/](../supabase/) |
 | TypeScript | glossary.md |
 
 ### 常用查詢
