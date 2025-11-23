@@ -48,8 +48,8 @@ export class WorkspaceContextService {
     if (created.length === 0) return joined;
     if (joined.length === 0) return created;
 
-    const createdIds = new Set(created.map(org => org.id));
-    const uniqueJoined = joined.filter(org => !createdIds.has(org.id));
+    const createdIds = new Set(created.map(org => org['id']));
+    const uniqueJoined = joined.filter(org => !createdIds.has(org['id']));
 
     return [...created, ...uniqueJoined];
   });
@@ -60,7 +60,7 @@ export class WorkspaceContextService {
     const teamsMap = new Map<string, TeamModel[]>();
 
     orgs.forEach(org => {
-      teamsMap.set(org.id, []);
+      teamsMap.set(org['id'] as string, []);
     });
 
     teams.forEach(team => {
@@ -85,11 +85,11 @@ export class WorkspaceContextService {
         return account ? (account as any).name || '個人帳戶' : '個人帳戶';
       }
       case ContextType.ORGANIZATION: {
-        const org = this.allOrganizations().find(o => o.id === id);
+        const org = this.allOrganizations().find(o => o['id'] === id);
         return org ? (org as any).name || '組織' : '組織';
       }
       case ContextType.TEAM: {
-        const team = this.userTeams().find(t => t.id === id);
+        const team = this.userTeams().find(t => t['id'] === id);
         return team ? (team as any).name || '團隊' : '團隊';
       }
       case ContextType.BOT:

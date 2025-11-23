@@ -70,62 +70,64 @@ export class UserLoginComponent {
     this.loading = true;
     this.cdr.detectChanges();
 
-    try {
-      const { data, error } = await this.supabaseAuth.signIn({
-        email: this.form.value.email!,
-        password: this.form.value.password!
-      });
+    this.supabaseAuth.signIn({
+      email: this.form.value.email!,
+      password: this.form.value.password!
+    }).subscribe({
+      next: ({ data, error }) => {
+        if (error) {
+          this.error = error.message || 'Login failed. Please check your credentials.';
+          this.loading = false;
+          this.cdr.detectChanges();
+          return;
+        }
 
-      if (error) {
-        this.error = error.message || 'Login failed. Please check your credentials.';
+        if (data) {
+          // Clear route reuse information
+          this.reuseTabService?.clear();
+          
+          // Reload startup service (user-specific app data)
+          this.startupSrv.load().subscribe(() => {
+            let url = this.tokenService.referrer!.url || '/';
+            if (url.includes('/passport')) {
+              url = '/';
+            }
+            this.router.navigateByUrl(url);
+          });
+        }
+      },
+      error: (err) => {
+        this.error = 'An unexpected error occurred. Please try again.';
+        console.error('Login error:', err);
         this.loading = false;
         this.cdr.detectChanges();
-        return;
       }
-
-      if (data?.session) {
-        // Clear route reuse information
-        this.reuseTabService?.clear();
-        
-        // Reload startup service (user-specific app data)
-        this.startupSrv.load().subscribe(() => {
-          let url = this.tokenService.referrer!.url || '/';
-          if (url.includes('/passport')) {
-            url = '/';
-          }
-          this.router.navigateByUrl(url);
-        });
-      }
-    } catch (err) {
-      this.error = 'An unexpected error occurred. Please try again.';
-      console.error('Login error:', err);
-    } finally {
-      this.loading = false;
-      this.cdr.detectChanges();
-    }
+    });
   }
 
   /**
    * OAuth 登入 (GitHub Provider)
    * OAuth login with GitHub
    */
-  async loginWithGithub(): Promise<void> {
+  loginWithGithub(): void {
     this.loading = true;
     this.cdr.detectChanges();
 
-    try {
-      const { error } = await this.supabaseAuth.signInWithOAuth('github');
-      if (error) {
-        this.error = error.message || 'OAuth login failed.';
+    this.supabaseAuth.signInWithProvider('github').subscribe({
+      next: ({ error }) => {
+        if (error) {
+          this.error = error.message || 'OAuth login failed.';
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+        // Note: OAuth redirects user away, so loading state will be cleared on return
+      },
+      error: (err) => {
+        this.error = 'An unexpected error occurred with OAuth login.';
+        console.error('OAuth error:', err);
         this.loading = false;
         this.cdr.detectChanges();
       }
-      // Note: OAuth redirects user away, so loading state will be cleared on return
-    } catch (err) {
-      this.error = 'An unexpected error occurred with OAuth login.';
-      console.error('OAuth error:', err);
-      this.loading = false;
-      this.cdr.detectChanges();
-    }
+    });
   }
 }

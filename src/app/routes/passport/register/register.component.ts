@@ -104,27 +104,30 @@ export class UserRegisterComponent {
     this.loading = true;
     this.cdr.detectChanges();
 
-    try {
-      const { data, error } = await this.supabaseAuth.signUp({
-        email: this.form.value.email!,
-        password: this.form.value.password!
-      });
+    const passwordValue = String(this.form.controls.password.value);
 
-      if (error) {
-        this.error = error.message || 'Registration failed. Please try again.';
+    this.supabaseAuth.signUp({
+      email: this.form.value.email!,
+      password: passwordValue
+    }).subscribe({
+      next: ({ data, error }) => {
+        this.loading = false;
+
+        if (error) {
+          this.error = error.message || 'Registration failed. Please try again.';
+          this.cdr.detectChanges();
+          return;
+        }
+
+        // Navigate to registration result page
+        this.router.navigate(['passport', 'register-result'], { queryParams: { email: this.form.value.email } });
+      },
+      error: (err) => {
+        this.error = 'An unexpected error occurred during registration.';
+        console.error('Registration error:', err);
         this.loading = false;
         this.cdr.detectChanges();
-        return;
       }
-
-      // Navigate to registration result page
-      this.router.navigate(['passport', 'register-result'], { queryParams: { email: this.form.value.email } });
-    } catch (err) {
-      this.error = 'An unexpected error occurred during registration.';
-      console.error('Registration error:', err);
-    } finally {
-      this.loading = false;
-      this.cdr.detectChanges();
-    }
+    });
   }
 }

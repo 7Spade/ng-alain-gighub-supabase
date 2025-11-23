@@ -56,7 +56,7 @@ export class WorkspaceDataService {
       }
 
       this.currentUserAccountState.set(userAccount);
-      this.currentUserAccountIdState.set(userAccount.id);
+      this.currentUserAccountIdState.set(userAccount['id'] as string | null);
 
       // 2. Load organizations
       let createdOrgs: OrganizationModel[] = [];
@@ -69,7 +69,7 @@ export class WorkspaceDataService {
       }
 
       try {
-        joinedOrgs = await this.accountService.getUserJoinedOrganizations(userAccount.id);
+        joinedOrgs = await this.accountService.getUserJoinedOrganizations(userAccount['id'] as string);
       } catch (error) {
         console.error('[WorkspaceDataService] Failed to load joined organizations:', error);
       }
@@ -82,7 +82,7 @@ export class WorkspaceDataService {
       let teams: TeamModel[] = [];
 
       try {
-        teams = await this.accountService.getUserTeams(userAccount.id);
+        teams = await this.accountService.getUserTeams(userAccount['id'] as string);
       } catch (error) {
         console.error('[WorkspaceDataService] Failed to load teams:', error);
       }
