@@ -258,7 +258,7 @@ Before submitting changes, ensure:
 
 - Never commit secrets, API keys, or sensitive data
 - Follow Angular security best practices (sanitization, etc.)
-- Use `@angular/platform-browser` `DomSanitizer` when dealing with dynamic content
+- Use `@angular/platform-browser`'s `DomSanitizer` when dealing with dynamic content
 - Validate and sanitize all user inputs
 - Be cautious with `innerHTML` and similar DOM manipulation
 
