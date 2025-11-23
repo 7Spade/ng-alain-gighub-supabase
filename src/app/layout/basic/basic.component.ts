@@ -1,7 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { I18nPipe, SettingsService, User } from '@delon/theme';
+import { I18nPipe, ModalHelper, SettingsService, User } from '@delon/theme';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
@@ -13,6 +13,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 import { SupabaseAuthService } from '@core';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { CreateOrganizationComponent } from '../../routes/account/create-organization/create-organization.component';
 import { HeaderClearStorageComponent } from './widgets/clear-storage.component';
 import { HeaderFullScreenComponent } from './widgets/fullscreen.component';
 import { HeaderI18nComponent } from './widgets/i18n.component';
@@ -90,6 +91,11 @@ import { HeaderUserComponent } from './widgets/user.component';
           <ul nz-menu>
             <li nz-menu-item routerLink="/pro/account/center">{{ 'menu.account.center' | i18n }}</li>
             <li nz-menu-item routerLink="/pro/account/settings">{{ 'menu.account.settings' | i18n }}</li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="openCreateOrganization()">
+              <i nz-icon nzType="plus-circle" class="mr-sm"></i>
+              <span>建立組織</span>
+            </li>
           </ul>
         </nz-dropdown-menu>
       </ng-template>
@@ -127,6 +133,7 @@ import { HeaderUserComponent } from './widgets/user.component';
 export class LayoutBasicComponent {
   private readonly settings = inject(SettingsService);
   private readonly supabaseAuth = inject(SupabaseAuthService);
+  private readonly modal = inject(ModalHelper);
 
   options: LayoutDefaultOptions = {
     logoExpanded: `./assets/logo-full.svg`,
@@ -157,4 +164,17 @@ export class LayoutBasicComponent {
       avatar: metadata['avatar_url'] || metadata['avatar'] || './assets/tmp/img/avatar.jpg'
     };
   });
+
+  /**
+   * 打開建立組織模態框
+   * Open create organization modal
+   */
+  openCreateOrganization(): void {
+    this.modal.create(CreateOrganizationComponent, {}, { size: 'md' }).subscribe(result => {
+      if (result) {
+        console.log('組織創建成功:', result);
+        // 組織創建成功後，WorkspaceContextFacade 會自動重新載入數據
+      }
+    });
+  }
 }

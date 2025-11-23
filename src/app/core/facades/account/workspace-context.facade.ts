@@ -12,7 +12,15 @@
 
 import { Injectable, computed, effect, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { WorkspaceContextService, WorkspaceDataService, AccountService } from '@shared';
+import { WorkspaceContextService, WorkspaceDataService, AccountService, OrganizationService, TeamService } from '@shared';
+import {
+  OrganizationModel,
+  TeamModel,
+  CreateOrganizationRequest,
+  UpdateOrganizationRequest,
+  CreateTeamRequest,
+  UpdateTeamRequest
+} from '@shared';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +29,8 @@ export class WorkspaceContextFacade {
   private readonly contextService = inject(WorkspaceContextService);
   private readonly dataService = inject(WorkspaceDataService);
   private readonly accountService = inject(AccountService);
+  private readonly organizationService = inject(OrganizationService);
+  private readonly teamService = inject(TeamService);
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
 
   // Proxy context service signals
@@ -142,5 +152,153 @@ export class WorkspaceContextFacade {
   reset(): void {
     this.dataService.reset();
     this.contextService.switchToApp();
+  }
+
+  // ==================== 組織管理方法 ====================
+
+  /**
+   * 創建組織
+   * Create organization
+   *
+   * @param {CreateOrganizationRequest} request - Create request
+   * @returns {Promise<OrganizationModel>} Created organization
+   */
+  async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationModel> {
+    try {
+      const organization = await this.organizationService.createOrganization(request);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+
+      return organization;
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to create organization:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 更新組織
+   * Update organization
+   *
+   * @param {string} id - Organization ID
+   * @param {UpdateOrganizationRequest} request - Update request
+   * @returns {Promise<OrganizationModel>} Updated organization
+   */
+  async updateOrganization(id: string, request: UpdateOrganizationRequest): Promise<OrganizationModel> {
+    try {
+      const organization = await this.organizationService.updateOrganization(id, request);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+
+      return organization;
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to update organization:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 刪除組織（軟刪除）
+   * Delete organization (soft delete)
+   *
+   * @param {string} id - Organization ID
+   * @returns {Promise<OrganizationModel>} Deleted organization
+   */
+  async deleteOrganization(id: string): Promise<OrganizationModel> {
+    try {
+      const organization = await this.organizationService.softDeleteOrganization(id);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+
+      return organization;
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to delete organization:', error);
+      throw error;
+    }
+  }
+
+  // ==================== 團隊管理方法 ====================
+
+  /**
+   * 創建團隊
+   * Create team
+   *
+   * @param {CreateTeamRequest} request - Create request
+   * @returns {Promise<TeamModel>} Created team
+   */
+  async createTeam(request: CreateTeamRequest): Promise<TeamModel> {
+    try {
+      const team = await this.teamService.createTeam(request);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+
+      return team;
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to create team:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 更新團隊
+   * Update team
+   *
+   * @param {string} id - Team ID
+   * @param {UpdateTeamRequest} request - Update request
+   * @returns {Promise<TeamModel>} Updated team
+   */
+  async updateTeam(id: string, request: UpdateTeamRequest): Promise<TeamModel> {
+    try {
+      const team = await this.teamService.updateTeam(id, request);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+
+      return team;
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to update team:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 刪除團隊
+   * Delete team
+   *
+   * @param {string} id - Team ID
+   * @returns {Promise<void>} Void
+   */
+  async deleteTeam(id: string): Promise<void> {
+    try {
+      await this.teamService.deleteTeam(id);
+
+      // 重新載入工作區數據
+      const token = this.tokenService.get();
+      if (token?.['user']?.['id']) {
+        await this.loadWorkspaceData(token['user']['id']);
+      }
+    } catch (error) {
+      console.error('[WorkspaceContextFacade] Failed to delete team:', error);
+      throw error;
+    }
   }
 }

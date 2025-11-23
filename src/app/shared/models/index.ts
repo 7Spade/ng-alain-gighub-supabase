@@ -5,4 +5,6 @@
  */
 
 export * from './supabase.models';
+
+// Account models (includes user, organization, team, bot via account/index.ts)
 export * from './account';

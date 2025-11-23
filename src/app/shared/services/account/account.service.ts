@@ -11,16 +11,19 @@
 
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AccountRepository, TeamRepository, TeamMemberRepository, AccountType, AccountStatus } from '@core';
-import { Account, OrganizationModel, TeamModel, CreateAccountRequest, UpdateAccountRequest } from '../../models/account';
+import { AccountRepository, TeamMemberRepository, AccountType, AccountStatus } from '@core';
+import { Account } from '../../models/account';
+import { TeamBusinessModel } from '../../models/account';
+import { TeamService } from './team.service';
+import { CreateUserAccountRequest, UpdateUserAccountRequest } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
   private readonly accountRepo = inject(AccountRepository);
-  private readonly teamRepo = inject(TeamRepository);
   private readonly teamMemberRepo = inject(TeamMemberRepository);
+  private readonly teamService = inject(TeamService);
 
   // State
   private userAccountsState = signal<Account[]>([]);
@@ -40,17 +43,7 @@ export class AccountService {
     return firstValueFrom(this.accountRepo.findById(id));
   }
 
-  async getUserCreatedOrganizations(authUserId: string): Promise<OrganizationModel[]> {
-    const orgs = await firstValueFrom(this.accountRepo.findCreatedOrganizations(authUserId));
-    return orgs as OrganizationModel[];
-  }
-
-  async getUserJoinedOrganizations(accountId: string): Promise<OrganizationModel[]> {
-    // TODO: Implement when organization_members repository is ready
-    return [];
-  }
-
-  async getUserTeams(accountId: string): Promise<TeamModel[]> {
+  async getUserTeams(accountId: string): Promise<TeamBusinessModel[]> {
     const memberships = await firstValueFrom(this.teamMemberRepo.findByAccount(accountId));
     const teamIds = memberships.map(m => (m as any).teamId);
 
@@ -58,15 +51,23 @@ export class AccountService {
       return [];
     }
 
-    const teamsPromises = teamIds.map(teamId => firstValueFrom(this.teamRepo.findById(teamId)));
+    // 使用 TeamService 查詢團隊
+    const teamsPromises = teamIds.map(teamId => this.teamService.findById(teamId));
     const teams = await Promise.all(teamsPromises);
 
-    return teams.filter(t => t !== null) as TeamModel[];
+    return teams.filter(t => t !== null) as TeamBusinessModel[];
   }
 
-  async createAccount(request: CreateAccountRequest): Promise<Account> {
+  /**
+   * 創建用戶帳戶
+   * Create user account
+   *
+   * @param {CreateUserRequest} request - Create request
+   * @returns {Promise<Account>} Created account
+   */
+  async createUserAccount(request: CreateUserAccountRequest): Promise<Account> {
     const insertData = {
-      type: request.type,
+      type: AccountType.USER,
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
@@ -76,15 +77,37 @@ export class AccountService {
     return firstValueFrom(this.accountRepo.create(insertData as any));
   }
 
-  async updateAccount(id: string, request: UpdateAccountRequest): Promise<Account> {
+  /**
+   * 更新用戶帳戶
+   * Update user account
+   *
+   * @param {string} id - Account ID
+   * @param {UpdateUserRequest} request - Update request
+   * @returns {Promise<Account>} Updated account
+   */
+  async updateUserAccount(id: string, request: UpdateUserAccountRequest): Promise<Account> {
     return firstValueFrom(this.accountRepo.update(id, request as any));
   }
 
-  async softDeleteAccount(id: string): Promise<Account> {
+  /**
+   * 軟刪除用戶帳戶
+   * Soft delete user account
+   *
+   * @param {string} id - Account ID
+   * @returns {Promise<Account>} Updated account
+   */
+  async softDeleteUserAccount(id: string): Promise<Account> {
     return firstValueFrom(this.accountRepo.softDelete(id));
   }
 
-  async restoreAccount(id: string): Promise<Account> {
+  /**
+   * 恢復已刪除的用戶帳戶
+   * Restore deleted user account
+   *
+   * @param {string} id - Account ID
+   * @returns {Promise<Account>} Updated account
+   */
+  async restoreUserAccount(id: string): Promise<Account> {
     return firstValueFrom(this.accountRepo.restore(id));
   }
 

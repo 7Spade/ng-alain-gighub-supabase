@@ -15,7 +15,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { SHARED_IMPORTS } from '@shared';
 import { AccountService } from '@shared';
-import { AccountType } from '@core';
+import { CreateOrganizationRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { SupabaseAuthService } from '@core';
@@ -65,21 +65,15 @@ export class CreateOrganizationComponent {
     try {
       const formValue = this.form.value;
 
-      // 創建組織帳戶
-      const organization = await this.accountService.createAccount({
-        type: AccountType.ORGANIZATION,
+      // 創建組織（通過 Facade）
+      const request: CreateOrganizationRequest = {
         name: formValue.name.trim(),
         email: formValue.email?.trim() || undefined,
         avatar: formValue.avatar?.trim() || undefined
-      });
+      };
+      const organization = await this.workspaceContext.createOrganization(request);
 
       this.msg.success('組織創建成功！');
-
-      // 重新載入工作區數據以更新組織列表
-      const currentUser = await firstValueFrom(this.supabaseAuth.getUser());
-      if (currentUser?.id) {
-        await this.workspaceContext.loadWorkspaceData(currentUser.id);
-      }
 
       // 關閉模態框並返回創建的組織
       this.modal.close(organization);

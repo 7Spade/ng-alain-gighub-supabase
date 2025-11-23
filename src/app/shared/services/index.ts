@@ -61,6 +61,7 @@
 // Export your services here
 // Example: export * from './feature/feature.service';
 
+// Account services (includes user, organization, team, bot via account/index.ts)
 export * from './account';
 
 // Temporary export to make this a valid module

@@ -10,22 +10,26 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { Account, OrganizationModel, TeamModel } from '../../models/account';
+import { Account, OrganizationBusinessModel, TeamBusinessModel } from '../../models/account';
 import { AccountService } from './account.service';
+import { OrganizationService } from './organization.service';
+import { TeamService } from './team.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkspaceDataService {
   private readonly accountService = inject(AccountService);
+  private readonly organizationService = inject(OrganizationService);
+  private readonly teamService = inject(TeamService);
 
   // State
   private currentUserAccountState = signal<Account | null>(null);
   private currentUserAccountIdState = signal<string | null>(null);
-  private createdOrganizationsState = signal<OrganizationModel[]>([]);
-  private joinedOrganizationsState = signal<OrganizationModel[]>([]);
+  private createdOrganizationsState = signal<OrganizationBusinessModel[]>([]);
+  private joinedOrganizationsState = signal<OrganizationBusinessModel[]>([]);
   private loadingOrganizationsState = signal<boolean>(false);
-  private userTeamsState = signal<TeamModel[]>([]);
+  private userTeamsState = signal<TeamBusinessModel[]>([]);
   private loadingTeamsState = signal<boolean>(false);
   private errorState = signal<string | null>(null);
 
@@ -59,17 +63,17 @@ export class WorkspaceDataService {
       this.currentUserAccountIdState.set(userAccount['id'] as string | null);
 
       // 2. Load organizations
-      let createdOrgs: OrganizationModel[] = [];
-      let joinedOrgs: OrganizationModel[] = [];
+      let createdOrgs: OrganizationBusinessModel[] = [];
+      let joinedOrgs: OrganizationBusinessModel[] = [];
 
       try {
-        createdOrgs = await this.accountService.getUserCreatedOrganizations(authUserId);
+        createdOrgs = await this.organizationService.getUserCreatedOrganizations(authUserId);
       } catch (error) {
         console.error('[WorkspaceDataService] Failed to load created organizations:', error);
       }
 
       try {
-        joinedOrgs = await this.accountService.getUserJoinedOrganizations(userAccount['id'] as string);
+        joinedOrgs = await this.organizationService.getUserJoinedOrganizations(userAccount['id'] as string);
       } catch (error) {
         console.error('[WorkspaceDataService] Failed to load joined organizations:', error);
       }
@@ -79,7 +83,7 @@ export class WorkspaceDataService {
       this.loadingOrganizationsState.set(false);
 
       // 3. Load teams
-      let teams: TeamModel[] = [];
+      let teams: TeamBusinessModel[] = [];
 
       try {
         teams = await this.accountService.getUserTeams(userAccount['id'] as string);

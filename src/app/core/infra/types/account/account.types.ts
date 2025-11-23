@@ -1,14 +1,16 @@
 /**
  * Account Type Definitions
  *
- * 帳戶相關類型定義（基礎設施層）
- * Account-related type definitions (Infrastructure Layer)
+ * 帳戶統一身份抽象類型定義（基礎設施層）
+ * Account unified identity abstraction type definitions (Infrastructure Layer)
  *
- * These types are used by the Repository layer and follow the 5-layer architecture.
- * Defines enumerations and interfaces for accounts, organizations, teams, and bots.
+ * These types represent the unified account abstraction that includes User, Bot, and Organization.
+ * For specific business domain types, see user/, organization/, team/, bot/ directories.
  *
  * @module core/infra/types/account
  */
+
+import { Database } from '../database.types';
 
 /**
  * 帳戶類型枚舉
@@ -43,32 +45,11 @@ export enum AccountStatus {
 }
 
 /**
- * 團隊成員角色枚舉
- * Team member role enumeration
- *
- * Corresponds to database team_members.role field
+ * Account entity type (unified identity abstraction)
  */
-export enum TeamMemberRole {
-  /** 團隊負責人 | Team leader */
-  LEADER = 'leader',
-  /** 團隊成員 | Team member */
-  MEMBER = 'member'
-}
-
-/**
- * 組織成員角色枚舉
- * Organization member role enumeration
- *
- * Corresponds to database organization_members.role field
- */
-export enum OrganizationMemberRole {
-  /** 組織擁有者 | Organization owner */
-  OWNER = 'owner',
-  /** 組織管理員 | Organization admin */
-  ADMIN = 'admin',
-  /** 組織成員 | Organization member */
-  MEMBER = 'member'
-}
+export type Account = Database['public']['Tables']['accounts']['Row'];
+export type AccountInsert = Database['public']['Tables']['accounts']['Insert'];
+export type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
 
 /**
  * 上下文類型枚舉
@@ -123,41 +104,4 @@ export interface AccountQueryOptions {
   createdBy?: string;
   /** 是否包含已刪除的帳戶 | Include deleted accounts */
   includeDeleted?: boolean;
-}
-
-/**
- * 團隊查詢選項
- * Team query options
- */
-export interface TeamQueryOptions {
-  /** 按組織 ID 過濾 | Filter by organization ID */
-  organizationId?: string;
-  /** 按成員 ID 過濾（查詢用戶所屬團隊） | Filter by member ID (find user's teams) */
-  memberId?: string;
-}
-
-/**
- * 組織成員查詢選項
- * Organization member query options
- */
-export interface OrganizationMemberQueryOptions {
-  /** 按組織 ID 過濾 | Filter by organization ID */
-  organizationId?: string;
-  /** 按帳戶 ID 過濾 | Filter by account ID */
-  accountId?: string;
-  /** 按角色過濾 | Filter by role */
-  role?: OrganizationMemberRole;
-}
-
-/**
- * 團隊成員查詢選項
- * Team member query options
- */
-export interface TeamMemberQueryOptions {
-  /** 按團隊 ID 過濾 | Filter by team ID */
-  teamId?: string;
-  /** 按帳戶 ID 過濾 | Filter by account ID */
-  accountId?: string;
-  /** 按角色過濾 | Filter by role */
-  role?: TeamMemberRole;
 }
