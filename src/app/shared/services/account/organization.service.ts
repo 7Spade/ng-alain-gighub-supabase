@@ -128,11 +128,13 @@ export class OrganizationService {
 
     // 3. 創建組織（觸發器會自動將創建者添加為 owner）
     // Create organization (trigger will automatically add creator as owner)
+    // auth_user_id: Set to creator's auth.uid() to satisfy SELECT policy after INSERT
     const insertData = {
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
-      status: request.status || AccountStatus.ACTIVE
+      status: request.status || AccountStatus.ACTIVE,
+      auth_user_id: user.id // Required for SELECT policy to return newly created org
     };
 
     const organization = await firstValueFrom(this.organizationRepo.create(insertData));
