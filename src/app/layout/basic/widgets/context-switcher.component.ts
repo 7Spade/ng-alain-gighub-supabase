@@ -24,112 +24,88 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
   standalone: true,
   imports: [CommonModule, NzDropDownModule, NzMenuModule, NzIconModule],
   template: `
-    <div
-      class="alain-default__nav-item d-flex align-items-center px-sm"
-      nz-dropdown
-      nzPlacement="bottomRight"
-      [nzDropdownMenu]="contextMenu"
-      [nzDisabled]="switching()"
-    >
-      @if (switching()) {
-        <i nz-icon nzType="loading" class="mr-sm"></i>
+    <!-- Application menu -->
+    @if (!hasToken()) {
+      <li
+        nz-menu-item
+        (click)="workspaceContext.switchToApp()"
+        [class.ant-menu-item-selected]="workspaceContext.contextType() === 'app'"
+      >
+        <i nz-icon nzType="appstore" class="mr-sm"></i>
+        <span>應用菜單</span>
+      </li>
+      <li nz-menu-divider></li>
+    }
+
+    <!-- Personal accounts (flat) -->
+    @for (account of userAccounts(); track getAccountId(account)) {
+      <li
+        nz-menu-item
+        (click)="workspaceContext.switchToUser(getAccountId(account))"
+        [class.ant-menu-item-selected]="
+          workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)
+        "
+      >
+        <i nz-icon nzType="user" class="mr-sm"></i>
+        <span>{{ getAccountName(account) }}</span>
+      </li>
+    }
+
+    <!-- Organizations with their teams (flat + nested teams) -->
+    @for (org of organizationAccounts(); track getAccountId(org)) {
+      @if (teamsByOrganization().has(getAccountId(org)) && teamsByOrganization().get(getAccountId(org))!.length > 0) {
+        <!-- Organization with teams -->
+        <li nz-submenu [nzTitle]="getAccountName(org)" nzIcon="team">
+          <ul nz-menu>
+            <!-- Organization itself -->
+            <li
+              nz-menu-item
+              (click)="workspaceContext.switchToOrganization(getAccountId(org))"
+              [class.ant-menu-item-selected]="
+                workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(org)
+              "
+            >
+              <i nz-icon nzType="team" class="mr-sm"></i>
+              <span>{{ getAccountName(org) }}</span>
+            </li>
+            <li nz-menu-divider></li>
+            <!-- Teams under this organization -->
+            @for (team of teamsByOrganization().get(getAccountId(org))!; track getTeamId(team)) {
+              <li
+                nz-menu-item
+                (click)="workspaceContext.switchToTeam(getTeamId(team))"
+                [class.ant-menu-item-selected]="
+                  workspaceContext.contextType() === 'team' && workspaceContext.contextId() === getTeamId(team)
+                "
+              >
+                <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
+                <span>{{ getTeamName(team) }}</span>
+              </li>
+            }
+          </ul>
+        </li>
       } @else {
-        <i nz-icon [nzType]="contextIcon()" class="mr-sm"></i>
+        <!-- Organization without teams (flat item) -->
+        <li
+          nz-menu-item
+          (click)="workspaceContext.switchToOrganization(getAccountId(org))"
+          [class.ant-menu-item-selected]="
+            workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(org)
+          "
+        >
+          <i nz-icon nzType="team" class="mr-sm"></i>
+          <span>{{ getAccountName(org) }}</span>
+        </li>
       }
-      <span>{{ contextLabel() }}</span>
-    </div>
-    <nz-dropdown-menu #contextMenu="nzDropdownMenu">
-      <div nz-menu class="width-sm">
-        <!-- Application menu: only show when not logged in -->
-        @if (!hasToken()) {
-          <div
-            nz-menu-item
-            (click)="workspaceContext.switchToApp()"
-            [class.ant-menu-item-selected]="workspaceContext.contextType() === 'app'"
-          >
-            <i nz-icon nzType="appstore" class="mr-sm"></i>
-            <span>應用菜單</span>
-          </div>
-          <li nz-menu-divider></li>
-        }
+    }
 
-        <!-- Personal account menu -->
-        @if (userAccounts().length > 0) {
-          <div nz-submenu nzTitle="個人帳戶" nzIcon="user">
-            <ul nz-menu>
-              @for (account of userAccounts(); track getAccountId(account)) {
-                <li
-                  nz-menu-item
-                  (click)="workspaceContext.switchToUser(getAccountId(account))"
-                  [class.ant-menu-item-selected]="
-                    workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)
-                  "
-                >
-                  <i nz-icon nzType="user" class="mr-sm"></i>
-                  <span>{{ getAccountName(account) }}</span>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-        <!-- Organization accounts menu -->
-        @if (organizationAccounts().length > 0) {
-          <div nz-submenu nzTitle="組織帳戶" nzIcon="team">
-            <ul nz-menu>
-              @for (account of organizationAccounts(); track getAccountId(account)) {
-                <li
-                  nz-menu-item
-                  (click)="workspaceContext.switchToOrganization(getAccountId(account))"
-                  [class.ant-menu-item-selected]="
-                    workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(account)
-                  "
-                >
-                  <i nz-icon nzType="team" class="mr-sm"></i>
-                  <span>{{ getAccountName(account) }}</span>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-        <!-- Team accounts menu -->
-        @if (userTeams().length > 0) {
-          <div nz-submenu nzTitle="團隊帳戶" nzIcon="usergroup-add">
-            <ul nz-menu>
-              @for (org of organizationAccounts(); track getAccountId(org)) {
-                @if (teamsByOrganization().has(getAccountId(org)) && teamsByOrganization().get(getAccountId(org))!.length > 0) {
-                  <li nz-submenu [nzTitle]="getAccountName(org)" nzIcon="team">
-                    <ul nz-menu>
-                      @for (team of teamsByOrganization().get(getAccountId(org))!; track getTeamId(team)) {
-                        <li
-                          nz-menu-item
-                          (click)="workspaceContext.switchToTeam(getTeamId(team))"
-                          [class.ant-menu-item-selected]="
-                            workspaceContext.contextType() === 'team' && workspaceContext.contextId() === getTeamId(team)
-                          "
-                        >
-                          <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
-                          <span>{{ getTeamName(team) }}</span>
-                        </li>
-                      }
-                    </ul>
-                  </li>
-                }
-              }
-            </ul>
-          </div>
-        }
-
-        <!-- No accounts message -->
-        @if (userAccounts().length === 0 && organizationAccounts().length === 0 && userTeams().length === 0) {
-          <li nz-menu-item nzDisabled>
-            <i nz-icon nzType="info-circle" class="mr-sm"></i>
-            <span>暫無可用帳戶</span>
-          </li>
-        }
-      </div>
-    </nz-dropdown-menu>
+    <!-- No accounts message -->
+    @if (userAccounts().length === 0 && organizationAccounts().length === 0) {
+      <li nz-menu-item nzDisabled>
+        <i nz-icon nzType="info-circle" class="mr-sm"></i>
+        <span>暫無可用帳戶</span>
+      </li>
+    }
   `,
   styles: [
     `
