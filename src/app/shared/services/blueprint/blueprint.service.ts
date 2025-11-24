@@ -76,10 +76,14 @@ export class BlueprintService {
 
     try {
       const blueprints = await firstValueFrom(this.blueprintRepo.findByOwner(ownerId));
-      this.blueprintsState.set(blueprints);
+      // Empty array is a valid result, not an error
+      this.blueprintsState.set(blueprints || []);
     } catch (error) {
-      this.errorState.set(error instanceof Error ? error.message : 'Failed to load blueprints');
-      throw error;
+      console.error('Failed to load blueprints for owner:', ownerId, error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load blueprints';
+      this.errorState.set(errorMessage);
+      // Don't throw error for empty results - set empty array instead
+      this.blueprintsState.set([]);
     } finally {
       this.loadingState.set(false);
     }
@@ -135,6 +139,7 @@ export class BlueprintService {
     try {
       const blueprintInsert = {
         ...request,
+        status: request.status || 'draft', // Default to draft if not specified
         structure: {
           settings: {
             allowGuestAccess: false,
@@ -147,14 +152,18 @@ export class BlueprintService {
         }
       };
 
+      console.log('Creating blueprint with data:', blueprintInsert);
       const newBlueprint = await firstValueFrom(this.blueprintRepo.create(blueprintInsert));
+      console.log('Blueprint created successfully:', newBlueprint);
 
       // Update state
       this.blueprintsState.update(blueprints => [...blueprints, newBlueprint]);
 
       return newBlueprint;
     } catch (error) {
-      this.errorState.set(error instanceof Error ? error.message : 'Failed to create blueprint');
+      console.error('Failed to create blueprint:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create blueprint';
+      this.errorState.set(errorMessage);
       throw error;
     } finally {
       this.loadingState.set(false);

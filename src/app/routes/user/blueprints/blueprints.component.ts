@@ -231,9 +231,11 @@ export class UserBlueprintsComponent implements OnInit, OnDestroy {
 
     try {
       await this.blueprintFacade.loadOwnerBlueprints(this.userId);
+      // Success - error state is cleared by facade
     } catch (error) {
       console.error('Failed to load blueprints:', error);
-      // Error state is already managed by the facade
+      // Error state is already managed by the facade, no need to show message
+      // User will see the error in the UI via the error() signal
     }
   }
 
@@ -277,19 +279,24 @@ export class UserBlueprintsComponent implements OnInit, OnDestroy {
         description: '這是一個新建立的個人藍圖',
         category: 'custom',
         visibility: 'private',
+        status: 'draft', // Explicitly set status
         ownerId: this.userId,
         ownerType: 'user',
         tags: []
       };
 
-      await this.blueprintFacade.createBlueprint(request);
+      console.log('Creating blueprint with request:', request);
+      const newBlueprint = await this.blueprintFacade.createBlueprint(request);
+      console.log('Blueprint created:', newBlueprint);
+
       this.message.success('藍圖建立成功！');
 
       // Reload blueprints to show the new one
       await this.loadBlueprints();
     } catch (error) {
-      this.message.error('建立藍圖失敗');
       console.error('Failed to create blueprint:', error);
+      const errorMessage = error instanceof Error ? error.message : '建立藍圖失敗';
+      this.message.error(`建立藍圖失敗: ${errorMessage}`);
     }
   }
 

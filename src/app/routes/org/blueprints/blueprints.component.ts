@@ -240,9 +240,11 @@ export class OrgBlueprintsComponent implements OnInit, OnDestroy {
 
     try {
       await this.blueprintFacade.loadOwnerBlueprints(this.organizationId);
+      // Success - error state is cleared by facade
     } catch (error) {
       console.error('Failed to load blueprints:', error);
-      // Error state is already managed by the facade
+      // Error state is already managed by the facade, no need to show message
+      // User will see the error in the UI via the error() signal
     }
   }
 
