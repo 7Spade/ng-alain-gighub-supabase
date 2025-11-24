@@ -1,0 +1,266 @@
+<!--
+  Task List Component Template
+  
+  Dual view modes: Tree View and Table View
+  Switch between views using the toggle button
+-->
+
+<page-header [title]="'任務管理'">
+  <ng-template #action>
+    <!-- View Mode Toggle -->
+    <nz-space>
+      <button 
+        *nzSpaceItem
+        nz-button 
+        [nzType]="viewMode() === 'tree' ? 'primary' : 'default'"
+        (click)="viewMode.set('tree')">
+        <i nz-icon nzType="apartment" nzTheme="outline"></i>
+        樹狀視圖
+      </button>
+      <button 
+        *nzSpaceItem
+        nz-button 
+        [nzType]="viewMode() === 'table' ? 'primary' : 'default'"
+        (click)="viewMode.set('table')">
+        <i nz-icon nzType="table" nzTheme="outline"></i>
+        表格視圖
+      </button>
+    
+      <button *nzSpaceItem nz-button nzType="primary" (click)="onCreateTask()">
+        <i nz-icon nzType="plus" nzTheme="outline"></i>
+        新增任務
+      </button>
+    </nz-space>
+  </ng-template>
+</page-header>
+
+<!-- Statistics Summary -->
+<nz-card [nzTitle]="'任務統計'" class="mb-md">
+  <nz-row [nzGutter]="16">
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().totalCount" 
+        [nzTitle]="'總數量'"
+        [nzPrefix]="totalPrefix">
+      </nz-statistic>
+      <ng-template #totalPrefix>
+        <i nz-icon nzType="bars" class="text-primary"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().completedCount" 
+        [nzTitle]="'已完成'"
+        [nzPrefix]="completedPrefix">
+      </nz-statistic>
+      <ng-template #completedPrefix>
+        <i nz-icon nzType="check-circle" class="text-success"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().inProgressCount" 
+        [nzTitle]="'進行中'"
+        [nzPrefix]="inProgressPrefix">
+      </nz-statistic>
+      <ng-template #inProgressPrefix>
+        <i nz-icon nzType="loading" class="text-warning"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().overallProgress" 
+        [nzTitle]="'整體進度'"
+        [nzSuffix]="'%'"
+        [nzPrefix]="progressPrefix">
+      </nz-statistic>
+      <ng-template #progressPrefix>
+        <i nz-icon nzType="dashboard" class="text-info"></i>
+      </ng-template>
+    </nz-col>
+  </nz-row>
+</nz-card>
+
+<!-- Search and Filter -->
+<nz-card class="mb-md">
+  <nz-input-group [nzPrefix]="searchIcon">
+    <input 
+      nz-input 
+      placeholder="搜尋任務名稱、描述或標籤" 
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch($event)"
+    />
+  </nz-input-group>
+  <ng-template #searchIcon>
+    <i nz-icon nzType="search"></i>
+  </ng-template>
+</nz-card>
+
+<!-- Loading State -->
+@if (loading()) {
+  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+}
+
+<!-- Error State -->
+@if (error()) {
+  <nz-alert
+    nzType="error"
+    [nzMessage]="'載入失敗'"
+    [nzDescription]="error()"
+    nzShowIcon
+  ></nz-alert>
+}
+
+<!-- Tree View -->
+@if (!loading() && !error() && viewMode() === 'tree') {
+  <nz-card [nzTitle]="'樹狀視圖'" class="task-tree-view">
+    @if (rootTasks().length === 0) {
+      <nz-empty [nzNotFoundContent]="'暫無任務'"></nz-empty>
+    } @else {
+      <!-- Simplified tree view - placeholder for full tree implementation -->
+      <div class="tree-placeholder">
+        <nz-alert
+          nzType="info"
+          nzMessage="樹狀視圖"
+          nzDescription="樹狀視圖功能即將完成，目前顯示任務列表預覽"
+          nzShowIcon>
+        </nz-alert>
+        
+        @for (task of rootTasks(); track task.id) {
+          <div class="task-node" [style.padding-left.px]="task.depth * 24">
+            <span class="task-level">{{ getTaskLevel(task) }}</span>
+            <nz-badge [nzStatus]="getStatusColor(task.status)"></nz-badge>
+            <span class="task-name">{{ task.name }}</span>
+            @if (task.childCount > 0) {
+              <nz-tag [nzColor]="'default'">{{ task.childCount }} 個子任務</nz-tag>
+            }
+            <nz-progress 
+              [nzPercent]="task.progress" 
+              [nzSize]="'small'"
+              [nzShowInfo]="true"
+              class="task-progress">
+            </nz-progress>
+            @for (tag of task.tags.slice(0, 3); track tag) {
+              <nz-tag [nzColor]="'blue'" class="task-tag">{{ tag }}</nz-tag>
+            }
+            <div class="task-actions">
+              <button nz-button nzType="link" nzSize="small" (click)="onEditTask(task)">
+                <i nz-icon nzType="edit"></i>
+              </button>
+              <button nz-button nzType="link" nzSize="small" nzDanger (click)="onDeleteTask(task)">
+                <i nz-icon nzType="delete"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </nz-card>
+}
+
+<!-- Table View -->
+@if (!loading() && !error() && viewMode() === 'table') {
+  <nz-card [nzTitle]="'表格視圖'" class="task-table-view">
+    <nz-table 
+      #basicTable 
+      [nzData]="filteredTasks()"
+      [nzPageSize]="20"
+      [nzShowSizeChanger]="true"
+      [nzPageSizeOptions]="[10, 20, 50, 100]">
+      <thead>
+        <tr>
+          <th nzWidth="80px">層級</th>
+          <th>任務名稱</th>
+          <th nzWidth="100px">狀態</th>
+          <th nzWidth="120px">進度</th>
+          <th nzWidth="80px">完成數</th>
+          <th nzWidth="80px">總數</th>
+          <th nzWidth="150px">被指派者</th>
+          <th nzWidth="120px">區域</th>
+          <th>標籤</th>
+          <th nzWidth="150px" nzRight>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of basicTable.data; track task.id) {
+          <tr>
+            <td>
+              <nz-tag [nzColor]="'blue'">{{ getTaskLevel(task) }}</nz-tag>
+            </td>
+            <td>
+              <span [style.padding-left.px]="task.depth * 20">
+                {{ task.name }}
+              </span>
+              @if (task.description) {
+                <i nz-icon nzType="info-circle" class="ml-xs text-grey" 
+                   nz-tooltip 
+                   [nzTooltipTitle]="task.description"></i>
+              }
+            </td>
+            <td>
+              <nz-badge 
+                [nzStatus]="getStatusColor(task.status)" 
+                [nzText]="getStatusText(task.status)">
+              </nz-badge>
+            </td>
+            <td>
+              <nz-progress 
+                [nzPercent]="task.progress" 
+                [nzSize]="'small'"
+                [nzShowInfo]="true">
+              </nz-progress>
+            </td>
+            <td>{{ task.completedCount }}</td>
+            <td>{{ task.totalCount }}</td>
+            <td>
+              @if (task.assigneeIds.length > 0) {
+                <nz-avatar-group>
+                  @for (assigneeId of task.assigneeIds.slice(0, 3); track assigneeId) {
+                    <nz-avatar 
+                      [nzText]="assigneeId.slice(0, 2).toUpperCase()"
+                      nzSize="small">
+                    </nz-avatar>
+                  }
+                  @if (task.assigneeIds.length > 3) {
+                    <nz-avatar 
+                      [nzText]="'+' + (task.assigneeIds.length - 3)"
+                      nzSize="small">
+                    </nz-avatar>
+                  }
+                </nz-avatar-group>
+              } @else {
+                <span class="text-grey">未指派</span>
+              }
+            </td>
+            <td>
+              @if (task.area) {
+                <nz-tag>{{ task.area }}</nz-tag>
+              } @else {
+                <span class="text-grey">-</span>
+              }
+            </td>
+            <td>
+              @for (tag of task.tags.slice(0, 2); track tag) {
+                <nz-tag [nzColor]="'blue'">{{ tag }}</nz-tag>
+              }
+              @if (task.tags.length > 2) {
+                <nz-tag>+{{ task.tags.length - 2 }}</nz-tag>
+              }
+            </td>
+            <td nzRight>
+              <button nz-button nzType="link" nzSize="small" (click)="onEditTask(task)">
+                <i nz-icon nzType="edit"></i>
+                編輯
+              </button>
+              <nz-divider nzType="vertical"></nz-divider>
+              <button nz-button nzType="link" nzSize="small" nzDanger (click)="onDeleteTask(task)">
+                <i nz-icon nzType="delete"></i>
+                刪除
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </nz-card>
+}
