@@ -1,0 +1,62 @@
+/**
+ * Blueprint Container Component Styles
+ *
+ * Styling for blueprint container layout
+ */
+
+:host {
+  display: block;
+  padding: 16px;
+}
+
+.mb-md {
+  margin-bottom: 16px;
+}
+
+// Module Cards
+.module-card {
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+
+  &:hover:not(.disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .module-icon {
+    margin-bottom: 16px;
+    font-size: 48px;
+    color: #1890ff;
+  }
+
+  p {
+    margin-bottom: 12px;
+    color: rgb(0 0 0 / 65%);
+  }
+}
+
+// Blueprint Content
+.blueprint-content {
+  margin-top: 24px;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  :host {
+    padding: 8px;
+  }
+
+  .module-card {
+    margin-bottom: 16px;
+
+    .module-icon {
+      font-size: 36px;
+    }
+  }
+}
