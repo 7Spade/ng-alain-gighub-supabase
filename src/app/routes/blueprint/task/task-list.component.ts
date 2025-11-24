@@ -15,7 +15,7 @@
  * @module task-list.component
  */
 
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { TaskFacade } from '@core';
 import { SHARED_IMPORTS, TaskModel, TaskViewMode } from '@shared';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
@@ -33,7 +33,7 @@ import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.less'
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent {
   private readonly taskFacade = inject(TaskFacade);
 
   // Facade state
@@ -61,12 +61,6 @@ export class TaskListComponent implements OnInit {
         task.tags.some(tag => tag.toLowerCase().includes(term))
     );
   });
-
-  ngOnInit(): void {
-    // Load tasks for current workspace (placeholder)
-    // In real implementation, get workspaceId from route or context
-    // this.taskFacade.loadWorkspaceTasks('workspace-id');
-  }
 
   /**
    * Toggle view mode between tree and table

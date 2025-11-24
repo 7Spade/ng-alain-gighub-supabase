@@ -8,7 +8,7 @@
  * @module create-blueprint.component
  */
 
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BlueprintFacade } from '@core';
 import { SFSchema, SFUISchema } from '@delon/form';
@@ -22,7 +22,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   templateUrl: './create-blueprint.component.html',
   styleUrl: './create-blueprint.component.less'
 })
-export class CreateBlueprintComponent implements OnInit {
+export class CreateBlueprintComponent {
   private readonly blueprintFacade = inject(BlueprintFacade);
   private readonly router = inject(Router);
   private readonly message = inject(NzMessageService);
@@ -30,7 +30,6 @@ export class CreateBlueprintComponent implements OnInit {
   readonly loading = signal(false);
 
   // @delon/form schema
-  schema: SFSchema = {
     properties: {
       name: {
         type: 'string',
@@ -87,10 +86,6 @@ export class CreateBlueprintComponent implements OnInit {
     }
   };
 
-  ngOnInit(): void {
-    // Component initialization
-  }
-
   /**
    * Handle form submission
    */
@@ -106,22 +101,18 @@ export class CreateBlueprintComponent implements OnInit {
         tags?: string;
       };
 
+      // TODO: Get ownerId and ownerType from authentication context
+      const ownerId = 'temp-owner-id'; // Placeholder
+      const ownerType = 'user'; // Placeholder
+
       const request: CreateBlueprintRequest = {
         name: formData.name,
         description: formData.description,
         category: formData.category as CreateBlueprintRequest['category'],
         visibility: (formData.visibility as CreateBlueprintRequest['visibility']) || 'private',
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
-        structure: {
-          settings: {
-            allowGuestAccess: false,
-            requireApprovalForJoin: true,
-            defaultMemberRole: 'member',
-            enableTaskComments: true,
-            enableFileSharing: true,
-            enableNotifications: true
-          }
-        }
+        ownerId,
+        ownerType
       };
 
       await this.blueprintFacade.createBlueprint(request);

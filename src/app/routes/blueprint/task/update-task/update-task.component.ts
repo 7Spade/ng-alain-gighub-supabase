@@ -138,7 +138,7 @@ export class UpdateTaskComponent implements OnInit {
   /**
    * Get form initial value
    */
-  getFormValue(): unknown {
+  getFormValue(): Record<string, unknown> {
     const t = this.task();
     if (!t) return {};
 

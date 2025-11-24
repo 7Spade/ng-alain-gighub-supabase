@@ -138,13 +138,10 @@ export class CreateTaskComponent implements OnInit {
         workspaceId: this.workspaceId(),
         name: formData.name,
         description: formData.description,
-        status: (formData.status as CreateTaskRequest['status']) || 'pending',
         priority: (formData.priority as CreateTaskRequest['priority']) || 'medium',
         area: formData.area,
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
-        dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
-        path: '0',
-        depth: 0
+        dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined
       };
 
       await this.taskFacade.createTask(request);

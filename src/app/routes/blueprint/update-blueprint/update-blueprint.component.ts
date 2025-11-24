@@ -120,7 +120,7 @@ export class UpdateBlueprintComponent implements OnInit {
   /**
    * Get form initial value
    */
-  getFormValue(): unknown {
+  getFormValue(): Record<string, unknown> {
     const bp = this.blueprint();
     if (!bp) return {};
 
