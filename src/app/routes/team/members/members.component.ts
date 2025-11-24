@@ -61,34 +61,6 @@ import { firstValueFrom } from 'rxjs';
         添加成員
       </button>
     </ng-template>
-
-    <!-- Add Member Modal -->
-    <nz-modal
-      [(nzVisible)]="addMemberModalVisible"
-      nzTitle="添加團隊成員"
-      (nzOnCancel)="cancelAddMember()"
-      (nzOnOk)="confirmAddMember()"
-      [nzOkLoading]="addingMember()"
-    >
-      <ng-container *nzModalContent>
-        <nz-form-item>
-          <nz-form-label nzRequired>選擇成員</nz-form-label>
-          <nz-form-control>
-            <input nz-input placeholder="輸入帳戶 ID" [(ngModel)]="selectedAccountId" />
-            <p style="color: #999; margin-top: 4px; font-size: 12px;"> 提示：從組織成員中選擇（暫時需要手動輸入 account_id） </p>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired>角色</nz-form-label>
-          <nz-form-control>
-            <nz-select [(ngModel)]="selectedRole" style="width: 100%">
-              <nz-option nzValue="leader" nzLabel="隊長"></nz-option>
-              <nz-option nzValue="member" nzLabel="成員"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </ng-container>
-    </nz-modal>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })

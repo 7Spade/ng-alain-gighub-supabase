@@ -105,11 +105,7 @@ export class OrgMembersComponent implements OnInit {
       return;
     }
 
-    this.modal.create(
-      AddOrganizationMemberComponent,
-      { organizationId: this.organizationId() },
-      { size: 'md' }
-    ).subscribe(result => {
+    this.modal.create(AddOrganizationMemberComponent, { organizationId: this.organizationId() }, { size: 'md' }).subscribe(result => {
       if (result?.success && this.organizationId()) {
         this.loadMembers(this.organizationId()!);
       }
@@ -118,9 +114,7 @@ export class OrgMembersComponent implements OnInit {
 
   async updateMemberRole(member: any, newRole: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.memberRepo.update(member.id, { role: newRole } as any)
-      );
+      await firstValueFrom(this.memberRepo.update(member.id, { role: newRole } as any));
       this.msg.success('角色更新成功！');
       await this.loadMembers(this.organizationId()!);
     } catch (error) {
