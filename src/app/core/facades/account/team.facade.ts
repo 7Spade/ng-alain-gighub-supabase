@@ -5,28 +5,63 @@
  * Team business domain facade (Core layer)
  *
  * Provides unified interface for team operations.
- * Coordinates between TeamService and WorkspaceDataService.
+ * Extends BaseAccountCrudFacade for common CRUD coordination logic.
  *
  * @module core/facades/account
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { TeamService, WorkspaceDataService, ErrorHandlerService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+import { TeamService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+
+import { BaseAccountCrudFacade } from './base-account-crud.facade';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TeamFacade {
+export class TeamFacade extends BaseAccountCrudFacade<TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest> {
   private readonly teamService = inject(TeamService);
-  private readonly dataService = inject(WorkspaceDataService);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
-  private readonly errorHandler = inject(ErrorHandlerService);
+
+  protected readonly entityTypeName = '團隊';
+  protected readonly facadeName = 'TeamFacade';
 
   // Proxy team service signals
   readonly teams = this.teamService.teams;
   readonly loading = this.teamService.loading;
   readonly error = this.teamService.error;
+
+  /**
+   * 執行創建操作
+   * Execute create operation
+   */
+  protected executeCreate(request: CreateTeamRequest): Promise<TeamBusinessModel> {
+    return this.teamService.createTeam(request);
+  }
+
+  /**
+   * 執行更新操作
+   * Execute update operation
+   */
+  protected executeUpdate(id: string, request: UpdateTeamRequest): Promise<TeamBusinessModel> {
+    return this.teamService.updateTeam(id, request);
+  }
+
+  /**
+   * 執行刪除操作
+   * Execute delete operation
+   * Note: deleteTeam returns void, so we need to handle this specially
+   */
+  protected async executeDelete(id: string): Promise<TeamBusinessModel> {
+    // First get the team to return it
+    const team = await this.teamService.findById(id);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+    
+    // Then delete it
+    await this.teamService.deleteTeam(id);
+    
+    return team;
+  }
 
   /**
    * 創建團隊
@@ -37,21 +72,7 @@ export class TeamFacade {
    * @throws {Error} User-friendly error message
    */
   async createTeam(request: CreateTeamRequest): Promise<TeamBusinessModel> {
-    try {
-      const team = await this.teamService.createTeam(request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return team;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'create', '團隊');
-      this.errorHandler.logError('TeamFacade', 'create team', error);
-      throw new Error(errorMessage);
-    }
+    return this.create(request);
   }
 
   /**
@@ -64,21 +85,7 @@ export class TeamFacade {
    * @throws {Error} User-friendly error message
    */
   async updateTeam(id: string, request: UpdateTeamRequest): Promise<TeamBusinessModel> {
-    try {
-      const team = await this.teamService.updateTeam(id, request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return team;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'update', '團隊');
-      this.errorHandler.logError('TeamFacade', 'update team', error);
-      throw new Error(errorMessage);
-    }
+    return this.update(id, request);
   }
 
   /**
@@ -86,23 +93,11 @@ export class TeamFacade {
    * Delete team
    *
    * @param {string} id - Team ID
-   * @returns {Promise<void>} Void
+   * @returns {Promise<TeamBusinessModel>} Deleted team
    * @throws {Error} User-friendly error message
    */
-  async deleteTeam(id: string): Promise<void> {
-    try {
-      await this.teamService.deleteTeam(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'delete', '團隊');
-      this.errorHandler.logError('TeamFacade', 'delete team', error);
-      throw new Error(errorMessage);
-    }
+  async deleteTeam(id: string): Promise<TeamBusinessModel> {
+    return this.delete(id);
   }
 
   /**
