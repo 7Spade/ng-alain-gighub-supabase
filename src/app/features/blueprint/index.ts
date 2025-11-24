@@ -19,6 +19,18 @@ export * from './domain';
 // Constants (feature configuration)
 export * from './constants';
 
+// Utils (feature-specific utilities)
+export * from './utils';
+
+// Directives (feature-specific directives)
+export * from './directives';
+
+// Pipes (feature-specific pipes)
+export * from './pipes';
+
+// Guards (feature-specific route guards)
+export * from './guards';
+
 // Shell components (public components only)
 export { BlueprintShellComponent } from './shell';
 
