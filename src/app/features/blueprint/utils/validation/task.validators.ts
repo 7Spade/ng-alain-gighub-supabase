@@ -265,7 +265,7 @@ export function validateTask(data: TaskData, options: { allowPastDueDate?: boole
  * @param maxOrder - Maximum allowed order
  * @returns Validation result
  */
-export function validateTaskOrder(order: number, minOrder = 0, maxOrder: number = Number.MAX_SAFE_INTEGER): ValidationResult {
+export function validateTaskOrder(order: number, minOrder = 0, maxOrder = Number.MAX_SAFE_INTEGER): ValidationResult {
   const errors: ValidationError[] = [];
 
   if (typeof order !== 'number' || isNaN(order)) {
