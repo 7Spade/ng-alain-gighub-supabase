@@ -102,7 +102,7 @@ export class OrgTeamsComponent implements OnInit {
   }
 
   editTeam(team: TeamBusinessModel): void {
-    this.modal.create(UpdateTeamComponent, { team }, { size: 'md' }).subscribe(result => {
+    this.modal.create(UpdateTeamComponent, { teamParam: team }, { size: 'md' }).subscribe(result => {
       if (result && this.organizationId()) {
         this.loadTeams(this.organizationId()!);
       }
@@ -110,7 +110,7 @@ export class OrgTeamsComponent implements OnInit {
   }
 
   deleteTeam(team: TeamBusinessModel): void {
-    this.modal.create(DeleteTeamComponent, { team }, { size: 'md' }).subscribe(result => {
+    this.modal.create(DeleteTeamComponent, { teamParam: team }, { size: 'md' }).subscribe(result => {
       if (result && this.organizationId()) {
         this.loadTeams(this.organizationId()!);
       }
