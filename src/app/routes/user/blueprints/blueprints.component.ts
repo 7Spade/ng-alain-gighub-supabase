@@ -243,7 +243,7 @@ export class UserBlueprintsComponent implements OnInit {
   }
 
   /**
-   * Handle edit blueprint  
+   * Handle edit blueprint
    */
   onEditBlueprint(blueprint: BlueprintModel): void {
     // Future: Open edit dialog with blueprint data
