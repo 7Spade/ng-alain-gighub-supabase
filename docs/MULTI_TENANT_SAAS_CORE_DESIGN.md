@@ -10,8 +10,8 @@
 **Project:** ng-alain-gighub-supabase  
 
 **References:**
-- [Account Context Switcher Design](./ACCOUNT_CONTEXT_SWITCHER_DESIGN.md)
-- [Blueprint Container Planning](./BLUEPRINT_CONTAINER_PLANNING.md)
+- [Account Context Switcher Design](./archive/2025/design-docs/ACCOUNT_CONTEXT_SWITCHER_DESIGN.md) (已封存 - 功能已實施)
+- [Blueprint Container Planning](./archive/2025/design-docs/BLUEPRINT_CONTAINER_PLANNING.md) (已封存 - 功能已實施)
 - [Supabase RLS Documentation](./supabase/security/rls.md)
 - [Security Standards](./specs/00-security-standards.md)
 

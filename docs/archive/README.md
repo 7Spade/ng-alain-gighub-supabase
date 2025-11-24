@@ -61,6 +61,8 @@ archive/
 - **CLEANUP_SUMMARY.md** - 文檔清理總結（v1.1.0）
 - **DOCUMENTATION_SUMMARY.md** - Supabase 文件建立任務總結
 
+**注意**: `TASK_NOW.md` 和 `MULTI_TENANT_SAAS_STATUS_REPORT.md` 已恢復到根目錄，因為它們是正在使用的活躍文件。
+
 #### 設計文檔 (Design Documents)
 **位置**: `archive/2025/design-docs/`
 
