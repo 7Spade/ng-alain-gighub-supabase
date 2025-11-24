@@ -2,7 +2,57 @@
 
 ## Overview
 
-This directory contains SQL migrations to fix infinite recursion issues in Row Level Security (RLS) policies for the accounts table. These migrations implement Phase 4 of the enterprise architecture refactoring (RLS-001 through RLS-004).
+This directory contains SQL migrations to fix infinite recursion issues in Row Level Security (RLS) policies for the accounts and teams tables. These migrations implement Phase 4 of the enterprise architecture refactoring (RLS-001 through RLS-005).
+
+## ⚠️ Critical: Application Code Integration
+
+**The `add_creator_as_org_owner` trigger automatically adds the creator as an organization owner after INSERT.** Application code should **NOT** manually create `organization_members` records for the creator, as this will cause duplicate key errors.
+
+### ✅ Correct Flow (TypeScript)
+```typescript
+// Let the database trigger handle membership creation
+async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
+  // 1. Verify user account exists (prevents orphaned organizations)
+  const userAccount = await this.userRepo.findByAuthUserId(user.id);
+  if (!userAccount) {
+    throw new Error('User account not found');
+  }
+
+  // 2. Create organization
+  const insertData = { name: request.name, email: request.email, ... };
+  const organization = await this.organizationRepo.create(insertData);
+  
+  // ✅ Trigger automatically adds creator to organization_members as owner
+  // No manual membership creation needed!
+  
+  return organization;
+}
+```
+
+### ❌ Incorrect Flow (Causes Duplicate Key Error)
+```typescript
+// DO NOT DO THIS - Conflicts with the database trigger!
+async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
+  const org = await this.organizationRepo.create(insertData);
+  
+  // ❌ This will FAIL with duplicate key error!
+  // The trigger has already created this record.
+  await this.organizationMemberRepo.create({
+    organizationId: org.id,
+    accountId: userAccountId,
+    role: 'owner'
+  });
+  
+  return org;
+}
+```
+
+### Why the Trigger Approach is Better
+1. **Atomic**: Membership is created in the same transaction as the organization
+2. **Consistent**: No need for application-level rollback logic
+3. **Simpler**: Less application code to maintain
+4. **Reliable**: Works even if application code fails after INSERT
+5. **Database-enforced**: Security model managed at the database layer
 
 ## Problem Statement
 
@@ -133,6 +183,24 @@ WHERE account_id = public.get_user_account_id()
 - `team_owners_manage_team_bots`: Manage bots in teams you own
 
 **No Recursion**: Uses `get_user_account_id()` for team membership checks
+
+### 5. `20251124000005_create_team_rls_policies.sql` (NEW)
+
+**Purpose**: Add RLS policies for teams table
+
+**What it does**:
+- Creates RLS policies for the `teams` table
+- Enables row-level security on teams
+- Implements SELECT, INSERT, UPDATE, and DELETE policies
+- Follows same pattern as organization policies
+
+**Key Policies**:
+- `users_view_teams_in_their_organizations`: View teams in organizations you belong to
+- `org_owners_create_teams`: Organization owners can create teams
+- `org_owners_update_teams`: Organization owners can update teams
+- `org_owners_delete_teams`: Organization owners can delete teams
+
+**No Recursion**: Uses `get_user_account_id()` in subqueries, same pattern as organizations
 
 ## Testing the Migrations (RLS-005)
 
