@@ -151,9 +151,21 @@ export class HeaderContextSwitcherComponent {
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
 
   // Use WorkspaceContextFacade signals
-  readonly userAccounts = computed(() => this.accountService.userAccounts() as any[]);
-  readonly organizationAccounts = this.workspaceContext.allOrganizations;
-  readonly userTeams = this.workspaceContext.userTeams;
+  readonly userAccounts = computed(() => {
+    const accounts = this.accountService.userAccounts() as any[];
+    console.log('[HeaderContextSwitcher] 👤 用戶帳戶:', accounts);
+    return accounts;
+  });
+  readonly organizationAccounts = computed(() => {
+    const orgs = this.workspaceContext.allOrganizations();
+    console.log('[HeaderContextSwitcher] 🏢 組織帳戶:', orgs);
+    return orgs;
+  });
+  readonly userTeams = computed(() => {
+    const teams = this.workspaceContext.userTeams();
+    console.log('[HeaderContextSwitcher] 👥 用戶團隊:', teams);
+    return teams;
+  });
   readonly teamsByOrganization = this.workspaceContext.teamsByOrganization;
   readonly contextLabel = this.workspaceContext.contextLabel;
   readonly contextIcon = this.workspaceContext.contextIcon;

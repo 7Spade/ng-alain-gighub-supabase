@@ -53,7 +53,19 @@ export class AccountService {
    * @returns {Promise<Account | null>} Account or null
    */
   async findByAuthUserId(authUserId: string): Promise<Account | null> {
-    return firstValueFrom(this.accountRepo.findByAuthUserId(authUserId));
+    try {
+      const account = await firstValueFrom(this.accountRepo.findByAuthUserId(authUserId));
+      console.log('[AccountService] ✅ 查詢用戶帳戶成功:', account);
+      return account;
+    } catch (error) {
+      console.error('[AccountService] ❌ 查詢用戶帳戶失敗:', error);
+      console.error('[AccountService] 錯誤詳情:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        authUserId: authUserId,
+        stack: error instanceof Error ? error.stack : null
+      });
+      throw error;
+    }
   }
 
   /**

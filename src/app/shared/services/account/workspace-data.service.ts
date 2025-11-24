@@ -47,6 +47,7 @@ export class WorkspaceDataService {
    * Load user workspace data
    */
   async loadWorkspaceData(authUserId: string): Promise<void> {
+    console.log('[WorkspaceDataService] 🚀 開始載入工作區資料, authUserId:', authUserId);
     this.loadingOrganizationsState.set(true);
     this.loadingTeamsState.set(true);
     this.errorState.set(null);
@@ -54,6 +55,7 @@ export class WorkspaceDataService {
     try {
       // 1. Get user account
       const userAccount = await this.accountService.findByAuthUserId(authUserId);
+      console.log('[WorkspaceDataService] ✅ 用戶帳戶:', userAccount);
       if (!userAccount) {
         throw new Error('User account not found');
       }
@@ -67,35 +69,48 @@ export class WorkspaceDataService {
 
       try {
         createdOrgs = await this.organizationService.getUserCreatedOrganizations(authUserId);
+        console.log('[WorkspaceDataService] ✅ 創建的組織 (' + createdOrgs.length + '):', createdOrgs);
       } catch (error) {
-        console.error('[WorkspaceDataService] Failed to load created organizations:', error);
+        console.error('[WorkspaceDataService] ❌ Failed to load created organizations:', error);
       }
 
       try {
         joinedOrgs = await this.organizationService.getUserJoinedOrganizations(userAccount['id'] as string);
+        console.log('[WorkspaceDataService] ✅ 加入的組織 (' + joinedOrgs.length + '):', joinedOrgs);
       } catch (error) {
-        console.error('[WorkspaceDataService] Failed to load joined organizations:', error);
+        console.error('[WorkspaceDataService] ❌ Failed to load joined organizations:', error);
       }
 
       this.createdOrganizationsState.set(createdOrgs);
       this.joinedOrganizationsState.set(joinedOrgs);
       this.loadingOrganizationsState.set(false);
 
-      // 3. Load teams
+      // 3. Load user accounts (for context switcher)
+      try {
+        await this.accountService.loadUserAccounts(authUserId);
+        console.log('[WorkspaceDataService] ✅ 用戶帳戶列表:', this.accountService.userAccounts());
+      } catch (error) {
+        console.error('[WorkspaceDataService] ❌ Failed to load user accounts:', error);
+      }
+
+      // 4. Load teams
       let teams: TeamBusinessModel[] = [];
 
       try {
         teams = await this.accountService.getUserTeams(userAccount['id'] as string);
+        console.log('[WorkspaceDataService] ✅ 用戶團隊 (' + teams.length + '):', teams);
       } catch (error) {
-        console.error('[WorkspaceDataService] Failed to load teams:', error);
+        console.error('[WorkspaceDataService] ❌ Failed to load teams:', error);
       }
 
       this.userTeamsState.set(teams);
       this.loadingTeamsState.set(false);
+
+      console.log('[WorkspaceDataService] ✅ 工作區資料載入完成');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load workspace data';
       this.errorState.set(errorMessage);
-      console.error('[WorkspaceDataService] Failed to load workspace data:', error);
+      console.error('[WorkspaceDataService] ❌ Failed to load workspace data:', error);
 
       this.loadingOrganizationsState.set(false);
       this.loadingTeamsState.set(false);

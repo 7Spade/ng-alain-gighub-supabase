@@ -23,6 +23,7 @@ import { HeaderRTLComponent } from './widgets/rtl.component';
 import { HeaderSearchComponent } from './widgets/search.component';
 import { HeaderTaskComponent } from './widgets/task.component';
 import { HeaderUserComponent } from './widgets/user.component';
+import { HeaderContextSwitcherComponent } from './widgets/context-switcher.component';
 import { CreateOrganizationComponent } from '../../routes/account/create-organization/create-organization.component';
 
 @Component({
@@ -90,6 +91,16 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
         </div>
         <nz-dropdown-menu #userMenu="nzDropdownMenu">
           <ul nz-menu>
+            <!-- 上下文切換器區域 -->
+            <li nz-menu-item [nzDisabled]="true" style="cursor: default; opacity: 1; background: transparent;">
+              <div style="font-weight: 600; color: rgba(0, 0, 0, 0.85); margin-bottom: 4px;"> 切換工作區 </div>
+            </li>
+            <li style="padding: 0;">
+              <header-context-switcher />
+            </li>
+            <li nz-menu-divider></li>
+
+            <!-- 原有菜單項 -->
             <li nz-menu-item routerLink="/pro/account/center">{{ 'menu.account.center' | i18n }}</li>
             <li nz-menu-item routerLink="/pro/account/settings">{{ 'menu.account.settings' | i18n }}</li>
             <li nz-menu-divider></li>
@@ -128,7 +139,8 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
     HeaderI18nComponent,
     HeaderClearStorageComponent,
     HeaderFullScreenComponent,
-    HeaderUserComponent
+    HeaderUserComponent,
+    HeaderContextSwitcherComponent
   ]
 })
 export class LayoutBasicComponent {
