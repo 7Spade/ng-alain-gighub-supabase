@@ -11,9 +11,9 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-
-import { BlueprintService, WorkspaceService } from '@shared';
 import {
+  BlueprintService,
+  WorkspaceService,
   BlueprintModel,
   WorkspaceModel,
   CreateBlueprintRequest,

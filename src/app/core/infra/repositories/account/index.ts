@@ -29,6 +29,14 @@ type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
  *
  * Provides CRUD operations for accounts (User, Organization, Bot).
  * Extends BaseRepository with account-specific query methods.
+ *
+ * @deprecated Use specialized repositories instead:
+ * - UserRepository for User accounts
+ * - BotRepository for Bot accounts
+ * - OrganizationRepository for Organization accounts
+ *
+ * This repository is kept for backward compatibility but will be removed in future versions.
+ * The specialized repositories provide type-safe operations with automatic type filtering.
  */
 @Injectable({
   providedIn: 'root'
@@ -66,6 +74,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 根據 auth_user_id 查詢用戶帳戶
    * Find user account by auth_user_id
    *
+   * @deprecated Use UserRepository.findByAuthUserId() instead for type-safe operations
    * @param {string} authUserId - Auth user ID from Supabase Auth
    * @returns {Observable<Account | null>} User account or null
    */
@@ -77,6 +86,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 根據 email 查詢帳戶
    * Find account by email
    *
+   * @deprecated Use UserRepository.findByEmail() instead for type-safe operations
    * @param {string} email - Email address
    * @returns {Observable<Account | null>} Account or null
    */
@@ -88,6 +98,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 查詢用戶創建的組織
    * Find organizations created by user
    *
+   * @deprecated Use OrganizationRepository.findByCreator() instead for type-safe operations
    * @param {string} authUserId - Auth user ID
    * @returns {Observable<Account[]>} Organizations created by user
    */
@@ -174,7 +185,16 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+// User Repository (專用於 User 類型帳戶)
+export * from './user.repository';
+
+// Bot Repository (專用於 Bot 類型帳戶)
+export * from './bot.repository';
+
+// Organization Repository (專用於 Organization 類型帳戶)
 export * from './organization.repository';
 export * from './organization-member.repository';
+
+// Team Repository (獨立 teams 表)
 export * from './team.repository';
 export * from './team-member.repository';

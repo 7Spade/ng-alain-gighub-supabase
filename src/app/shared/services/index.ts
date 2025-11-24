@@ -61,6 +61,9 @@
 // Export your services here
 // Example: export * from './feature/feature.service';
 
+// Error handler service
+export * from './error-handler.service';
+
 // Account services (includes user, organization, team, bot via account/index.ts)
 export * from './account';
 
