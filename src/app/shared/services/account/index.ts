@@ -128,6 +128,9 @@ export * from './workspace-data.service';
 // Business Domain Services (業務域服務 - 扁平化導出)
 // ============================================================================
 
+// Specialized Account Services (推薦使用)
+// Recommended: Use specialized services for type safety
 export * from './user.service';
+export * from './bot.service';
 export * from './organization.service';
 export * from './team.service';
