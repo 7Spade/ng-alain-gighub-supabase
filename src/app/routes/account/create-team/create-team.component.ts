@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade, WorkspaceContextFacade } from '@core';
-import { SHARED_IMPORTS, CreateTeamRequest } from '@shared';
+import { SHARED_IMPORTS, CreateTeamRequest, validateForm, getTrimmedFormValue } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -55,27 +55,14 @@ export class CreateTeamComponent {
    * Submit form to create team
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!validateForm(this.form)) {
       return;
     }
 
     this.loading.set(true);
     try {
-      const formValue = this.form.value;
-      const request: CreateTeamRequest = {
-        organizationId: formValue.organizationId,
-        name: formValue.name.trim(),
-        description: formValue.description?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
-      const team = await this.teamFacade.createTeam(request);
+      const request = getTrimmedFormValue<CreateTeamRequest>(this.form);
+      const team = await this.teamFacade.createTeam(request as CreateTeamRequest);
       this.msg.success('團隊創建成功！');
       this.modal.close(team);
     } catch (error) {
