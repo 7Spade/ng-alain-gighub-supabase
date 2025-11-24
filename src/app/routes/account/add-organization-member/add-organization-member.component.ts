@@ -42,13 +42,13 @@ export class AddOrganizationMemberComponent implements OnInit {
   ngOnInit(): void {
     const config = this.modal.getConfig() as any;
     const params = config?.nzComponentParams || {};
-    
+
     console.log('[AddOrganizationMemberComponent] params:', params);
     console.log('[AddOrganizationMemberComponent] organizationId from params:', params?.organizationId);
-    
+
     // Try both params and direct property
     this.organizationId = params?.organizationId || (this as any).organizationId;
-    
+
     console.log('[AddOrganizationMemberComponent] Final organizationId:', this.organizationId);
 
     if (!this.organizationId) {
@@ -66,13 +66,13 @@ export class AddOrganizationMemberComponent implements OnInit {
     try {
       const formValue = this.form.value;
       const user = await this.supabaseService.getUser();
-      
+
       await firstValueFrom(
         this.orgMemberRepo.create({
           organization_id: this.organizationId,
           account_id: formValue.accountId,
           role: formValue.role,
-          auth_user_id: user?.id  // ✅ 添加 auth_user_id
+          auth_user_id: user?.id // ✅ 添加 auth_user_id
         } as any)
       );
       this.msg.success('成員添加成功！');
@@ -89,4 +89,3 @@ export class AddOrganizationMemberComponent implements OnInit {
     this.modal.destroy();
   }
 }
-
