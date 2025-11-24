@@ -13,8 +13,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { WorkspaceDataService } from '@shared';
-import { ErrorHandlerService } from '@shared';
+import { WorkspaceDataService, ErrorHandlerService } from '@shared';
 
 /**
  * Base Account CRUD Facade

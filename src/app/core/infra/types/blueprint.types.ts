@@ -1,9 +1,9 @@
 /**
  * Blueprint Container Types
- * 
+ *
  * Base type definitions for Blueprint Container system (邏輯容器)
  * Following docs/00-順序.md and BLUEPRINT_CONTAINER_PLANNING.md
- * 
+ *
  * @module blueprint.types
  */
 
@@ -20,13 +20,7 @@ export type BlueprintStatus = 'draft' | 'published' | 'archived';
 /**
  * Blueprint category
  */
-export type BlueprintCategory =
-  | 'software_development'
-  | 'marketing'
-  | 'sales'
-  | 'hr'
-  | 'operations'
-  | 'custom';
+export type BlueprintCategory = 'software_development' | 'marketing' | 'sales' | 'hr' | 'operations' | 'custom';
 
 /**
  * Owner type (Account Context integration)

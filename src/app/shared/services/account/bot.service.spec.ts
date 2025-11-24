@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { BotService } from './bot.service';
 import { BotRepository } from '@core/infra/repositories/account';
 import { of, throwError } from 'rxjs';
+
+import { BotService } from './bot.service';
 
 describe('BotService', () => {
   let service: BotService;
@@ -31,10 +32,7 @@ describe('BotService', () => {
     ]);
 
     TestBed.configureTestingModule({
-      providers: [
-        BotService,
-        { provide: BotRepository, useValue: botRepoSpy }
-      ]
+      providers: [BotService, { provide: BotRepository, useValue: botRepoSpy }]
     });
 
     service = TestBed.inject(BotService);

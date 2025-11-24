@@ -11,8 +11,6 @@
  */
 
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
-
 import { TaskRepository } from '@core';
 import {
   TaskModel,
@@ -25,6 +23,7 @@ import {
   TaskStatusEnum,
   TaskViewMode
 } from '@shared';
+import { Observable, firstValueFrom } from 'rxjs';
 
 /**
  * Task Service
@@ -69,17 +68,15 @@ export class TaskService {
       inProgressCount: tasks.filter(t => t.status === TaskStatusEnum.IN_PROGRESS).length,
       completedCount: tasks.filter(t => t.status === TaskStatusEnum.COMPLETED).length,
       cancelledCount: tasks.filter(t => t.status === TaskStatusEnum.CANCELLED).length,
-      
+
       // By level
       l0Count: tasks.filter(t => t.depth === 0).length,
       l1Count: tasks.filter(t => t.depth === 1).length,
       l2Count: tasks.filter(t => t.depth === 2).length,
       l3PlusCount: tasks.filter(t => t.depth >= 3).length,
-      
+
       // Progress
-      overallProgress: tasks.length > 0 
-        ? (tasks.filter(t => t.status === TaskStatusEnum.COMPLETED).length / tasks.length) * 100 
-        : 0,
+      overallProgress: tasks.length > 0 ? (tasks.filter(t => t.status === TaskStatusEnum.COMPLETED).length / tasks.length) * 100 : 0,
       averageDepth: tasks.length > 0 ? totalDepth / tasks.length : 0
     };
   });
@@ -140,7 +137,7 @@ export class TaskService {
         path,
         depth,
         status: TaskStatusEnum.PENDING,
-        priority: request.priority || 'medium' as const,
+        priority: request.priority || ('medium' as const),
         assigneeIds: request.assigneeIds || [],
         assigneeTypes: request.assigneeTypes || [],
         tags: request.tags || []
@@ -239,10 +236,7 @@ export class TaskService {
   /**
    * Calculate path and depth for new task
    */
-  private async calculatePathAndDepth(
-    parentId: string | null | undefined,
-    workspaceId: string
-  ): Promise<{ path: string; depth: number }> {
+  private async calculatePathAndDepth(parentId: string | null | undefined, workspaceId: string): Promise<{ path: string; depth: number }> {
     if (!parentId) {
       // Root task - calculate next position
       const rootTasks = await firstValueFrom(this.taskRepo.findRootTasks(workspaceId));
@@ -270,14 +264,14 @@ export class TaskService {
 
   /**
    * Recalculate progress for parent tasks (recursive)
-   * 
+   *
    * Note: This is a simplified implementation for the base structure.
    * In production, progress calculation should be handled by database triggers
    * or a dedicated background job to ensure consistency across the tree.
    */
   private async recalculateParentProgress(task: TaskModel): Promise<void> {
     if (!task.parentId) {
-      return;  // Root task, no parent to update
+      return; // Root task, no parent to update
     }
 
     try {
@@ -288,7 +282,7 @@ export class TaskService {
 
       // Get all children of parent
       const children = await firstValueFrom(this.taskRepo.findByParent(parent.id));
-      
+
       const completedCount = children.filter(c => c.status === TaskStatusEnum.COMPLETED).length;
       const totalCount = children.length;
       const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -296,11 +290,11 @@ export class TaskService {
       // Update parent with calculated progress
       // Note: In production, this should be a database-level update
       // to avoid race conditions and ensure atomicity
-      
+
       // TODO: Implement database-level progress calculation
       // For now, we skip the update to avoid infinite recursion
       // and rely on future database triggers
-      
+
       // Recursively update grandparent
       await this.recalculateParentProgress(parent);
     } catch (error) {

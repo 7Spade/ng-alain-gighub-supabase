@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { AccountType } from '@core/infra/types/account';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { of, throwError } from 'rxjs';
+
 import { UserRepository } from './user.repository';
-import { AccountType } from '@core/infra/types/account';
 
 describe('UserRepository', () => {
   let repository: UserRepository;

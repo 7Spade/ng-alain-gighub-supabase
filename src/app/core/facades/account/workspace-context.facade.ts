@@ -70,13 +70,10 @@ export class WorkspaceContextFacade {
         return;
       }
 
+      // Restore context immediately when data is ready, no setTimeout
       if (!dataLoading && hasToken && userAccountId) {
-        setTimeout(() => {
-          if (!this.hasRestoredContext) {
-            this.hasRestoredContext = true;
-            this.restoreContext();
-          }
-        }, 100);
+        this.hasRestoredContext = true;
+        this.restoreContext();
       }
     });
   }

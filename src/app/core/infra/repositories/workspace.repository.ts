@@ -11,8 +11,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { BaseRepository } from './base.repository';
-import { Workspace, WorkspaceInsert, WorkspaceUpdate } from '../types/workspace.types';
 import { QueryOptions } from '../types/supabase.types';
+import { Workspace, WorkspaceInsert, WorkspaceUpdate } from '../types/workspace.types';
 
 /**
  * Workspace Repository
