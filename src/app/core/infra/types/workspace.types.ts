@@ -1,9 +1,9 @@
 /**
  * Workspace Types
- * 
+ *
  * Type definitions for workspace instances (instantiated from blueprints)
  * Following docs/00-順序.md and BLUEPRINT_CONTAINER_PLANNING.md
- * 
+ *
  * @module workspace.types
  */
 

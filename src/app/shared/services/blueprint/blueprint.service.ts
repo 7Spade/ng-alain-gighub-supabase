@@ -10,19 +10,9 @@
  */
 
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
-
 import { BlueprintRepository } from '@core';
-import {
-  BlueprintModel,
-  BlueprintSummary,
-  CreateBlueprintRequest,
-  UpdateBlueprintRequest,
-  BlueprintStatistics,
-  BlueprintFilterOptions,
-  BlueprintStatusEnum,
-  BlueprintVisibilityEnum
-} from '@shared';
+import { BlueprintModel, CreateBlueprintRequest, UpdateBlueprintRequest, BlueprintStatistics, BlueprintStatusEnum } from '@shared';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Blueprint Service
@@ -56,9 +46,7 @@ export class BlueprintService {
     const blueprints = this.blueprints();
     const blueprintsWithRating = blueprints.filter(b => b.rating);
     const averageRating =
-      blueprintsWithRating.length > 0
-        ? blueprintsWithRating.reduce((sum, b) => sum + (b.rating || 0), 0) / blueprintsWithRating.length
-        : 0;
+      blueprintsWithRating.length > 0 ? blueprintsWithRating.reduce((sum, b) => sum + (b.rating || 0), 0) / blueprintsWithRating.length : 0;
 
     return {
       totalCount: blueprints.length,

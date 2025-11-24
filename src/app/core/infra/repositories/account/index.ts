@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Database, AccountType, AccountStatus, AccountQueryOptions } from '../../types';
+import { Database, AccountType, AccountStatus } from '../../types';
 import { BaseRepository } from '../base.repository';
 
 // ============================================================================
@@ -23,6 +23,13 @@ type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
 
 /**
  * Account Repository
+ *
+ * @deprecated Use UserRepository, BotRepository, or OrganizationRepository instead.
+ * This repository provides generic account operations but lacks type safety.
+ * For type-specific operations, use the specialized repositories:
+ * - UserRepository for type='User'
+ * - BotRepository for type='Bot'
+ * - OrganizationRepository for type='Organization'
  *
  * 帳戶資料存取層
  * Account data access layer
@@ -53,6 +60,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 根據狀態查詢帳戶
    * Find accounts by status
    *
+   * @deprecated Use specialized repositories (UserRepository, BotRepository, OrganizationRepository)
    * @param {AccountStatus} status - Account status
    * @returns {Observable<Account[]>} Accounts with specified status
    */
@@ -60,74 +68,6 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
     return this.findAll({
       filters: { status: status as any }
     });
-  }
-
-  /**
-   * 根據 auth_user_id 查詢用戶帳戶
-   * Find user account by auth_user_id
-   *
-   * @param {string} authUserId - Auth user ID from Supabase Auth
-   * @returns {Observable<Account | null>} User account or null
-   */
-  findByAuthUserId(authUserId: string): Observable<Account | null> {
-    return this.findOne({ authUserId });
-  }
-
-  /**
-   * 根據 email 查詢帳戶
-   * Find account by email
-   *
-   * @param {string} email - Email address
-   * @returns {Observable<Account | null>} Account or null
-   */
-  findByEmail(email: string): Observable<Account | null> {
-    return this.findOne({ email });
-  }
-
-  /**
-   * 查詢用戶創建的組織
-   * Find organizations created by user
-   *
-   * @param {string} authUserId - Auth user ID
-   * @returns {Observable<Account[]>} Organizations created by user
-   */
-  findCreatedOrganizations(authUserId: string): Observable<Account[]> {
-    return this.findAll({
-      filters: {
-        type: AccountType.ORGANIZATION,
-        createdBy: authUserId,
-        status: AccountStatus.ACTIVE
-      }
-    });
-  }
-
-  /**
-   * 進階查詢（使用 AccountQueryOptions）
-   * Advanced query with AccountQueryOptions
-   *
-   * @param {AccountQueryOptions} options - Query options
-   * @returns {Observable<Account[]>} Filtered accounts
-   */
-  findWithOptions(options: AccountQueryOptions): Observable<Account[]> {
-    const filters: Record<string, any> = {};
-
-    if (options.type) {
-      filters['type'] = options.type;
-    }
-
-    if (options.status) {
-      filters['status'] = options.status;
-    } else if (!options.includeDeleted) {
-      // 預設不包含已刪除的帳戶
-      // By default, exclude deleted accounts
-      filters['status'] = [AccountStatus.ACTIVE, AccountStatus.INACTIVE, AccountStatus.SUSPENDED];
-    }
-
-    if (options.createdBy) {
-      filters['createdBy'] = options.createdBy;
-    }
-
-    return this.findAll({ filters });
   }
 
   /**
@@ -174,7 +114,16 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+// User Repository
+export * from './user.repository';
+
+// Bot Repository
+export * from './bot.repository';
+
+// Organization Repository and related
 export * from './organization.repository';
 export * from './organization-member.repository';
+
+// Team Repository and related
 export * from './team.repository';
 export * from './team-member.repository';
