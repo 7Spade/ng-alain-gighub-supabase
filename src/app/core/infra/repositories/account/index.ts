@@ -74,7 +74,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * @returns {Observable<Account | null>} User account or null
    */
   findByAuthUserId(authUserId: string): Observable<Account | null> {
-    return this.findOne({ authUserId });
+    return this.findOne({ authUserId, type: AccountType.USER });
   }
 
   /**

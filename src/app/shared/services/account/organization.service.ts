@@ -71,7 +71,7 @@ export class OrganizationService {
       })
     );
 
-    const organizationIds = ownerMemberships.map(m => (m as any).organizationId);
+    const organizationIds = ownerMemberships.map(m => (m as any).organization_id).filter(id => id);
     if (organizationIds.length === 0) {
       return [];
     }
@@ -89,7 +89,7 @@ export class OrganizationService {
    */
   async getUserJoinedOrganizations(accountId: string): Promise<OrganizationBusinessModel[]> {
     const memberships = await firstValueFrom(this.organizationMemberRepo.findByAccount(accountId));
-    const orgIds = memberships.map(m => (m as any).organizationId);
+    const orgIds = memberships.map(m => (m as any).organization_id).filter(id => id);
 
     if (orgIds.length === 0) {
       return [];

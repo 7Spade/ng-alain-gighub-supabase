@@ -61,3 +61,5 @@ yarn-error.log
 
 .eslintcache
 .env
+
+.playwright-mcp
