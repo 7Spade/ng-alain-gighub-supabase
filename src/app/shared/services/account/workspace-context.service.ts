@@ -21,9 +21,10 @@ import { TeamModel } from '../../models/account';
 export class WorkspaceContextService {
   private readonly dataService = inject(WorkspaceDataService);
 
-  // Context state - 預設為 USER 上下文而非 APP，避免閃現
-  private contextTypeState = signal<ContextType>(ContextType.USER);
-  private contextIdState = signal<string | null>(null);
+  // Context state - 初始化時立即從 localStorage 載入，避免閃現
+  // Initialize context state from localStorage immediately to prevent flash
+  private contextTypeState = signal<ContextType>(this.getInitialContextType());
+  private contextIdState = signal<string | null>(this.getInitialContextId());
   private switchingState = signal<boolean>(false);
 
   // Readonly signals
@@ -168,8 +169,55 @@ export class WorkspaceContextService {
   }
 
   /**
+   * 獲取初始上下文類型
+   * Get initial context type from localStorage or default to USER
+   */
+  private getInitialContextType(): ContextType {
+    if (typeof localStorage === 'undefined') {
+      return ContextType.USER;
+    }
+
+    try {
+      const saved = localStorage.getItem('workspace_context');
+      if (saved) {
+        const context = JSON.parse(saved) as ContextState;
+        return context.type || ContextType.USER;
+      }
+    } catch (error) {
+      console.error('[WorkspaceContextService] Failed to load initial context type:', error);
+    }
+
+    return ContextType.USER;
+  }
+
+  /**
+   * 獲取初始上下文 ID
+   * Get initial context ID from localStorage
+   */
+  private getInitialContextId(): string | null {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
+
+    try {
+      const saved = localStorage.getItem('workspace_context');
+      if (saved) {
+        const context = JSON.parse(saved) as ContextState;
+        return context.id || null;
+      }
+    } catch (error) {
+      console.error('[WorkspaceContextService] Failed to load initial context id:', error);
+    }
+
+    return null;
+  }
+
+  /**
    * 恢復上下文（從 localStorage）
    * Restore context from localStorage
+   *
+   * Note: Context is now loaded during initialization via getInitialContextType/Id.
+   * This method is kept for backward compatibility and explicit restoration.
    */
   restoreContext(): void {
     if (typeof localStorage === 'undefined') return;
