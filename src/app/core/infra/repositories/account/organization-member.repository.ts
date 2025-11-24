@@ -84,6 +84,10 @@ export class OrganizationMemberRepository extends BaseRepository<OrganizationMem
       filters['accountId'] = options.accountId;
     }
 
+    if (options.authUserId) {
+      filters['authUserId'] = options.authUserId;
+    }
+
     if (options.role) {
       filters['role'] = options.role;
     }

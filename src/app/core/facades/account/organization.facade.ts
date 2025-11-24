@@ -5,35 +5,57 @@
  * Organization business domain facade (Core layer)
  *
  * Provides unified interface for organization operations.
- * Coordinates between OrganizationService and WorkspaceDataService.
+ * Extends BaseAccountCrudFacade for common CRUD coordination logic.
  *
  * @module core/facades/account
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import {
-  OrganizationService,
-  WorkspaceDataService,
-  ErrorHandlerService,
-  OrganizationBusinessModel,
-  CreateOrganizationRequest,
-  UpdateOrganizationRequest
-} from '@shared';
+import { OrganizationService, OrganizationBusinessModel, CreateOrganizationRequest, UpdateOrganizationRequest } from '@shared';
+
+import { BaseAccountCrudFacade } from './base-account-crud.facade';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrganizationFacade {
+export class OrganizationFacade extends BaseAccountCrudFacade<
+  OrganizationBusinessModel,
+  CreateOrganizationRequest,
+  UpdateOrganizationRequest
+> {
   private readonly organizationService = inject(OrganizationService);
-  private readonly dataService = inject(WorkspaceDataService);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
-  private readonly errorHandler = inject(ErrorHandlerService);
+
+  protected readonly entityTypeName = '組織';
+  protected readonly facadeName = 'OrganizationFacade';
 
   // Proxy organization service signals
   readonly organizations = this.organizationService.organizations;
   readonly loading = this.organizationService.loading;
   readonly error = this.organizationService.error;
+
+  /**
+   * 執行創建操作
+   * Execute create operation
+   */
+  protected executeCreate(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
+    return this.organizationService.createOrganization(request);
+  }
+
+  /**
+   * 執行更新操作
+   * Execute update operation
+   */
+  protected executeUpdate(id: string, request: UpdateOrganizationRequest): Promise<OrganizationBusinessModel> {
+    return this.organizationService.updateOrganization(id, request);
+  }
+
+  /**
+   * 執行刪除操作
+   * Execute delete operation
+   */
+  protected executeDelete(id: string): Promise<OrganizationBusinessModel> {
+    return this.organizationService.softDeleteOrganization(id);
+  }
 
   /**
    * 創建組織
@@ -44,21 +66,7 @@ export class OrganizationFacade {
    * @throws {Error} User-friendly error message
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
-    try {
-      const organization = await this.organizationService.createOrganization(request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return organization;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'create', '組織');
-      this.errorHandler.logError('OrganizationFacade', 'create organization', error);
-      throw new Error(errorMessage);
-    }
+    return this.create(request);
   }
 
   /**
@@ -71,21 +79,7 @@ export class OrganizationFacade {
    * @throws {Error} User-friendly error message
    */
   async updateOrganization(id: string, request: UpdateOrganizationRequest): Promise<OrganizationBusinessModel> {
-    try {
-      const organization = await this.organizationService.updateOrganization(id, request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return organization;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'update', '組織');
-      this.errorHandler.logError('OrganizationFacade', 'update organization', error);
-      throw new Error(errorMessage);
-    }
+    return this.update(id, request);
   }
 
   /**
@@ -97,21 +91,7 @@ export class OrganizationFacade {
    * @throws {Error} User-friendly error message
    */
   async deleteOrganization(id: string): Promise<OrganizationBusinessModel> {
-    try {
-      const organization = await this.organizationService.softDeleteOrganization(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return organization;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'delete', '組織');
-      this.errorHandler.logError('OrganizationFacade', 'delete organization', error);
-      throw new Error(errorMessage);
-    }
+    return this.delete(id);
   }
 
   /**

@@ -71,5 +71,11 @@ export * from './workspace';
 // Task Module services
 export * from './task';
 
+// Menu management service
+export * from './menu';
+
+// Error handling service
+export * from './error-handler.service';
+
 // Temporary export to make this a valid module
 export const SERVICES_MODULE = 'services';

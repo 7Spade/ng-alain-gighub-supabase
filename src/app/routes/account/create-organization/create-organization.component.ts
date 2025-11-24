@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OrganizationFacade } from '@core';
-import { SHARED_IMPORTS, CreateOrganizationRequest } from '@shared';
+import { SHARED_IMPORTS, CreateOrganizationRequest, validateForm, getTrimmedFormValue } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -42,26 +42,14 @@ export class CreateOrganizationComponent {
    * Submit form to create organization
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!validateForm(this.form)) {
       return;
     }
 
     this.loading = true;
     try {
-      const formValue = this.form.value;
-      const request: CreateOrganizationRequest = {
-        name: formValue.name.trim(),
-        email: formValue.email?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
-      const organization = await this.organizationFacade.createOrganization(request);
+      const request = getTrimmedFormValue<CreateOrganizationRequest>(this.form);
+      const organization = await this.organizationFacade.createOrganization(request as CreateOrganizationRequest);
       this.msg.success('組織創建成功！');
       this.modal.close(organization);
     } catch (error) {

@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade, WorkspaceContextFacade } from '@core';
-import { SHARED_IMPORTS, CreateTeamRequest } from '@shared';
+import { SHARED_IMPORTS, CreateTeamRequest, validateForm, getTrimmedFormValue } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -32,8 +32,16 @@ export class CreateTeamComponent {
   private readonly msg = inject(NzMessageService);
 
   loading = signal(false);
+  
+  // 從上下文自動獲取組織 ID
+  readonly currentOrgId = this.workspaceContext.contextType() === 'organization' 
+    ? this.workspaceContext.contextId() 
+    : null;
+  
+  readonly showOrgSelector = !this.currentOrgId; // 只有在非組織上下文才顯示選擇器
+
   form: FormGroup = this.fb.group({
-    organizationId: ['', [Validators.required]],
+    organizationId: [this.currentOrgId || '', [Validators.required]],
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
     description: ['', [Validators.maxLength(500)]],
     avatar: ['']
@@ -55,27 +63,14 @@ export class CreateTeamComponent {
    * Submit form to create team
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!validateForm(this.form)) {
       return;
     }
 
     this.loading.set(true);
     try {
-      const formValue = this.form.value;
-      const request: CreateTeamRequest = {
-        organizationId: formValue.organizationId,
-        name: formValue.name.trim(),
-        description: formValue.description?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
-      const team = await this.teamFacade.createTeam(request);
+      const request = getTrimmedFormValue<CreateTeamRequest>(this.form);
+      const team = await this.teamFacade.createTeam(request as CreateTeamRequest);
       this.msg.success('團隊創建成功！');
       this.modal.close(team);
     } catch (error) {
@@ -91,5 +86,15 @@ export class CreateTeamComponent {
    */
   cancel(): void {
     this.modal.destroy();
+  }
+
+  /**
+   * 獲取當前組織名稱
+   * Get current organization name
+   */
+  getCurrentOrgName(): string {
+    if (!this.currentOrgId) return '';
+    const org = this.organizations().find(o => o['id'] === this.currentOrgId);
+    return org ? ((org as any).name || '未命名組織') : '';
   }
 }

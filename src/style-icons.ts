@@ -1,5 +1,15 @@
 // Custom icon static resources
 
-import { BulbOutline, ExceptionOutline, InfoOutline, LinkOutline, ProfileOutline } from '@ant-design/icons-angular/icons';
+import { IconDefinition } from '@ant-design/icons-angular';
+import {
+  BulbOutline,
+  ExceptionOutline,
+  InfoOutline,
+  LinkOutline,
+  PlusCircleOutline,
+  ProfileOutline
+} from '@ant-design/icons-angular/icons';
 
-export const ICONS = [InfoOutline, BulbOutline, ProfileOutline, ExceptionOutline, LinkOutline];
+const PlusCircleAlias: IconDefinition = { ...PlusCircleOutline, name: 'plus-circle-o' as any };
+
+export const ICONS = [InfoOutline, BulbOutline, ProfileOutline, ExceptionOutline, LinkOutline, PlusCircleOutline, PlusCircleAlias];

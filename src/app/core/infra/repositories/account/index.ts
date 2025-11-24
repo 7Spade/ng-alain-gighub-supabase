@@ -27,6 +27,10 @@ type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
  * 帳戶資料存取層
  * Account data access layer
  *
+ * @deprecated Use UserRepository, BotRepository, or OrganizationRepository instead.
+ * This repository is kept for backward compatibility but should not be used for new code.
+ * Prefer type-specific repositories that enforce type filtering at the repository level.
+ *
  * Provides CRUD operations for accounts (User, Organization, Bot).
  * Extends BaseRepository with account-specific query methods.
  */
@@ -70,7 +74,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * @returns {Observable<Account | null>} User account or null
    */
   findByAuthUserId(authUserId: string): Observable<Account | null> {
-    return this.findOne({ authUserId });
+    return this.findOne({ authUserId, type: AccountType.USER });
   }
 
   /**
@@ -82,23 +86,6 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    */
   findByEmail(email: string): Observable<Account | null> {
     return this.findOne({ email });
-  }
-
-  /**
-   * 查詢用戶創建的組織
-   * Find organizations created by user
-   *
-   * @param {string} authUserId - Auth user ID
-   * @returns {Observable<Account[]>} Organizations created by user
-   */
-  findCreatedOrganizations(authUserId: string): Observable<Account[]> {
-    return this.findAll({
-      filters: {
-        type: AccountType.ORGANIZATION,
-        createdBy: authUserId,
-        status: AccountStatus.ACTIVE
-      }
-    });
   }
 
   /**
@@ -121,10 +108,6 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
       // 預設不包含已刪除的帳戶
       // By default, exclude deleted accounts
       filters['status'] = [AccountStatus.ACTIVE, AccountStatus.INACTIVE, AccountStatus.SUSPENDED];
-    }
-
-    if (options.createdBy) {
-      filters['createdBy'] = options.createdBy;
     }
 
     return this.findAll({ filters });
@@ -174,6 +157,8 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+export * from './user.repository';
+export * from './bot.repository';
 export * from './organization.repository';
 export * from './organization-member.repository';
 export * from './team.repository';

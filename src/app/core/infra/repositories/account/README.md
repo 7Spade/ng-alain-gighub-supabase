@@ -34,7 +34,6 @@ This module provides the data access layer (Repository Layer) for account manage
 
 **主要方法：**
 - `findById(id)` - 根據 ID 查詢組織
-- `findCreatedByUser(authUserId)` - 查詢用戶創建的組織
 - `findByIds(ids)` - 批量查詢組織
 - `create(data)` - 創建組織
 - `update(id, data)` - 更新組織

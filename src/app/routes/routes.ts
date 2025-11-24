@@ -24,7 +24,10 @@ export const routes: Routes = [
       { path: 'style', loadChildren: () => import('./demo/style/routes').then(m => m.routes) },
       { path: 'delon', loadChildren: () => import('./demo/delon/routes').then(m => m.routes) },
       { path: 'extras', loadChildren: () => import('./demo/extras/routes').then(m => m.routes) },
-      { path: 'pro', loadChildren: () => import('./demo/pro/routes').then(m => m.routes) }
+      { path: 'pro', loadChildren: () => import('./demo/pro/routes').then(m => m.routes) },
+      { path: 'user', loadChildren: () => import('./user/routes').then(m => m.routes) },
+      { path: 'org', loadChildren: () => import('./org/routes').then(m => m.routes) },
+      { path: 'team', loadChildren: () => import('./team/routes').then(m => m.routes) }
     ]
   },
   // Blak Layout 空白布局

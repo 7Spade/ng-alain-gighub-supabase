@@ -1,0 +1,157 @@
+<page-header />
+
+<!-- 統計卡片區域 -->
+<div nz-row [nzGutter]="16" class="mb-md">
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <nz-card [nzBordered]="false" class="stat-card stat-card-primary">
+      <div nz-row nzType="flex" nzAlign="middle">
+        <div nz-col nzSpan="14">
+          <number-info
+            [subTitle]="'組織成員'"
+            [total]="totalMembers().toString()"
+            [status]="'up'"
+            [subTotal]="'12%'"
+          />
+        </div>
+        <div nz-col nzSpan="10">
+          <span nz-icon nzType="team" nzTheme="outline" class="stat-icon" style="color: #1890ff;"></span>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <nz-card [nzBordered]="false" class="stat-card stat-card-success">
+      <div nz-row nzType="flex" nzAlign="middle">
+        <div nz-col nzSpan="14">
+          <number-info
+            [subTitle]="'團隊數量'"
+            [total]="totalTeams().toString()"
+            [status]="'up'"
+            [subTotal]="'8%'"
+          />
+        </div>
+        <div nz-col nzSpan="10">
+          <span nz-icon nzType="cluster" nzTheme="outline" class="stat-icon" style="color: #52c41a;"></span>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <nz-card [nzBordered]="false" class="stat-card stat-card-warning">
+      <div nz-row nzType="flex" nzAlign="middle">
+        <div nz-col nzSpan="14">
+          <number-info
+            [subTitle]="'藍圖總數'"
+            [total]="totalBlueprints().toString()"
+            [status]="'up'"
+            [subTotal]="'15%'"
+          />
+        </div>
+        <div nz-col nzSpan="10">
+          <span nz-icon nzType="project" nzTheme="outline" class="stat-icon" style="color: #faad14;"></span>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <nz-card [nzBordered]="false" class="stat-card stat-card-danger">
+      <div nz-row nzType="flex" nzAlign="middle">
+        <div nz-col nzSpan="14">
+          <number-info
+            [subTitle]="'進行中專案'"
+            [total]="activeProjects().toString()"
+            [status]="'down'"
+            [subTotal]="'3%'"
+          />
+        </div>
+        <div nz-col nzSpan="10">
+          <span nz-icon nzType="fund" nzTheme="outline" class="stat-icon" style="color: #f5222d;"></span>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>
+
+<!-- 趨勢圖表區域 -->
+<div nz-row [nzGutter]="16" class="mb-md">
+  <div nz-col [nzXs]="24" [nzLg]="16">
+    <nz-card [nzTitle]="'成員增長趨勢'" [nzBordered]="false">
+      @if (memberTrendData().length > 0) {
+        <g2-mini-area
+          line
+          [animate]="true"
+          [color]="'#1890ff'"
+          [borderWidth]="2"
+          [height]="200"
+          [data]="memberTrendData()"
+        />
+      }
+    </nz-card>
+  </div>
+
+  <div nz-col [nzXs]="24" [nzLg]="8">
+    <nz-card [nzTitle]="'團隊活動度'" [nzBordered]="false">
+      @if (teamActivityData().length > 0) {
+        <g2-mini-bar
+          [height]="200"
+          [data]="teamActivityData()"
+          color="#52c41a"
+        />
+      }
+    </nz-card>
+  </div>
+</div>
+
+<!-- 圖表詳情區域 -->
+<div nz-row [nzGutter]="16" class="mb-md">
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-card [nzTitle]="'藍圖狀態分佈'" [nzBordered]="false">
+      @if (blueprintData().length > 0) {
+        <g2-bar
+          [data]="blueprintData()"
+          [height]="280"
+          [padding]="[20, 20, 40, 50]"
+        />
+      }
+    </nz-card>
+  </div>
+
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-card [nzTitle]="'成員角色分佈'" [nzBordered]="false">
+      @if (memberRoleData().length > 0) {
+        <g2-pie
+          [data]="memberRoleData()"
+          [height]="280"
+          [hasLegend]="true"
+          [subTitle]="'總成員'"
+          [total]="totalMembers().toString()"
+          [colors]="['#1890ff', '#52c41a', '#faad14', '#f5222d']"
+        />
+      }
+    </nz-card>
+  </div>
+</div>
+
+<!-- 活動趨勢區域 -->
+<div nz-row [nzGutter]="16">
+  <div nz-col [nzXs]="24">
+    <nz-card [nzTitle]="'30 天活動趨勢'" [nzBordered]="false">
+      @if (activityData().length > 0) {
+        <g2-mini-area
+          [animate]="true"
+          [color]="'#faad14'"
+          [borderWidth]="2"
+          [height]="120"
+          [data]="activityData()"
+        />
+      }
+      <div class="mt-md text-center text-grey">
+        <span>最近 30 天的組織活動統計，包含提交、評論、PR 等操作</span>
+      </div>
+    </nz-card>
+  </div>
+</div>
+

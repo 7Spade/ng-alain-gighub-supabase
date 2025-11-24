@@ -5,17 +5,16 @@
  * Organization management service (Shared layer)
  *
  * Provides business logic for organization operations using Signals-based state management.
- * Handles organization CRUD operations and coordinates with AccountRepository.
+ * Handles organization CRUD operations and coordinates with OrganizationRepository and UserRepository.
  *
  * @module shared/services/account
  */
 
 import { Injectable, inject, signal } from '@angular/core';
 import {
-  AccountType,
   AccountStatus,
   OrganizationMemberRole,
-  AccountRepository,
+  UserRepository,
   SupabaseService,
   OrganizationRepository,
   OrganizationMemberRepository
@@ -31,7 +30,7 @@ import { ErrorHandlerService } from '../error-handler.service';
 export class OrganizationService {
   private readonly organizationRepo = inject(OrganizationRepository);
   private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly userRepo = inject(UserRepository);
   private readonly supabaseService = inject(SupabaseService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
@@ -54,10 +53,7 @@ export class OrganizationService {
    */
   async findById(id: string): Promise<OrganizationBusinessModel | null> {
     const account = await firstValueFrom(this.organizationRepo.findById(id));
-    if (account && (account as any).type === AccountType.ORGANIZATION) {
-      return account as OrganizationBusinessModel;
-    }
-    return null;
+    return account as OrganizationBusinessModel | null;
   }
 
   /**
@@ -68,7 +64,19 @@ export class OrganizationService {
    * @returns {Promise<OrganizationBusinessModel[]>} Organizations created by user
    */
   async getUserCreatedOrganizations(authUserId: string): Promise<OrganizationBusinessModel[]> {
-    const orgs = await firstValueFrom(this.organizationRepo.findCreatedByUser(authUserId));
+    const ownerMemberships = await firstValueFrom(
+      this.organizationMemberRepo.findWithOptions({
+        authUserId,
+        role: OrganizationMemberRole.OWNER
+      })
+    );
+
+    const organizationIds = ownerMemberships.map(m => (m as any).organization_id).filter(id => id);
+    if (organizationIds.length === 0) {
+      return [];
+    }
+
+    const orgs = await firstValueFrom(this.organizationRepo.findByIds(organizationIds));
     return orgs as OrganizationBusinessModel[];
   }
 
@@ -81,22 +89,28 @@ export class OrganizationService {
    */
   async getUserJoinedOrganizations(accountId: string): Promise<OrganizationBusinessModel[]> {
     const memberships = await firstValueFrom(this.organizationMemberRepo.findByAccount(accountId));
-    const orgIds = memberships.map(m => (m as any).organizationId);
+    const orgIds = memberships.map(m => (m as any).organization_id).filter(id => id);
 
     if (orgIds.length === 0) {
       return [];
     }
 
     const orgs = await firstValueFrom(this.organizationRepo.findByIds(orgIds));
-    return orgs.filter(org => org && (org as any).type === AccountType.ORGANIZATION) as OrganizationBusinessModel[];
+    return orgs as OrganizationBusinessModel[];
   }
 
   /**
    * 創建組織
    * Create organization
    *
+   * Creates a new organization account. The database trigger `add_creator_as_org_owner`
+   * automatically adds the creator as an owner in the organization_members table after
+   * the INSERT operation completes. This ensures atomic membership creation without the
+   * need for manual application-level coordination.
+   *
    * @param {CreateOrganizationRequest} request - Create request
-   * @returns {Promise<OrganizationModel>} Created organization
+   * @returns {Promise<OrganizationBusinessModel>} Created organization
+   * @throws {Error} If user is not authenticated, user account not found, or creation fails
    */
   async createOrganization(request: CreateOrganizationRequest): Promise<OrganizationBusinessModel> {
     // 1. 獲取當前用戶的 auth_user_id
@@ -105,49 +119,29 @@ export class OrganizationService {
       throw new Error('User not authenticated');
     }
 
-    // 2. 獲取當前用戶的 account_id
-    const userAccount = await firstValueFrom(this.accountRepo.findByAuthUserId(user.id));
+    // 2. 驗證用戶帳號存在（防止創建無主組織）
+    // Verify user account exists (prevents creating ownerless organizations)
+    const userAccount = await firstValueFrom(this.userRepo.findByAuthUserId(user.id));
     if (!userAccount) {
       throw new Error('User account not found');
     }
-    const userAccountId = userAccount['id'] as string;
 
-    // 3. 創建組織
+    // 3. 創建組織（觸發器會自動將創建者添加為 owner）
+    // Create organization (trigger will automatically add creator as owner)
+    // auth_user_id: Set to creator's auth.uid() to satisfy SELECT policy after INSERT
     const insertData = {
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
-      status: request.status || AccountStatus.ACTIVE
+      status: request.status || AccountStatus.ACTIVE,
+      auth_user_id: user.id // Required for SELECT policy to return newly created org
     };
 
     const organization = await firstValueFrom(this.organizationRepo.create(insertData));
-    const organizationId = organization['id'] as string;
 
-    // 4. 創建 organization_members 記錄，將創建者設為 owner
-    // 這必須在創建組織後立即執行，因為 RLS 策略要求組織還沒有任何成員
-    // 如果創建成員記錄失敗，組織將無法使用（沒有 owner），所以我們必須拋出異常
-    try {
-      await firstValueFrom(
-        this.organizationMemberRepo.create({
-          organizationId,
-          accountId: userAccountId,
-          role: OrganizationMemberRole.OWNER
-        } as any)
-      );
-    } catch (error) {
-      // 如果創建成員記錄失敗，嘗試軟刪除剛創建的組織
-      try {
-        await firstValueFrom(this.organizationRepo.softDelete(organizationId));
-        console.warn(`[OrganizationService] Rolled back organization creation due to member creation failure: ${organizationId}`);
-      } catch (rollbackError) {
-        console.error('[OrganizationService] Failed to rollback organization creation:', rollbackError);
-      }
-
-      // 拋出異常，讓調用者知道創建失敗
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create organization member';
-      console.error('[OrganizationService] Failed to create organization member:', error);
-      throw new Error(`Failed to create organization: ${errorMessage}`);
-    }
+    // Note: The database trigger `add_creator_as_org_owner` automatically creates
+    // an organization_members record with role='owner' for the creator.
+    // No manual membership creation needed here.
 
     return organization as OrganizationBusinessModel;
   }

@@ -5,22 +5,24 @@
  * User business domain facade (Core layer)
  *
  * Provides unified interface for user account operations.
- * Coordinates between UserService and WorkspaceDataService.
+ * Extends BaseAccountCrudFacade for common CRUD coordination logic.
  *
  * @module core/facades/account
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { UserService, WorkspaceDataService, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
+import { UserService, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
+
+import { BaseAccountCrudFacade } from './base-account-crud.facade';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserFacade {
+export class UserFacade extends BaseAccountCrudFacade<UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest> {
   private readonly userService = inject(UserService);
-  private readonly dataService = inject(WorkspaceDataService);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
+
+  protected readonly entityTypeName = '用戶';
+  protected readonly facadeName = 'UserFacade';
 
   // Proxy user service signals
   readonly userAccounts = this.userService.userAccounts;
@@ -28,27 +30,39 @@ export class UserFacade {
   readonly error = this.userService.error;
 
   /**
+   * 執行創建操作
+   * Execute create operation
+   */
+  protected executeCreate(request: CreateUserAccountRequest): Promise<UserAccountModel> {
+    return this.userService.createUser(request);
+  }
+
+  /**
+   * 執行更新操作
+   * Execute update operation
+   */
+  protected executeUpdate(id: string, request: UpdateUserAccountRequest): Promise<UserAccountModel> {
+    return this.userService.updateUser(id, request);
+  }
+
+  /**
+   * 執行刪除操作
+   * Execute delete operation
+   */
+  protected executeDelete(id: string): Promise<UserAccountModel> {
+    return this.userService.softDeleteUser(id);
+  }
+
+  /**
    * 創建用戶帳戶
    * Create user account
    *
    * @param {CreateUserAccountRequest} request - Create request
    * @returns {Promise<UserAccountModel>} Created user account
+   * @throws {Error} User-friendly error message
    */
   async createUser(request: CreateUserAccountRequest): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.createUser(request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to create user:', error);
-      throw error;
-    }
+    return this.create(request);
   }
 
   /**
@@ -58,22 +72,10 @@ export class UserFacade {
    * @param {string} id - Account ID
    * @param {UpdateUserAccountRequest} request - Update request
    * @returns {Promise<UserAccountModel>} Updated user account
+   * @throws {Error} User-friendly error message
    */
   async updateUser(id: string, request: UpdateUserAccountRequest): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.updateUser(id, request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to update user:', error);
-      throw error;
-    }
+    return this.update(id, request);
   }
 
   /**
@@ -82,22 +84,10 @@ export class UserFacade {
    *
    * @param {string} id - Account ID
    * @returns {Promise<UserAccountModel>} Deleted user account
+   * @throws {Error} User-friendly error message
    */
   async deleteUser(id: string): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.softDeleteUser(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to delete user:', error);
-      throw error;
-    }
+    return this.delete(id);
   }
 
   /**
@@ -110,17 +100,12 @@ export class UserFacade {
   async restoreUser(id: string): Promise<UserAccountModel> {
     try {
       const user = await this.userService.restoreUser(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
+      await this.reloadWorkspaceData();
       return user;
     } catch (error) {
-      console.error('[UserFacade] Failed to restore user:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'restore', this.entityTypeName);
+      this.errorHandler.logError(this.facadeName, `restore ${this.entityTypeName}`, error);
+      throw new Error(errorMessage);
     }
   }
 

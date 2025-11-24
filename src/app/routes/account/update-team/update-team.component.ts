@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade } from '@core';
-import { SHARED_IMPORTS, UpdateTeamRequest, TeamBusinessModel } from '@shared';
+import { SHARED_IMPORTS, UpdateTeamRequest, TeamBusinessModel, validateForm, getTrimmedFormValue } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -62,27 +62,19 @@ export class UpdateTeamComponent implements OnInit {
    * 提交表單更新團隊
    * Submit form to update team
    */
+  /**
+   * 提交表單更新團隊
+   * Submit form to update team
+   */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!validateForm(this.form)) {
       return;
     }
 
     this.loading.set(true);
     try {
-      const formValue = this.form.value;
-      const request: UpdateTeamRequest = {
-        name: formValue.name.trim(),
-        description: formValue.description?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
-      const updatedTeam = await this.teamFacade.updateTeam(this.team['id'] as string, request);
+      const request = getTrimmedFormValue<UpdateTeamRequest>(this.form);
+      const updatedTeam = await this.teamFacade.updateTeam(this.team['id'] as string, request as UpdateTeamRequest);
       this.msg.success('團隊更新成功！');
       this.modal.close(updatedTeam);
     } catch (error) {

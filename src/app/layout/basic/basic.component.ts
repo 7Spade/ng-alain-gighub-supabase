@@ -1,8 +1,9 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { SupabaseAuthService } from '@core';
+import { SupabaseAuthService, WorkspaceContextFacade, ContextType } from '@core';
 import { I18nPipe, ModalHelper, SettingsService, User } from '@delon/theme';
+import { MenuManagementService, MenuContextParams } from '@shared';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
@@ -22,6 +23,7 @@ import { HeaderRTLComponent } from './widgets/rtl.component';
 import { HeaderSearchComponent } from './widgets/search.component';
 import { HeaderTaskComponent } from './widgets/task.component';
 import { HeaderUserComponent } from './widgets/user.component';
+import { HeaderContextSwitcherComponent } from './widgets/context-switcher.component';
 import { CreateOrganizationComponent } from '../../routes/account/create-organization/create-organization.component';
 
 @Component({
@@ -89,6 +91,16 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
         </div>
         <nz-dropdown-menu #userMenu="nzDropdownMenu">
           <ul nz-menu>
+            <!-- 上下文切換器區域 -->
+            <li nz-menu-item [nzDisabled]="true" style="cursor: default; opacity: 1; background: transparent;">
+              <div style="font-weight: 600; color: rgba(0, 0, 0, 0.85); margin-bottom: 4px;"> 切換工作區 </div>
+            </li>
+            <li style="padding: 0;">
+              <header-context-switcher />
+            </li>
+            <li nz-menu-divider></li>
+
+            <!-- 原有菜單項 -->
             <li nz-menu-item routerLink="/pro/account/center">{{ 'menu.account.center' | i18n }}</li>
             <li nz-menu-item routerLink="/pro/account/settings">{{ 'menu.account.settings' | i18n }}</li>
             <li nz-menu-divider></li>
@@ -127,13 +139,16 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
     HeaderI18nComponent,
     HeaderClearStorageComponent,
     HeaderFullScreenComponent,
-    HeaderUserComponent
+    HeaderUserComponent,
+    HeaderContextSwitcherComponent
   ]
 })
 export class LayoutBasicComponent {
   private readonly settings = inject(SettingsService);
   private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly modal = inject(ModalHelper);
+  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly menuManagementService = inject(MenuManagementService);
 
   options: LayoutDefaultOptions = {
     logoExpanded: `./assets/logo-full.svg`,
@@ -164,6 +179,48 @@ export class LayoutBasicComponent {
       avatar: metadata['avatar_url'] || metadata['avatar'] || './assets/tmp/img/avatar.jpg'
     };
   });
+
+  constructor() {
+    // 載入菜單配置
+    this.menuManagementService.loadMenuConfig().subscribe();
+
+    // 監聽上下文變化並更新菜單
+    effect(() => {
+      const contextType = this.workspaceContext.contextType();
+      const contextId = this.workspaceContext.contextId();
+
+      // 構建菜單參數
+      const params = this.buildMenuParams(contextType, contextId);
+
+      // 更新菜單
+      this.menuManagementService.updateMenu(contextType, params);
+    });
+  }
+
+  /**
+   * 構建菜單參數
+   * Build menu parameters from context
+   */
+  private buildMenuParams(contextType: ContextType, contextId: string | null): MenuContextParams {
+    const params: MenuContextParams = {};
+
+    switch (contextType) {
+      case ContextType.USER:
+        params.userId = contextId || undefined;
+        break;
+      case ContextType.ORGANIZATION:
+        params.organizationId = contextId || undefined;
+        break;
+      case ContextType.TEAM:
+        params.teamId = contextId || undefined;
+        break;
+      case ContextType.BOT:
+        params.botId = contextId || undefined;
+        break;
+    }
+
+    return params;
+  }
 
   /**
    * 打開建立組織模態框
