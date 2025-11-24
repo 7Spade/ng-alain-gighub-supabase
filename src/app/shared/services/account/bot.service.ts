@@ -11,7 +11,7 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { BotRepository, AccountStatus } from '@core';
+import { BotRepository, AccountStatus, SupabaseService } from '@core';
 import { firstValueFrom } from 'rxjs';
 
 import { BotAccountModel, CreateBotRequest, UpdateBotRequest } from '../../models/account';
@@ -21,6 +21,7 @@ import { BotAccountModel, CreateBotRequest, UpdateBotRequest } from '../../model
 })
 export class BotService {
   private readonly botRepo = inject(BotRepository);
+  private readonly supabaseService = inject(SupabaseService);
 
   // State
   private botsState = signal<BotAccountModel[]>([]);
@@ -63,11 +64,18 @@ export class BotService {
    * @returns {Promise<BotAccountModel>} Created bot account
    */
   async createBot(request: CreateBotRequest): Promise<BotAccountModel> {
+    // Get current user for auth_user_id (required by RLS policy)
+    const user = await this.supabaseService.getUser();
+    if (!user || !user.id) {
+      throw new Error('User not authenticated');
+    }
+
     const insertData = {
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
-      status: request.status || AccountStatus.ACTIVE
+      status: request.status || AccountStatus.ACTIVE,
+      auth_user_id: user.id // Required by authenticated_users_create_bots policy
     };
 
     const account = await firstValueFrom(this.botRepo.create(insertData as any));
