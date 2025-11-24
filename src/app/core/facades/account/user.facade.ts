@@ -11,16 +11,15 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { UserService, WorkspaceDataService, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
+import { UserService, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '@shared';
+
+import { BaseAccountCrudFacade } from './base-account-crud.facade';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserFacade {
+export class UserFacade extends BaseAccountCrudFacade<UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest> {
   private readonly userService = inject(UserService);
-  private readonly dataService = inject(WorkspaceDataService);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
 
   // Proxy user service signals
   readonly userAccounts = this.userService.userAccounts;
@@ -33,22 +32,10 @@ export class UserFacade {
    *
    * @param {CreateUserAccountRequest} request - Create request
    * @returns {Promise<UserAccountModel>} Created user account
+   * @throws {Error} User-friendly error message
    */
   async createUser(request: CreateUserAccountRequest): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.createUser(request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to create user:', error);
-      throw error;
-    }
+    return this.executeCreate(request, req => this.userService.createUser(req), '用戶');
   }
 
   /**
@@ -58,22 +45,10 @@ export class UserFacade {
    * @param {string} id - Account ID
    * @param {UpdateUserAccountRequest} request - Update request
    * @returns {Promise<UserAccountModel>} Updated user account
+   * @throws {Error} User-friendly error message
    */
   async updateUser(id: string, request: UpdateUserAccountRequest): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.updateUser(id, request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to update user:', error);
-      throw error;
-    }
+    return this.executeUpdate(id, request, (id, req) => this.userService.updateUser(id, req), '用戶');
   }
 
   /**
@@ -82,22 +57,10 @@ export class UserFacade {
    *
    * @param {string} id - Account ID
    * @returns {Promise<UserAccountModel>} Deleted user account
+   * @throws {Error} User-friendly error message
    */
   async deleteUser(id: string): Promise<UserAccountModel> {
-    try {
-      const user = await this.userService.softDeleteUser(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return user;
-    } catch (error) {
-      console.error('[UserFacade] Failed to delete user:', error);
-      throw error;
-    }
+    return this.executeDelete(id, id => this.userService.softDeleteUser(id), '用戶');
   }
 
   /**
@@ -106,21 +69,17 @@ export class UserFacade {
    *
    * @param {string} id - Account ID
    * @returns {Promise<UserAccountModel>} Restored user account
+   * @throws {Error} User-friendly error message
    */
   async restoreUser(id: string): Promise<UserAccountModel> {
     try {
       const user = await this.userService.restoreUser(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
+      await this.reloadWorkspaceData();
       return user;
     } catch (error) {
-      console.error('[UserFacade] Failed to restore user:', error);
-      throw error;
+      const errorMessage = this.errorHandler.getErrorMessage(error, 'restore', '用戶');
+      this.errorHandler.logError(this.constructor.name, 'restore user', error);
+      throw new Error(errorMessage);
     }
   }
 

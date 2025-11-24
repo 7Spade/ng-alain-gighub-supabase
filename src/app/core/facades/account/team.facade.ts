@@ -11,17 +11,15 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { TeamService, WorkspaceDataService, ErrorHandlerService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+import { TeamService, TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest } from '@shared';
+
+import { BaseAccountCrudFacade } from './base-account-crud.facade';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TeamFacade {
+export class TeamFacade extends BaseAccountCrudFacade<TeamBusinessModel, CreateTeamRequest, UpdateTeamRequest> {
   private readonly teamService = inject(TeamService);
-  private readonly dataService = inject(WorkspaceDataService);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
-  private readonly errorHandler = inject(ErrorHandlerService);
 
   // Proxy team service signals
   readonly teams = this.teamService.teams;
@@ -37,21 +35,7 @@ export class TeamFacade {
    * @throws {Error} User-friendly error message
    */
   async createTeam(request: CreateTeamRequest): Promise<TeamBusinessModel> {
-    try {
-      const team = await this.teamService.createTeam(request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return team;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'create', '團隊');
-      this.errorHandler.logError('TeamFacade', 'create team', error);
-      throw new Error(errorMessage);
-    }
+    return this.executeCreate(request, req => this.teamService.createTeam(req), '團隊');
   }
 
   /**
@@ -64,21 +48,7 @@ export class TeamFacade {
    * @throws {Error} User-friendly error message
    */
   async updateTeam(id: string, request: UpdateTeamRequest): Promise<TeamBusinessModel> {
-    try {
-      const team = await this.teamService.updateTeam(id, request);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
-
-      return team;
-    } catch (error) {
-      const errorMessage = this.errorHandler.getErrorMessage(error, 'update', '團隊');
-      this.errorHandler.logError('TeamFacade', 'update team', error);
-      throw new Error(errorMessage);
-    }
+    return this.executeUpdate(id, request, (id, req) => this.teamService.updateTeam(id, req), '團隊');
   }
 
   /**
@@ -92,15 +62,10 @@ export class TeamFacade {
   async deleteTeam(id: string): Promise<void> {
     try {
       await this.teamService.deleteTeam(id);
-
-      // 重新載入工作區數據
-      const token = this.tokenService.get();
-      if (token?.['user']?.['id']) {
-        await this.dataService.loadWorkspaceData(token['user']['id']);
-      }
+      await this.reloadWorkspaceData();
     } catch (error) {
       const errorMessage = this.errorHandler.getErrorMessage(error, 'delete', '團隊');
-      this.errorHandler.logError('TeamFacade', 'delete team', error);
+      this.errorHandler.logError(this.constructor.name, 'delete team', error);
       throw new Error(errorMessage);
     }
   }
