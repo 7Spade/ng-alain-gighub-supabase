@@ -1,7 +1,7 @@
 # 文檔封存 | Documentation Archive
 
 > **目的**: 本目錄存放已過時、已完成或不再維護的文檔，保留作為歷史參考  
-> **最後更新**: 2025-01-20
+> **最後更新**: 2025-11-24
 
 ---
 
@@ -60,8 +60,10 @@ archive/
 - **REFACTORING_SUMMARY.md** - Account 模組重構總結
 - **CLEANUP_SUMMARY.md** - 文檔清理總結（v1.1.0）
 - **DOCUMENTATION_SUMMARY.md** - Supabase 文件建立任務總結
+- **IMPLEMENTATION_COMPLETE.md** - TASK_NOW.md 實施總結（38/38 任務 100% 完成）
+- **RLS_CONFIGURATION_CHECK_REPORT.md** - RLS 配置檢查報告（2025-01-20）
 
-**注意**: `TASK_NOW.md` 和 `MULTI_TENANT_SAAS_STATUS_REPORT.md` 已恢復到根目錄，因為它們是正在使用的活躍文件。
+**注意**: `TASK_NOW.md` 和 `MULTI_TENANT_SAAS_STATUS_REPORT.md` 仍保留在根目錄作為活躍的任務追蹤文件。`IMPLEMENTATION_COMPLETE.md` 是關於 TASK_NOW.md 中任務的完成報告，已封存作為歷史紀錄。
 
 #### 設計文檔 (Design Documents)
 **位置**: `archive/2025/design-docs/`
@@ -83,6 +85,9 @@ archive/
 **位置**: `archive/2025/fix-reports/`
 
 - **RLS_INFINITE_RECURSION_FIX.md** - RLS 無限遞迴修復報告
+- **ORGANIZATION_CONTEXT_SWITCHER_FIX.md** - 組織上下文切換器修復報告（2025-11-24）
+- **RLS_INFINITE_RECURSION_DIAGNOSIS_REPORT.md** - RLS 無限遞迴問題診斷報告（2025-01-20）
+- **RLS_MIGRATION_FIX_REPORT.md** - RLS Migration 修正報告（2025-01-20）
 
 ### 歷史封存文檔
 
@@ -178,14 +183,14 @@ git log -S "關鍵字" --all -- docs/archive/
 
 ## 📊 統計資訊
 
-- **封存文檔總數**: 21+ 個
-  - 2025 年新增: 12 個
-  - 歷史文檔: 9+ 個
-- **最後更新**: 2025-01-20
+- **封存文檔總數**: 26 個
+  - 2025 年新增: 17 個
+  - 歷史文檔: 9 個
+- **最後更新**: 2025-11-24
 - **維護狀態**: 定期整理
 
 ---
 
-**最後更新**: 2025-01-20  
+**最後更新**: 2025-11-24  
 **維護者**: 文檔團隊
 
