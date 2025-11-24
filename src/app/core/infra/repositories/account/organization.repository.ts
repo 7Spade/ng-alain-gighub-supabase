@@ -14,16 +14,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import {
-  AccountType,
-  AccountStatus,
-  Organization,
-  OrganizationInsert,
-  OrganizationUpdate,
-  OrganizationQueryOptions
-} from '../../types';
-import { BaseRepository } from '../base.repository';
+import { AccountType, AccountStatus, Organization, OrganizationInsert, OrganizationUpdate, OrganizationQueryOptions } from '../../types';
 import { QueryOptions } from '../../types/supabase.types';
+import { BaseRepository } from '../base.repository';
 
 /**
  * Organization Repository

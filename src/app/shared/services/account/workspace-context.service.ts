@@ -13,7 +13,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ContextType, ContextState } from '@core';
 
 import { WorkspaceDataService } from './workspace-data.service';
-import { Account, TeamModel, OrganizationModel } from '../../models/account';
+import { TeamModel } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,8 @@ import { Account, TeamModel, OrganizationModel } from '../../models/account';
 export class WorkspaceContextService {
   private readonly dataService = inject(WorkspaceDataService);
 
-  // Context state
-  private contextTypeState = signal<ContextType>(ContextType.APP);
+  // Context state - 預設為 USER 上下文而非 APP，避免閃現
+  private contextTypeState = signal<ContextType>(ContextType.USER);
   private contextIdState = signal<string | null>(null);
   private switchingState = signal<boolean>(false);
 
@@ -83,20 +83,20 @@ export class WorkspaceContextService {
         return '應用菜單';
       case ContextType.USER: {
         const account = this.currentUserAccount();
-        return account ? (account as any).name || '個人帳戶' : '個人帳戶';
+        return account ? (account as any).name || '個人工作區' : '個人工作區';
       }
       case ContextType.ORGANIZATION: {
         const org = this.allOrganizations().find(o => o['id'] === id);
-        return org ? (org as any).name || '組織' : '組織';
+        return org ? (org as any).name || '組織工作區' : '組織工作區';
       }
       case ContextType.TEAM: {
         const team = this.userTeams().find(t => t['id'] === id);
-        return team ? (team as any).name || '團隊' : '團隊';
+        return team ? (team as any).name || '團隊工作區' : '團隊工作區';
       }
       case ContextType.BOT:
         return '機器人';
       default:
-        return '未知';
+        return '個人工作區';
     }
   });
 

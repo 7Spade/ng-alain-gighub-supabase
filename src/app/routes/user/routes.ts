@@ -22,4 +22,3 @@ export const routes: Routes = [
     data: { title: '個人設定' }
   }
 ];
-

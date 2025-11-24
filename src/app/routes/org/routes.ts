@@ -27,4 +27,3 @@ export const routes: Routes = [
     data: { title: '組織設定' }
   }
 ];
-

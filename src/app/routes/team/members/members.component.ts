@@ -1,13 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { TeamMemberRepository, TeamRepository } from '@core';
+import { ModalHelper } from '@delon/theme';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { ModalHelper } from '@delon/theme';
-import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-member.component';
 import { firstValueFrom } from 'rxjs';
+
+import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-member.component';
 
 @Component({
   selector: 'app-team-members',
@@ -111,18 +112,20 @@ export class TeamMembersComponent implements OnInit {
       return;
     }
 
-    this.modal.create(
-      AddTeamMemberComponent,
-      {
-        teamId: this.teamId(),
-        organizationId: this.organizationId()
-      },
-      { size: 'md' }
-    ).subscribe(result => {
-      if (result?.success && this.teamId()) {
-        this.loadMembers(this.teamId()!);
-      }
-    });
+    this.modal
+      .create(
+        AddTeamMemberComponent,
+        {
+          teamId: this.teamId(),
+          organizationId: this.organizationId()
+        },
+        { size: 'md' }
+      )
+      .subscribe(result => {
+        if (result?.success && this.teamId()) {
+          this.loadMembers(this.teamId()!);
+        }
+      });
   }
 
   async updateMemberRole(member: any, newRole: string): Promise<void> {

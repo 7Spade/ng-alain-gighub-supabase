@@ -71,12 +71,12 @@ export class WorkspaceContextFacade {
       }
 
       if (!dataLoading && hasToken && userAccountId) {
-        setTimeout(() => {
-          if (!this.hasRestoredContext) {
-            this.hasRestoredContext = true;
-            this.restoreContext();
-          }
-        }, 100);
+        // 立即恢復上下文，無需 setTimeout
+        // 這確保在菜單載入時就已經有正確的上下文
+        if (!this.hasRestoredContext) {
+          this.hasRestoredContext = true;
+          this.restoreContext();
+        }
       }
     });
   }

@@ -16,9 +16,8 @@
  */
 
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { SHARED_IMPORTS } from '@shared';
 import { TaskFacade } from '@core';
-import { TaskModel, TaskViewMode } from '@shared';
+import { SHARED_IMPORTS, TaskModel, TaskViewMode } from '@shared';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 
 /**
@@ -52,13 +51,14 @@ export class TaskListComponent implements OnInit {
   readonly filteredTasks = computed(() => {
     const tasks = this.tasks();
     const term = this.searchTerm().toLowerCase();
-    
+
     if (!term) return tasks;
-    
-    return tasks.filter(task => 
-      task.name.toLowerCase().includes(term) ||
-      task.description?.toLowerCase().includes(term) ||
-      task.tags.some(tag => tag.toLowerCase().includes(term))
+
+    return tasks.filter(
+      task =>
+        task.name.toLowerCase().includes(term) ||
+        task.description?.toLowerCase().includes(term) ||
+        task.tags.some(tag => tag.toLowerCase().includes(term))
     );
   });
 
@@ -72,7 +72,7 @@ export class TaskListComponent implements OnInit {
    * Toggle view mode between tree and table
    */
   toggleViewMode(): void {
-    this.viewMode.update(mode => mode === 'tree' ? 'table' : 'tree');
+    this.viewMode.update(mode => (mode === 'tree' ? 'table' : 'tree'));
   }
 
   /**
@@ -133,10 +133,10 @@ export class TaskListComponent implements OnInit {
    */
   getStatusColor(status: string): string {
     const colorMap: Record<string, string> = {
-      'pending': 'default',
-      'in_progress': 'processing',
-      'completed': 'success',
-      'cancelled': 'error'
+      pending: 'default',
+      in_progress: 'processing',
+      completed: 'success',
+      cancelled: 'error'
     };
     return colorMap[status] || 'default';
   }
@@ -146,10 +146,10 @@ export class TaskListComponent implements OnInit {
    */
   getStatusText(status: string): string {
     const textMap: Record<string, string> = {
-      'pending': '待處理',
-      'in_progress': '進行中',
-      'completed': '已完成',
-      'cancelled': '已取消'
+      pending: '待處理',
+      in_progress: '進行中',
+      completed: '已完成',
+      cancelled: '已取消'
     };
     return textMap[status] || status;
   }
@@ -159,10 +159,10 @@ export class TaskListComponent implements OnInit {
    */
   getPriorityColor(priority: string): string {
     const colorMap: Record<string, string> = {
-      'low': 'default',
-      'medium': 'warning',
-      'high': 'error',
-      'urgent': 'error'
+      low: 'default',
+      medium: 'warning',
+      high: 'error',
+      urgent: 'error'
     };
     return colorMap[priority] || 'default';
   }

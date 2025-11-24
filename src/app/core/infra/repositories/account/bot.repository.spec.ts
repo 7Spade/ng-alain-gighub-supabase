@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { BotRepository } from './bot.repository';
 import { AccountType } from '@core/infra/types/account';
+import { SupabaseClient } from '@supabase/supabase-js';
+
+import { BotRepository } from './bot.repository';
 
 describe('BotRepository', () => {
   let repository: BotRepository;

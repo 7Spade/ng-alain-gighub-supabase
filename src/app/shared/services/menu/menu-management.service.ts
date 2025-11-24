@@ -129,7 +129,8 @@ export class MenuManagementService {
     let menu: Menu[] = [];
     switch (contextType) {
       case ContextType.APP:
-        menu = config.app || [];
+        // APP 菜單已移除，返回空陣列
+        menu = [];
         break;
       case ContextType.USER:
         menu = config.user || [];
@@ -144,7 +145,8 @@ export class MenuManagementService {
         menu = config.bot || [];
         break;
       default:
-        menu = config.app || [];
+        // 預設返回空陣列而非 APP 菜單
+        menu = [];
     }
 
     // 深拷貝並處理動態參數
@@ -259,4 +261,3 @@ export class MenuManagementService {
     this.menuCache.delete(cacheKey);
   }
 }
-

@@ -15,4 +15,3 @@ import { SHARED_IMPORTS } from '@shared';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserBlueprintsComponent {}
-

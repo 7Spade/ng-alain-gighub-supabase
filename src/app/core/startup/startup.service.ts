@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { EnvironmentProviders, Injectable, Provider, inject, provideAppInitializer } from '@angular/core';
 import { Router } from '@angular/router';
-import { ContextType } from '@core';
 import { ACLService } from '@delon/acl';
 import { ALAIN_I18N_TOKEN, MenuService, SettingsService, TitleService } from '@delon/theme';
 import { MenuManagementService } from '@shared';
@@ -82,17 +81,9 @@ export class StartupService {
             this.aclService.setFull(true);
 
             // 載入菜單配置（MenuManagementService 會處理菜單更新）
-            this.menuManagementService.loadMenuConfig().subscribe(() => {
-              // 初始化時載入預設菜單（app 菜單）
-              // 注意：LayoutBasicComponent 的 effect 會監聽上下文變化並自動更新菜單
-              // 這裡只是確保菜單配置已載入
-              this.menuManagementService.updateMenu(ContextType.APP);
-            });
-
-            // 向後兼容：如果 MenuManagementService 未載入，使用舊的菜單配置
-            if (appData.menu && !appData.menus) {
-              this.menuService.add(appData.menu);
-            }
+            // 注意：不再預設載入 APP 菜單，菜單將在 WorkspaceContextFacade 恢復上下文後載入
+            // 這避免了登入時短暫顯示 APP 菜單的問題
+            this.menuManagementService.loadMenuConfig().subscribe();
 
             // 设置页面标题的后缀
             this.titleService.default = '';
