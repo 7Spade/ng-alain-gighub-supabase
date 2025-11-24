@@ -2,9 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { ActivatedRoute } from '@angular/router';
 import { BlueprintFacade } from '@core';
 import { ModalHelper } from '@delon/theme';
-import { SHARED_IMPORTS, BlueprintModel } from '@shared';
-import { BlueprintCreateModalComponent } from '@shared/components/blueprint';
-import { BlueprintEditModalComponent } from '@shared/components/blueprint';
+import { SHARED_IMPORTS, BlueprintModel, BlueprintCreateModalComponent, BlueprintEditModalComponent } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 
@@ -56,10 +54,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
                   ></nz-badge>
                 </td>
                 <td>
-                  <nz-badge
-                    [nzStatus]="getStatusColor(blueprint.status)"
-                    [nzText]="getStatusText(blueprint.status)"
-                  ></nz-badge>
+                  <nz-badge [nzStatus]="getStatusColor(blueprint.status)" [nzText]="getStatusText(blueprint.status)"></nz-badge>
                 </td>
                 <td>
                   @for (tag of blueprint.tags; track tag) {
@@ -133,15 +128,13 @@ export class UserBlueprintsComponent implements OnInit {
       return;
     }
 
-    this.modal
-      .createStatic(BlueprintCreateModalComponent, { ownerId: userId, ownerType: 'user' }, { size: 'md' })
-      .subscribe(result => {
-        if (result) {
-          this.message.success('藍圖建立成功');
-          // Reload blueprints
-          this.loadBlueprints(userId);
-        }
-      });
+    this.modal.createStatic(BlueprintCreateModalComponent, { ownerId: userId, ownerType: 'user' }, { size: 'md' }).subscribe(result => {
+      if (result) {
+        this.message.success('藍圖建立成功');
+        // Reload blueprints
+        this.loadBlueprints(userId);
+      }
+    });
   }
 
   /**

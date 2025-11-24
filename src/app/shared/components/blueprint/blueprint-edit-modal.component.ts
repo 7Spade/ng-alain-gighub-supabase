@@ -56,9 +56,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 
     <div class="modal-footer">
       <button nz-button (click)="onCancel()">取消</button>
-      <button nz-button nzType="primary" [nzLoading]="loading()" (click)="sf.validator()">
-        儲存變更
-      </button>
+      <button nz-button nzType="primary" [nzLoading]="loading()" (click)="sf.validator()"> 儲存變更 </button>
     </div>
   `,
   styles: [
