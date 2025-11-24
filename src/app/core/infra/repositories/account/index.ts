@@ -27,6 +27,12 @@ type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
  * 帳戶資料存取層
  * Account data access layer
  *
+ * @deprecated This generic repository is deprecated. Use specialized repositories instead:
+ * - UserRepository for User accounts
+ * - BotRepository for Bot accounts
+ * - OrganizationRepository for Organization accounts
+ * - TeamRepository for Team entities
+ *
  * Provides CRUD operations for accounts (User, Organization, Bot).
  * Extends BaseRepository with account-specific query methods.
  */
@@ -66,6 +72,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 根據 auth_user_id 查詢用戶帳戶
    * Find user account by auth_user_id
    *
+   * @deprecated Use UserRepository.findByAuthUserId() instead
    * @param {string} authUserId - Auth user ID from Supabase Auth
    * @returns {Observable<Account | null>} User account or null
    */
@@ -77,6 +84,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 根據 email 查詢帳戶
    * Find account by email
    *
+   * @deprecated Use UserRepository.findByEmail() for users
    * @param {string} email - Email address
    * @returns {Observable<Account | null>} Account or null
    */
@@ -88,6 +96,7 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
    * 查詢用戶創建的組織
    * Find organizations created by user
    *
+   * @deprecated Use OrganizationRepository.findCreatedByUser() instead
    * @param {string} authUserId - Auth user ID
    * @returns {Observable<Account[]>} Organizations created by user
    */
@@ -174,7 +183,13 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+// Specialized Account Repositories (推薦使用)
+// Recommended: Use specialized repositories for type safety
+export * from './user.repository';
+export * from './bot.repository';
 export * from './organization.repository';
+
+// Organization & Team Member Repositories
 export * from './organization-member.repository';
 export * from './team.repository';
 export * from './team-member.repository';

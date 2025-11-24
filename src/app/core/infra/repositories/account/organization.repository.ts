@@ -6,28 +6,28 @@
  *
  * Provides CRUD operations for organizations.
  * Organizations are stored in accounts table with type='Organization'.
+ * This repository enforces type='Organization' at the database query level for compile-time type safety.
  *
  * @module core/infra/repositories/account
  */
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { AccountRepository } from './index';
-import { AccountType, AccountStatus, OrganizationQueryOptions } from '../../types';
+import { Organization, OrganizationInsert, OrganizationUpdate, AccountType, AccountStatus } from '../../types';
+import { BaseRepository } from '../base.repository';
 
 /**
  * Organization Repository
  *
- * Extends AccountRepository with organization-specific query methods.
- * Since organizations are stored in accounts table, this repository
- * provides a specialized interface for organization operations.
+ * Extends BaseRepository with organization-specific query methods.
+ * Enforces type='Organization' filter at database query level for type safety.
  */
 @Injectable({
   providedIn: 'root'
 })
-export class OrganizationRepository {
-  private readonly accountRepo = inject(AccountRepository);
+export class OrganizationRepository extends BaseRepository<Organization, OrganizationInsert, OrganizationUpdate> {
+  protected tableName = 'accounts';
 
   /**
    * 根據 ID 查詢組織
@@ -36,9 +36,27 @@ export class OrganizationRepository {
    * @param {string} id - Organization ID
    * @returns {Observable<Organization | null>} Organization or null
    */
-  findById(id: string): Observable<any> {
-    return this.accountRepo.findById(id);
-    // Note: Type checking should be done at service layer
+  override findById(id: string): Observable<Organization | null> {
+    return super.findOne({
+      id,
+      type: AccountType.ORGANIZATION
+    });
+  }
+
+  /**
+   * 查詢所有組織（強制過濾 type='Organization'）
+   * Find all organizations (enforces type='Organization' filter)
+   *
+   * @returns {Observable<Organization[]>} Array of organizations
+   */
+  override findAll(options?: any): Observable<Organization[]> {
+    return super.findAll({
+      ...options,
+      filters: {
+        ...options?.filters,
+        type: AccountType.ORGANIZATION
+      }
+    });
   }
 
   /**
@@ -48,11 +66,10 @@ export class OrganizationRepository {
    * @param {string[]} ids - Organization IDs
    * @returns {Observable<Organization[]>} Organizations
    */
-  findByIds(ids: string[]): Observable<any[]> {
-    return this.accountRepo.findAll({
+  findByIds(ids: string[]): Observable<Organization[]> {
+    return this.findAll({
       filters: {
-        id: ids as any,
-        type: AccountType.ORGANIZATION as any
+        id: ids as any
       }
     });
   }
@@ -64,50 +81,41 @@ export class OrganizationRepository {
    * @param {string} authUserId - Auth user ID
    * @returns {Observable<Organization[]>} Organizations created by user
    */
-  findCreatedByUser(authUserId: string): Observable<any[]> {
-    return this.accountRepo.findCreatedOrganizations(authUserId);
+  findCreatedByUser(authUserId: string): Observable<Organization[]> {
+    return this.findAll({
+      filters: {
+        createdBy: authUserId,
+        status: AccountStatus.ACTIVE
+      }
+    });
   }
 
   /**
-   * 進階查詢（使用 OrganizationQueryOptions）
-   * Advanced query with OrganizationQueryOptions
+   * 根據名稱查詢組織
+   * Find organization by name
    *
-   * @param {OrganizationQueryOptions} options - Query options
-   * @returns {Observable<Organization[]>} Filtered organizations
+   * @param {string} name - Organization name
+   * @returns {Observable<Organization | null>} Organization or null
    */
-  findWithOptions(options: OrganizationQueryOptions): Observable<any[]> {
-    const filters: Record<string, any> = {
+  findByName(name: string): Observable<Organization | null> {
+    return this.findOne({
+      name,
       type: AccountType.ORGANIZATION
-    };
-
-    if (options.status) {
-      filters['status'] = options.status;
-    } else if (!options.includeDeleted) {
-      // 預設不包含已刪除的組織
-      // By default, exclude deleted organizations
-      filters['status'] = [AccountStatus.ACTIVE, AccountStatus.INACTIVE, AccountStatus.SUSPENDED];
-    }
-
-    if (options.createdBy) {
-      filters['createdBy'] = options.createdBy;
-    }
-
-    return this.accountRepo.findAll({ filters });
+    });
   }
 
   /**
-   * 創建組織
-   * Create organization
+   * 創建組織（強制設定 type='Organization'）
+   * Create organization (enforces type='Organization')
    *
-   * @param {OrganizationInsert} data - Organization data
+   * @param {Partial<OrganizationInsert>} data - Organization data
    * @returns {Observable<Organization>} Created organization
    */
-  create(data: any): Observable<any> {
-    const insertData = {
+  override create(data: Partial<OrganizationInsert>): Observable<Organization> {
+    return super.create({
       ...data,
       type: AccountType.ORGANIZATION
-    };
-    return this.accountRepo.create(insertData);
+    } as OrganizationInsert);
   }
 
   /**
@@ -115,11 +123,13 @@ export class OrganizationRepository {
    * Update organization
    *
    * @param {string} id - Organization ID
-   * @param {OrganizationUpdate} data - Update data
+   * @param {Partial<OrganizationUpdate>} data - Update data
    * @returns {Observable<Organization>} Updated organization
    */
-  update(id: string, data: any): Observable<any> {
-    return this.accountRepo.update(id, data);
+  override update(id: string, data: Partial<OrganizationUpdate>): Observable<Organization> {
+    // Ensure type cannot be changed
+    const { type, ...updateData } = data as any;
+    return super.update(id, updateData);
   }
 
   /**
@@ -129,8 +139,8 @@ export class OrganizationRepository {
    * @param {string} id - Organization ID
    * @returns {Observable<Organization>} Updated organization
    */
-  softDelete(id: string): Observable<any> {
-    return this.accountRepo.softDelete(id);
+  softDelete(id: string): Observable<Organization> {
+    return this.update(id, { status: AccountStatus.DELETED } as any);
   }
 
   /**
@@ -140,7 +150,21 @@ export class OrganizationRepository {
    * @param {string} id - Organization ID
    * @returns {Observable<Organization>} Updated organization
    */
-  restore(id: string): Observable<any> {
-    return this.accountRepo.restore(id);
+  restore(id: string): Observable<Organization> {
+    return this.update(id, { status: AccountStatus.ACTIVE } as any);
+  }
+
+  /**
+   * 查詢活躍組織
+   * Find active organizations
+   *
+   * @returns {Observable<Organization[]>} Active organizations
+   */
+  findActive(): Observable<Organization[]> {
+    return this.findAll({
+      filters: {
+        status: AccountStatus.ACTIVE
+      }
+    });
   }
 }
