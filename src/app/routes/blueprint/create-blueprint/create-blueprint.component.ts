@@ -1,10 +1,11 @@
 /**
- * Blueprint Create Modal Component
+ * Blueprint Create Component
  *
- * Modal for creating new blueprints with @delon/form
+ * Component for creating new blueprints with @delon/form
  * Following enterprise standards and five-layer architecture
+ * Located in Feature Module as per angular-enterprise-development-guidelines.md
  *
- * @module blueprint-create-modal.component
+ * @module create-blueprint.component
  */
 
 import { Component, OnInit, inject, signal } from '@angular/core';
@@ -15,13 +16,13 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 /**
- * Blueprint Create Modal Component
+ * Blueprint Create Component
  *
  * Uses @delon/form (sf) for form generation
  * Validates input and creates blueprint via BlueprintFacade
  */
 @Component({
-  selector: 'app-blueprint-create-modal',
+  selector: 'app-create-blueprint',
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
@@ -72,7 +73,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
     `
   ]
 })
-export class BlueprintCreateModalComponent implements OnInit {
+export class CreateBlueprintComponent implements OnInit {
   private readonly modal = inject(NzModalRef);
   private readonly blueprintFacade = inject(BlueprintFacade);
   private readonly message = inject(NzMessageService);

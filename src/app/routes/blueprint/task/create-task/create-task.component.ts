@@ -1,10 +1,10 @@
 /**
- * Task Create Modal Component
+ * Create Task Component
  *
  * Modal for creating new tasks with @delon/form
  * Supports parent task selection and full task properties
  *
- * @module task-create-modal.component
+ * @module create-task.component
  */
 
 import { Component, OnInit, inject, signal } from '@angular/core';
@@ -15,13 +15,13 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 /**
- * Task Create Modal Component
+ * Create Task Component
  *
  * Uses @delon/form (sf) for form generation
  * Validates input and creates task via TaskFacade
  */
 @Component({
-  selector: 'app-task-create-modal',
+  selector: 'app-create-task',
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
@@ -72,7 +72,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
     `
   ]
 })
-export class TaskCreateModalComponent implements OnInit {
+export class CreateTaskComponent implements OnInit {
   private readonly modal = inject(NzModalRef);
   private readonly taskFacade = inject(TaskFacade);
   private readonly message = inject(NzMessageService);

@@ -1,10 +1,10 @@
 /**
- * Task Edit Modal Component
+ * Update Task Component
  *
  * Modal for editing existing tasks with @delon/form
  * Pre-fills form with current task data
  *
- * @module task-edit-modal.component
+ * @module update-task.component
  */
 
 import { Component, OnInit, inject, signal } from '@angular/core';
@@ -15,14 +15,14 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 /**
- * Task Edit Modal Component
+ * Update Task Component
  *
  * Uses @delon/form (sf) for form generation
  * Pre-fills with existing task data
  * Validates input and updates task via TaskFacade
  */
 @Component({
-  selector: 'app-task-edit-modal',
+  selector: 'app-update-task',
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
@@ -91,7 +91,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
     `
   ]
 })
-export class TaskEditModalComponent implements OnInit {
+export class UpdateTaskComponent implements OnInit {
   private readonly modal = inject(NzModalRef);
   private readonly taskFacade = inject(TaskFacade);
   private readonly message = inject(NzMessageService);

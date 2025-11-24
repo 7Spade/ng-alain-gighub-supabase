@@ -2,9 +2,12 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { ActivatedRoute } from '@angular/router';
 import { BlueprintFacade } from '@core';
 import { ModalHelper } from '@delon/theme';
-import { SHARED_IMPORTS, BlueprintModel, BlueprintCreateModalComponent, BlueprintEditModalComponent } from '@shared';
+import { SHARED_IMPORTS, BlueprintModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+
+import { CreateBlueprintComponent } from '../../blueprint/create-blueprint';
+import { UpdateBlueprintComponent } from '../../blueprint/update-blueprint';
 
 @Component({
   selector: 'app-team-blueprints',
@@ -128,7 +131,7 @@ export class TeamBlueprintsComponent implements OnInit {
       return;
     }
 
-    this.modal.createStatic(BlueprintCreateModalComponent, { ownerId: teamId, ownerType: 'team' }, { size: 'md' }).subscribe(result => {
+    this.modal.createStatic(CreateBlueprintComponent, { ownerId: teamId, ownerType: 'team' }, { size: 'md' }).subscribe(result => {
       if (result) {
         this.message.success('藍圖建立成功');
         // Reload blueprints
@@ -141,7 +144,7 @@ export class TeamBlueprintsComponent implements OnInit {
    * Handle blueprint edit
    */
   onEditBlueprint(blueprint: BlueprintModel): void {
-    this.modal.createStatic(BlueprintEditModalComponent, { blueprint }, { size: 'md' }).subscribe(result => {
+    this.modal.createStatic(UpdateBlueprintComponent, { blueprint }, { size: 'md' }).subscribe(result => {
       if (result) {
         this.message.success('藍圖更新成功');
         // Reload blueprints

@@ -23,8 +23,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 
-import { TaskCreateModalComponent } from './task-create-modal.component';
-import { TaskEditModalComponent } from './task-edit-modal.component';
+import { CreateTaskComponent } from './create-task';
+import { UpdateTaskComponent } from './update-task';
 
 /**
  * Task List Component
@@ -121,7 +121,7 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    this.modal.createStatic(TaskCreateModalComponent, { workspaceId: wsId, parentId: null }, { size: 'md' }).subscribe(result => {
+    this.modal.createStatic(CreateTaskComponent, { workspaceId: wsId, parentId: null }, { size: 'md' }).subscribe(result => {
       if (result) {
         this.message.success('任務建立成功');
         // Reload tasks to show the new task
@@ -134,7 +134,7 @@ export class TaskListComponent implements OnInit {
    * Handle task edit
    */
   onEditTask(task: TaskModel): void {
-    this.modal.createStatic(TaskEditModalComponent, { task }, { size: 'md' }).subscribe(result => {
+    this.modal.createStatic(UpdateTaskComponent, { task }, { size: 'md' }).subscribe(result => {
       if (result) {
         this.message.success('任務更新成功');
         // Reload tasks to show the updated task

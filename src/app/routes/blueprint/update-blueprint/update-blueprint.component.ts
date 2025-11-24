@@ -1,10 +1,11 @@
 /**
- * Blueprint Edit Modal Component
+ * Blueprint Update Component
  *
- * Modal for editing existing blueprints with @delon/form
+ * Component for editing existing blueprints with @delon/form
  * Pre-fills form with current blueprint data
+ * Located in Feature Module as per angular-enterprise-development-guidelines.md
  *
- * @module blueprint-edit-modal.component
+ * @module update-blueprint.component
  */
 
 import { Component, OnInit, inject, signal } from '@angular/core';
@@ -22,14 +23,14 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 /**
- * Blueprint Edit Modal Component
+ * Blueprint Update Component
  *
  * Uses @delon/form (sf) for form generation
  * Pre-fills with existing blueprint data
  * Validates input and updates blueprint via BlueprintFacade
  */
 @Component({
-  selector: 'app-blueprint-edit-modal',
+  selector: 'app-update-blueprint',
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
@@ -93,7 +94,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
     `
   ]
 })
-export class BlueprintEditModalComponent implements OnInit {
+export class UpdateBlueprintComponent implements OnInit {
   private readonly modal = inject(NzModalRef);
   private readonly blueprintFacade = inject(BlueprintFacade);
   private readonly message = inject(NzMessageService);
