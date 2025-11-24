@@ -1,0 +1,14 @@
+<page-header [title]="'建立藍圖'"></page-header>
+
+<nz-card>
+  <sf [schema]="schema" [ui]="ui" [loading]="loading()" (formSubmit)="onSubmit($event)" [button]="'none'">
+    <div class="text-center mt-lg">
+      <button nz-button nzType="default" (click)="onCancel()" [disabled]="loading()">
+        取消
+      </button>
+      <button nz-button nzType="primary" type="submit" [nzLoading]="loading()" class="ml-sm">
+        建立
+      </button>
+    </div>
+  </sf>
+</nz-card>
