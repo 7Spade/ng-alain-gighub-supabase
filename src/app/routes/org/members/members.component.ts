@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { OrganizationMemberRepository } from '@core';
 import { SHARED_IMPORTS } from '@shared';
 import { firstValueFrom } from 'rxjs';
@@ -7,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-org-members',
   standalone: true,
-  imports: [SHARED_IMPORTS],
+  imports: [SHARED_IMPORTS, DatePipe],
   template: `
     <page-header />
     <nz-card [nzTitle]="'成員管理'">
