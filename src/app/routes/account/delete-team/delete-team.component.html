@@ -6,15 +6,15 @@
   <nz-alert
     nzType="warning"
     nzMessage="警告"
-    nzDescription="此操作將永久刪除團隊「{{ (team as any)?.name }}」。刪除後，團隊及其相關數據將無法恢復。此操作不可撤銷。"
+    nzDescription="此操作將永久刪除團隊「{{ team['name'] }}」。刪除後，團隊及其相關數據將無法恢復。此操作不可撤銷。"
     [nzShowIcon]="true"
     class="mb-md"
   ></nz-alert>
 
   <div class="delete-confirm-info">
-    <p><strong>團隊名稱：</strong>{{ (team as any)?.name }}</p>
-    @if ((team as any)?.description) {
-      <p><strong>團隊描述：</strong>{{ (team as any).description }}</p>
+    <p><strong>團隊名稱：</strong>{{ team['name'] }}</p>
+    @if (team['description']) {
+      <p><strong>團隊描述：</strong>{{ team['description'] }}</p>
     }
   </div>
 </div>
@@ -34,4 +34,3 @@
     確認刪除
   </button>
 </div>
-

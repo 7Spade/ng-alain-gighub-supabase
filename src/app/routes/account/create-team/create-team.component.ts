@@ -5,21 +5,17 @@
  * Create team component
  *
  * Allows users to create a new team within an organization.
- * Integrated with TeamRepository and WorkspaceContextFacade.
+ * Integrated with TeamFacade and WorkspaceContextFacade.
  *
  * @module routes/account
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
-import { SHARED_IMPORTS } from '@shared';
-import { TeamRepository } from '@core';
-import { CreateTeamRequest } from '@shared';
+import { TeamFacade, WorkspaceContextFacade } from '@core';
+import { SHARED_IMPORTS, CreateTeamRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { SupabaseAuthService } from '@core';
-import { TeamFacade, WorkspaceContextFacade } from '@core';
 
 @Component({
   selector: 'app-create-team',
@@ -30,13 +26,10 @@ import { TeamFacade, WorkspaceContextFacade } from '@core';
 })
 export class CreateTeamComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly teamRepo = inject(TeamRepository);
-  private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
   private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   loading = signal(false);
   form: FormGroup = this.fb.group({
@@ -46,11 +39,9 @@ export class CreateTeamComponent {
     avatar: ['']
   });
 
-  // 獲取所有組織列表
   readonly organizations = this.workspaceContext.allOrganizations;
   readonly loadingOrganizations = this.workspaceContext.loadingOrganizations;
 
-  // 計算組織選項（用於下拉選單）
   readonly organizationOptions = computed(() => {
     const orgs = this.organizations();
     return orgs.map(org => ({
@@ -75,12 +66,8 @@ export class CreateTeamComponent {
     }
 
     this.loading.set(true);
-    this.cdr.markForCheck();
-
     try {
       const formValue = this.form.value;
-
-      // 創建團隊請求
       const request: CreateTeamRequest = {
         organizationId: formValue.organizationId,
         name: formValue.name.trim(),
@@ -88,20 +75,13 @@ export class CreateTeamComponent {
         avatar: formValue.avatar?.trim() || undefined
       };
 
-      // 創建團隊（通過 Facade）
       const team = await this.teamFacade.createTeam(request);
-
       this.msg.success('團隊創建成功！');
-
-      // 關閉模態框並返回創建的團隊
       this.modal.close(team);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '創建團隊失敗';
-      this.msg.error(errorMessage);
-      console.error('[CreateTeamComponent] Failed to create team:', error);
+      this.msg.error(error instanceof Error ? error.message : '創建團隊失敗');
     } finally {
       this.loading.set(false);
-      this.cdr.markForCheck();
     }
   }
 

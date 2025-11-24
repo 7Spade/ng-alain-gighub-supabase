@@ -10,10 +10,10 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { AccountRepository, AccountType, AccountStatus } from '@core';
-import { Account } from '../../models/account';
-import { UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '../../models/account';
+import { firstValueFrom } from 'rxjs';
+
+import { Account, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
