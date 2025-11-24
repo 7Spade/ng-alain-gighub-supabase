@@ -120,7 +120,8 @@ export class OrganizationService {
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
-      status: request.status || AccountStatus.ACTIVE
+      status: request.status || AccountStatus.ACTIVE,
+      auth_user_id: user.id
     };
 
     const organization = await firstValueFrom(this.organizationRepo.create(insertData));
