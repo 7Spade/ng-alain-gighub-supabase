@@ -127,7 +127,7 @@ export class TaskService {
         ...request,
         path,
         depth,
-        status: TaskStatusEnum.PENDING,
+        status: 'pending' as const,
         priority: request.priority || ('medium' as const),
         assigneeIds: request.assigneeIds || [],
         assigneeTypes: request.assigneeTypes || [],

@@ -16,6 +16,9 @@ export { BLUEPRINT_ROUTES } from './blueprint.routes';
 // Domain types and models (public types only)
 export * from './domain';
 
+// Constants (feature configuration)
+export * from './constants';
+
 // Shell components (public components only)
 export { BlueprintShellComponent } from './shell';
 

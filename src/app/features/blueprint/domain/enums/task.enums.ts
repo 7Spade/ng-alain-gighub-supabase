@@ -11,20 +11,38 @@
  * Task status enum for business logic
  */
 export enum TaskStatusEnum {
-  PENDING = 'pending',
+  TODO = 'todo',
   IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  IN_REVIEW = 'in_review',
+  DONE = 'done',
+  CANCELLED = 'cancelled',
+  // Legacy aliases for backward compatibility
+  PENDING = 'pending',
+  COMPLETED = 'completed'
 }
 
 /**
  * Task priority enum for business logic
  */
 export enum TaskPriorityEnum {
+  LOWEST = 'lowest',
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
+  HIGHEST = 'highest',
+  // Legacy alias
   URGENT = 'urgent'
+}
+
+/**
+ * Task type enum for business logic
+ */
+export enum TaskTypeEnum {
+  TASK = 'task',
+  MILESTONE = 'milestone',
+  BUG = 'bug',
+  FEATURE = 'feature',
+  IMPROVEMENT = 'improvement'
 }
 
 /**
