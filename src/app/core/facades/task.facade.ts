@@ -11,15 +11,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-
-import { TaskService } from '@shared';
-import {
-  TaskModel,
-  CreateTaskRequest,
-  UpdateTaskRequest,
-  TaskStatistics,
-  TaskViewMode
-} from '@shared';
+import { TaskService, TaskModel, CreateTaskRequest, UpdateTaskRequest, TaskStatistics, TaskViewMode } from '@shared';
 
 /**
  * Task Facade

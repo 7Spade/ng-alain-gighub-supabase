@@ -504,6 +504,28 @@
           }
         ]
       }
+    ],
+    "blueprint": [
+      {
+        "text": "藍圖容器",
+        "i18n": "menu.blueprint",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "藍圖總覽",
+            "i18n": "menu.blueprint.overview",
+            "icon": "anticon-project",
+            "link": "/blueprint/{blueprintId}"
+          },
+          {
+            "text": "任務模組",
+            "i18n": "menu.blueprint.tasks",
+            "icon": "anticon-check-square",
+            "link": "/blueprint/{blueprintId}/task"
+          }
+        ]
+      }
     ]
   }
 }

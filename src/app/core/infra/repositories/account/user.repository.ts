@@ -15,8 +15,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { AccountType, AccountStatus, UserAccount, UserAccountInsert, UserAccountUpdate } from '../../types';
-import { BaseRepository } from '../base.repository';
 import { QueryOptions } from '../../types/supabase.types';
+import { BaseRepository } from '../base.repository';
 
 /**
  * User Repository

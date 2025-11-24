@@ -11,13 +11,15 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: ':id',
     loadComponent: () => import('./blueprint-container.component').then(m => m.BlueprintContainerComponent),
-    data: { title: '藍圖容器' }
-  },
-  {
-    path: 'task',
-    loadComponent: () => import('./task/task-list.component').then(m => m.TaskListComponent),
-    data: { title: '任務管理' }
+    data: { title: '藍圖容器' },
+    children: [
+      {
+        path: 'task',
+        loadComponent: () => import('./task/task-list.component').then(m => m.TaskListComponent),
+        data: { title: '任務管理' }
+      }
+    ]
   }
 ];

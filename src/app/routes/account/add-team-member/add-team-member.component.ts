@@ -46,11 +46,11 @@ export class AddTeamMemberComponent implements OnInit {
   ngOnInit(): void {
     const config = this.modal.getConfig() as any;
     const params = config?.nzComponentParams || {};
-    
+
     console.log('[AddTeamMemberComponent] params:', params);
     console.log('[AddTeamMemberComponent] teamId:', params?.teamId);
     console.log('[AddTeamMemberComponent] organizationId:', params?.organizationId);
-    
+
     this.teamId = params?.teamId || (this as any).teamId;
     this.organizationId = params?.organizationId || (this as any).organizationId;
 
@@ -88,13 +88,13 @@ export class AddTeamMemberComponent implements OnInit {
     try {
       const formValue = this.form.value;
       const user = await this.supabaseService.getUser();
-      
+
       await firstValueFrom(
         this.teamMemberRepo.create({
           team_id: this.teamId,
           account_id: formValue.accountId,
           role: formValue.role,
-          auth_user_id: user?.id  // ✅ 添加 auth_user_id
+          auth_user_id: user?.id // ✅ 添加 auth_user_id
         } as any)
       );
       this.msg.success('成員添加成功！');
@@ -111,4 +111,3 @@ export class AddTeamMemberComponent implements OnInit {
     this.modal.destroy();
   }
 }
-
