@@ -56,15 +56,14 @@ enum OrganizationMemberRole {
 
 **主要屬性：**
 - `id: string` - 帳號 ID (UUID)
-- `auth_user_id: string | null` - Supabase Auth 用戶 ID
-- `type: AccountType` - 帳號類型
+- `auth_user_id: string | null` - Supabase Auth 用戶 ID（User: 1:1關係；Organization/Bot: 記錄創建者）
+- `type: AccountType` - 帳號類型（'User' | 'Bot' | 'Organization'）
 - `name: string` - 名稱
 - `email: string | null` - 電子郵件
 - `avatar: string | null` - 頭像 URL
-- `status: AccountStatus` - 帳號狀態
+- `status: AccountStatus` - 帳號狀態（'active' | 'inactive' | 'suspended' | 'deleted'，使用軟刪除）
 - `created_at: string` - 創建時間 (ISO 8601)
 - `updated_at: string` - 更新時間 (ISO 8601)
-- `deleted_at: string | null` - 刪除時間 (軟刪除)
 
 ### `OrganizationDatabaseModel`
 組織資料庫模型，繼承自 `AccountDatabaseModel`。
@@ -103,8 +102,7 @@ const account: AccountDatabaseModel = {
   avatar: null,
   status: AccountStatus.ACTIVE,
   created_at: '2025-01-01T00:00:00Z',
-  updated_at: '2025-01-01T00:00:00Z',
-  deleted_at: null
+  updated_at: '2025-01-01T00:00:00Z'
 };
 ```
 

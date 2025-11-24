@@ -17,11 +17,11 @@ describe('BotFacade', () => {
     type: 'Bot' as const,
     name: 'Test Bot',
     email: 'bot@example.com',
-    creator_id: 'user-1',
+    avatar: null,
     status: 'active' as const,
+    auth_user_id: 'auth-123', // Bot creator's auth.users.id
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    deleted_at: null
+    updated_at: new Date().toISOString()
   };
 
   beforeEach(() => {
@@ -53,7 +53,7 @@ describe('BotFacade', () => {
 
   describe('createBot', () => {
     it('should create bot, reload workspace, and return bot', async () => {
-      const createRequest = { name: 'New Bot', email: 'new@example.com', creator_id: 'user-1' };
+      const createRequest = { name: 'New Bot', email: 'new@example.com' };
       botServiceSpy.createBot.and.returnValue(Promise.resolve(mockBot));
       tokenServiceSpy.get.and.returnValue({ user: { id: 'user-1' } });
       dataServiceSpy.loadWorkspaceData.and.returnValue(Promise.resolve());
@@ -66,7 +66,7 @@ describe('BotFacade', () => {
     });
 
     it('should handle errors and throw with user-friendly message', async () => {
-      const createRequest = { name: 'New Bot', email: 'new@example.com', creator_id: 'user-1' };
+      const createRequest = { name: 'New Bot', email: 'new@example.com' };
       const error = new Error('Database error');
       botServiceSpy.createBot.and.returnValue(Promise.reject(error));
       errorHandlerSpy.getErrorMessage.and.returnValue('建立機器人失敗');
@@ -137,7 +137,7 @@ describe('BotFacade', () => {
       errorHandlerSpy.getErrorMessage.and.returnValue('網路錯誤，請稍後再試');
 
       try {
-        await facade.createBot({ name: 'Bot', email: 'bot@test.com', creator_id: 'user-1' });
+        await facade.createBot({ name: 'Bot', email: 'bot@test.com' });
         fail('Should have thrown an error');
       } catch (e) {
         expect(errorHandlerSpy.getErrorMessage).toHaveBeenCalledWith(error, 'create', '機器人');
