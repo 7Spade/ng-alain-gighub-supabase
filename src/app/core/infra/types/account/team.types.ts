@@ -57,4 +57,3 @@ export interface TeamMemberQueryOptions {
   /** 按角色過濾 | Filter by role */
   role?: TeamMemberRole;
 }
-

@@ -8,10 +8,11 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { AccountRepository, TeamMemberRepository } from '@core';
-import { Account, TeamBusinessModel } from '../../models/account';
+import { firstValueFrom } from 'rxjs';
+
 import { TeamService } from './team.service';
+import { Account, TeamBusinessModel } from '../../models/account';
 
 // ============================================================================
 // Account Unified Identity Abstraction Service (統一身份抽象 Service)

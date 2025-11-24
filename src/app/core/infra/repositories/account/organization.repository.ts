@@ -12,8 +12,9 @@
 
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AccountType, AccountStatus, OrganizationQueryOptions } from '../../types';
+
 import { AccountRepository } from './index';
+import { AccountType, AccountStatus, OrganizationQueryOptions } from '../../types';
 
 /**
  * Organization Repository
@@ -143,4 +144,3 @@ export class OrganizationRepository {
     return this.accountRepo.restore(id);
   }
 }
-
