@@ -13,12 +13,13 @@
  * @module user-blueprints.component
  */
 
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BlueprintFacade } from '@core';
-import { SHARED_IMPORTS, BlueprintModel } from '@shared';
+import { BlueprintFacade, SupabaseAuthService, AuthState } from '@core';
+import { SHARED_IMPORTS, BlueprintModel, CreateBlueprintRequest } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-user-blueprints',
@@ -160,12 +161,14 @@ import { NzModalService } from 'ng-zorro-antd/modal';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserBlueprintsComponent implements OnInit {
+export class UserBlueprintsComponent implements OnInit, OnDestroy {
   private readonly blueprintFacade = inject(BlueprintFacade);
+  private readonly authService = inject(SupabaseAuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly modal = inject(NzModalService);
   private readonly message = inject(NzMessageService);
+  private readonly destroy$ = new Subject<void>();
 
   // Facade state
   readonly blueprints = this.blueprintFacade.blueprints;
@@ -175,6 +178,7 @@ export class UserBlueprintsComponent implements OnInit {
   // Local state
   searchTerm = '';
   private readonly searchTermSignal = signal<string>('');
+  private userId: string | null = null;
 
   // Computed
   readonly filteredBlueprints = computed(() => {
@@ -193,21 +197,43 @@ export class UserBlueprintsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadBlueprints();
+    // Get userId from route params
+    this.userId = this.route.snapshot.paramMap.get('userId');
+
+    if (!this.userId) {
+      console.warn('No userId found in route params');
+      return;
+    }
+
+    // Wait for auth to be ready before loading blueprints
+    this.authService.authState$
+      .pipe(
+        filter(state => state === AuthState.SIGNED_IN),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadBlueprints();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
    * Load personal blueprints
    */
   private async loadBlueprints(): Promise<void> {
+    if (!this.userId) {
+      return;
+    }
+
     try {
-      // Get userId from route params
-      const userId = this.route.snapshot.paramMap.get('userId');
-      if (userId) {
-        await this.blueprintFacade.loadOwnerBlueprints(userId);
-      }
+      await this.blueprintFacade.loadOwnerBlueprints(this.userId);
     } catch (error) {
       console.error('Failed to load blueprints:', error);
+      // Error state is already managed by the facade
     }
   }
 
@@ -237,9 +263,34 @@ export class UserBlueprintsComponent implements OnInit {
   /**
    * Handle create blueprint
    */
-  onCreateBlueprint(): void {
-    this.message.info('新增藍圖功能即將推出');
-    // Placeholder for future implementation
+  async onCreateBlueprint(): Promise<void> {
+    if (!this.userId) {
+      this.message.error('無法取得使用者 ID');
+      return;
+    }
+
+    try {
+      // Create a simple blueprint with default values
+      // In a real implementation, you would show a form modal to collect user input
+      const request: CreateBlueprintRequest = {
+        name: `新藍圖 ${new Date().toLocaleDateString('zh-TW')}`,
+        description: '這是一個新建立的個人藍圖',
+        category: 'custom',
+        visibility: 'private',
+        ownerId: this.userId,
+        ownerType: 'user',
+        tags: []
+      };
+
+      await this.blueprintFacade.createBlueprint(request);
+      this.message.success('藍圖建立成功！');
+
+      // Reload blueprints to show the new one
+      await this.loadBlueprints();
+    } catch (error) {
+      this.message.error('建立藍圖失敗');
+      console.error('Failed to create blueprint:', error);
+    }
   }
 
   /**

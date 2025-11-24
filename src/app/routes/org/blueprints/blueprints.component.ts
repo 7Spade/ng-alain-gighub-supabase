@@ -13,12 +13,13 @@
  * @module org-blueprints.component
  */
 
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BlueprintFacade } from '@core';
+import { BlueprintFacade, SupabaseAuthService, AuthState } from '@core';
 import { SHARED_IMPORTS, BlueprintModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-org-blueprints',
@@ -169,12 +170,14 @@ import { NzModalService } from 'ng-zorro-antd/modal';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OrgBlueprintsComponent implements OnInit {
+export class OrgBlueprintsComponent implements OnInit, OnDestroy {
   private readonly blueprintFacade = inject(BlueprintFacade);
+  private readonly authService = inject(SupabaseAuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly modal = inject(NzModalService);
   private readonly message = inject(NzMessageService);
+  private readonly destroy$ = new Subject<void>();
 
   // Facade state
   readonly blueprints = this.blueprintFacade.blueprints;
@@ -184,6 +187,7 @@ export class OrgBlueprintsComponent implements OnInit {
   // Local state
   searchTerm = '';
   private readonly searchTermSignal = signal<string>('');
+  private organizationId: string | null = null;
 
   // Computed
   readonly filteredBlueprints = computed(() => {
@@ -202,21 +206,43 @@ export class OrgBlueprintsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadBlueprints();
+    // Get organizationId from route params
+    this.organizationId = this.route.snapshot.paramMap.get('organizationId');
+
+    if (!this.organizationId) {
+      console.warn('No organizationId found in route params');
+      return;
+    }
+
+    // Wait for auth to be ready before loading blueprints
+    this.authService.authState$
+      .pipe(
+        filter(state => state === AuthState.SIGNED_IN),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadBlueprints();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
    * Load organization blueprints
    */
   private async loadBlueprints(): Promise<void> {
+    if (!this.organizationId) {
+      return;
+    }
+
     try {
-      // Get organizationId from route params
-      const organizationId = this.route.snapshot.paramMap.get('organizationId');
-      if (organizationId) {
-        await this.blueprintFacade.loadOwnerBlueprints(organizationId);
-      }
+      await this.blueprintFacade.loadOwnerBlueprints(this.organizationId);
     } catch (error) {
       console.error('Failed to load blueprints:', error);
+      // Error state is already managed by the facade
     }
   }
 

@@ -13,12 +13,13 @@
  * @module team-blueprints.component
  */
 
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BlueprintFacade } from '@core';
+import { BlueprintFacade, SupabaseAuthService, AuthState } from '@core';
 import { SHARED_IMPORTS, BlueprintModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-team-blueprints',
@@ -160,12 +161,14 @@ import { NzModalService } from 'ng-zorro-antd/modal';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TeamBlueprintsComponent implements OnInit {
+export class TeamBlueprintsComponent implements OnInit, OnDestroy {
   private readonly blueprintFacade = inject(BlueprintFacade);
+  private readonly authService = inject(SupabaseAuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly modal = inject(NzModalService);
   private readonly message = inject(NzMessageService);
+  private readonly destroy$ = new Subject<void>();
 
   // Facade state
   readonly blueprints = this.blueprintFacade.blueprints;
@@ -175,6 +178,7 @@ export class TeamBlueprintsComponent implements OnInit {
   // Local state
   searchTerm = '';
   private readonly searchTermSignal = signal<string>('');
+  private teamId: string | null = null;
 
   // Computed
   readonly filteredBlueprints = computed(() => {
@@ -193,21 +197,43 @@ export class TeamBlueprintsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadBlueprints();
+    // Get teamId from route params
+    this.teamId = this.route.snapshot.paramMap.get('teamId');
+
+    if (!this.teamId) {
+      console.warn('No teamId found in route params');
+      return;
+    }
+
+    // Wait for auth to be ready before loading blueprints
+    this.authService.authState$
+      .pipe(
+        filter(state => state === AuthState.SIGNED_IN),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadBlueprints();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
    * Load team blueprints
    */
   private async loadBlueprints(): Promise<void> {
+    if (!this.teamId) {
+      return;
+    }
+
     try {
-      // Get teamId from route params
-      const teamId = this.route.snapshot.paramMap.get('teamId');
-      if (teamId) {
-        await this.blueprintFacade.loadOwnerBlueprints(teamId);
-      }
+      await this.blueprintFacade.loadOwnerBlueprints(this.teamId);
     } catch (error) {
       console.error('Failed to load blueprints:', error);
+      // Error state is already managed by the facade
     }
   }
 
