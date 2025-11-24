@@ -5,21 +5,22 @@
  * User management service (Shared layer)
  *
  * Provides business logic for user account operations using Signals-based state management.
+ * Uses UserRepository for type-safe data access (no runtime type checks needed).
  *
  * @module shared/services/account
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { AccountRepository, AccountType, AccountStatus } from '@core';
+import { UserRepository, AccountStatus } from '@core';
 import { firstValueFrom } from 'rxjs';
 
-import { Account, UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '../../models/account';
+import { UserAccountModel, CreateUserAccountRequest, UpdateUserAccountRequest } from '../../models/account';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly userRepo = inject(UserRepository);
 
   // State
   private userAccountsState = signal<UserAccountModel[]>([]);
@@ -39,11 +40,8 @@ export class UserService {
    * @returns {Promise<UserAccountModel | null>} User account or null
    */
   async findByAuthUserId(authUserId: string): Promise<UserAccountModel | null> {
-    const account = await firstValueFrom(this.accountRepo.findByAuthUserId(authUserId));
-    if (account && (account as any).type === AccountType.USER) {
-      return account as UserAccountModel;
-    }
-    return null;
+    const account = await firstValueFrom(this.userRepo.findByAuthUserId(authUserId));
+    return account as UserAccountModel | null;
   }
 
   /**
@@ -54,11 +52,8 @@ export class UserService {
    * @returns {Promise<UserAccountModel | null>} User account or null
    */
   async findById(id: string): Promise<UserAccountModel | null> {
-    const account = await firstValueFrom(this.accountRepo.findById(id));
-    if (account && (account as any).type === AccountType.USER) {
-      return account as UserAccountModel;
-    }
-    return null;
+    const account = await firstValueFrom(this.userRepo.findById(id));
+    return account as UserAccountModel | null;
   }
 
   /**
@@ -70,14 +65,13 @@ export class UserService {
    */
   async createUser(request: CreateUserAccountRequest): Promise<UserAccountModel> {
     const insertData = {
-      type: AccountType.USER,
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
       status: request.status || AccountStatus.ACTIVE
     };
 
-    const account = await firstValueFrom(this.accountRepo.create(insertData as any));
+    const account = await firstValueFrom(this.userRepo.create(insertData as any));
     return account as UserAccountModel;
   }
 
@@ -90,7 +84,7 @@ export class UserService {
    * @returns {Promise<UserAccountModel>} Updated user account
    */
   async updateUser(id: string, request: UpdateUserAccountRequest): Promise<UserAccountModel> {
-    const account = await firstValueFrom(this.accountRepo.update(id, request as any));
+    const account = await firstValueFrom(this.userRepo.update(id, request as any));
     return account as UserAccountModel;
   }
 
@@ -102,7 +96,7 @@ export class UserService {
    * @returns {Promise<UserAccountModel>} Updated user account
    */
   async softDeleteUser(id: string): Promise<UserAccountModel> {
-    const account = await firstValueFrom(this.accountRepo.softDelete(id));
+    const account = await firstValueFrom(this.userRepo.softDelete(id));
     return account as UserAccountModel;
   }
 
@@ -114,7 +108,7 @@ export class UserService {
    * @returns {Promise<UserAccountModel>} Updated user account
    */
   async restoreUser(id: string): Promise<UserAccountModel> {
-    const account = await firstValueFrom(this.accountRepo.restore(id));
+    const account = await firstValueFrom(this.userRepo.restore(id));
     return account as UserAccountModel;
   }
 
@@ -130,8 +124,8 @@ export class UserService {
 
     try {
       const accounts = await firstValueFrom(
-        this.accountRepo.findAll({
-          filters: { authUserId: authUserId as any, type: AccountType.USER as any }
+        this.userRepo.findAll({
+          filters: { authUserId: authUserId as any }
         })
       );
 

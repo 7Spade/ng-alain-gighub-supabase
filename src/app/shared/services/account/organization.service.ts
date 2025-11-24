@@ -5,17 +5,16 @@
  * Organization management service (Shared layer)
  *
  * Provides business logic for organization operations using Signals-based state management.
- * Handles organization CRUD operations and coordinates with AccountRepository.
+ * Handles organization CRUD operations and coordinates with OrganizationRepository and UserRepository.
  *
  * @module shared/services/account
  */
 
 import { Injectable, inject, signal } from '@angular/core';
 import {
-  AccountType,
   AccountStatus,
   OrganizationMemberRole,
-  AccountRepository,
+  UserRepository,
   SupabaseService,
   OrganizationRepository,
   OrganizationMemberRepository
@@ -31,7 +30,7 @@ import { ErrorHandlerService } from '../error-handler.service';
 export class OrganizationService {
   private readonly organizationRepo = inject(OrganizationRepository);
   private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly userRepo = inject(UserRepository);
   private readonly supabaseService = inject(SupabaseService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
@@ -54,10 +53,7 @@ export class OrganizationService {
    */
   async findById(id: string): Promise<OrganizationBusinessModel | null> {
     const account = await firstValueFrom(this.organizationRepo.findById(id));
-    if (account && (account as any).type === AccountType.ORGANIZATION) {
-      return account as OrganizationBusinessModel;
-    }
-    return null;
+    return account as OrganizationBusinessModel | null;
   }
 
   /**
@@ -88,7 +84,7 @@ export class OrganizationService {
     }
 
     const orgs = await firstValueFrom(this.organizationRepo.findByIds(orgIds));
-    return orgs.filter(org => org && (org as any).type === AccountType.ORGANIZATION) as OrganizationBusinessModel[];
+    return orgs as OrganizationBusinessModel[];
   }
 
   /**
@@ -106,7 +102,7 @@ export class OrganizationService {
     }
 
     // 2. 獲取當前用戶的 account_id
-    const userAccount = await firstValueFrom(this.accountRepo.findByAuthUserId(user.id));
+    const userAccount = await firstValueFrom(this.userRepo.findByAuthUserId(user.id));
     if (!userAccount) {
       throw new Error('User account not found');
     }

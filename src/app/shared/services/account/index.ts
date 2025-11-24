@@ -129,5 +129,6 @@ export * from './workspace-data.service';
 // ============================================================================
 
 export * from './user.service';
+export * from './bot.service';
 export * from './organization.service';
 export * from './team.service';
