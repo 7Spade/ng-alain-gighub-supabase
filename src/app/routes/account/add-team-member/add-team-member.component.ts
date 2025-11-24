@@ -11,7 +11,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TeamMemberRepository, OrganizationMemberRepository } from '@core';
+import { TeamMemberRepository, OrganizationMemberRepository, SupabaseService } from '@core';
 import { SHARED_IMPORTS, validateForm } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
