@@ -32,12 +32,10 @@ import { firstValueFrom } from 'rxjs';
               <tr>
                 <td>{{ member.account_id }}</td>
                 <td>{{ getRoleName(member.role) }}</td>
-                <td>{{ member.joined_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>{{ member.joined_at | date: 'yyyy-MM-dd HH:mm' }}</td>
                 <td>
                   @if (member.role !== 'leader') {
-                    <button nz-button nzType="link" nzDanger nzSize="small">
-                      移除
-                    </button>
+                    <button nz-button nzType="link" nzDanger nzSize="small"> 移除 </button>
                   }
                 </td>
               </tr>
@@ -83,8 +81,8 @@ export class TeamMembersComponent implements OnInit {
 
   getRoleName(role: string): string {
     const roleMap: Record<string, string> = {
-      'leader': '隊長',
-      'member': '成員'
+      leader: '隊長',
+      member: '成員'
     };
     return roleMap[role] || role;
   }
