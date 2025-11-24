@@ -207,6 +207,28 @@ USING (
    );
    ```
 
+### 方案 1.5：Membership RLS 零遞迴（2025-11-24 ✅ 已部署）
+
+為徹底切斷「accounts ↔ organization_members / team_members ↔ accounts」的遞迴鏈，我們追加 Migration `20251124000006_fix_membership_rls_policies.sql` 並已透過 Supabase MCP 套用到遠端專案。重點如下：
+
+1. **新增 6 個 SECURITY DEFINER Helper 函數**  
+   - `is_org_member`、`is_org_owner`、`is_org_admin`、`organization_has_members`  
+   - `is_team_member`、`is_team_leader`  
+   - 全部 `row_security = off`，所以在 RLS 策略中呼叫時不會觸發遞迴。
+
+2. **覆寫 `organization_members` 與 `team_members` 的所有策略**  
+   - 全部 `TO authenticated`，SELECT/INSERT/UPDATE/DELETE 皆只呼叫上述 helper 或目前列的欄位。  
+   - 再也沒有 `SELECT ... FROM accounts` 或自我 JOIN 的語句。
+
+3. **新增索引**  
+   - `idx_organization_members_auth_user`、`idx_team_members_auth_user`，確保 `auth.uid()` 比對效能。
+
+4. **實測結果**  
+   - `SELECT * FROM public.accounts WHERE auth_user_id = auth.uid() AND type = 'User';` ✅ 不再拋出 `42P17`。  
+   - 前端「建立組織」已可正常執行。
+
+> ✅ 結論：membership RLS 現在完全遵循 Supabase 官方「Zero Account Table Access」原則，遞迴路徑被永久移除。後續若再新增 membership 類策略，務必沿用同樣模式（helper function + `auth_user_id`）。
+
 ### 方案 2：修改遠端資料庫以符合 Migration 文件（不推薦）
 
 **需要執行**：
