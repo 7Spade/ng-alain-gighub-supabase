@@ -10,12 +10,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { BlueprintFacade } from '@core';
 import { SFSchema, SFUISchema } from '@delon/form';
-import {
-  SHARED_IMPORTS,
-  CreateBlueprintRequest,
-  BlueprintCategoryEnum,
-  BlueprintVisibilityEnum
-} from '@shared';
+import { SHARED_IMPORTS, CreateBlueprintRequest, BlueprintCategoryEnum, BlueprintVisibilityEnum } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -47,9 +42,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 
     <div class="modal-footer">
       <button nz-button (click)="onCancel()">取消</button>
-      <button nz-button nzType="primary" [nzLoading]="loading()" (click)="sf.validator()">
-        建立藍圖
-      </button>
+      <button nz-button nzType="primary" [nzLoading]="loading()" (click)="sf.validator()"> 建立藍圖 </button>
     </div>
   `,
   styles: [
