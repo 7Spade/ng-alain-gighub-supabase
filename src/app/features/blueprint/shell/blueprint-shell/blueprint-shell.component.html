@@ -1,0 +1,102 @@
+<!--
+  Blueprint Shell Template
+  
+  Main container for blueprint modules
+  Provides navigation and context display
+-->
+
+<page-header [title]="'藍圖容器'">
+  <ng-template #action>
+    <button nz-button nzType="default" (click)="navigateToModule('task')">
+      <i nz-icon nzType="project" nzTheme="outline"></i>
+      任務模組
+    </button>
+    <!-- Future modules can be added here -->
+  </ng-template>
+</page-header>
+
+<!-- Loading State -->
+@if (loading()) {
+  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+}
+
+<!-- Error State -->
+@if (error()) {
+  <nz-alert
+    nzType="error"
+    [nzMessage]="'載入失敗'"
+    [nzDescription]="error()"
+    nzShowIcon
+  ></nz-alert>
+}
+
+<!-- Blueprint Info -->
+@if (selectedBlueprint()) {
+  <nz-card [nzTitle]="'藍圖資訊'" class="mb-md">
+    <nz-descriptions [nzColumn]="2" nzBordered>
+      <nz-descriptions-item [nzTitle]="'名稱'">
+        {{ selectedBlueprint()?.name }}
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'類別'">
+        {{ selectedBlueprint()?.category }}
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'描述'" [nzSpan]="2">
+        {{ selectedBlueprint()?.description }}
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'可見性'">
+        <nz-badge 
+          [nzStatus]="selectedBlueprint()?.visibility === 'public' ? 'success' : 'default'" 
+          [nzText]="selectedBlueprint()?.visibility">
+        </nz-badge>
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'狀態'">
+        <nz-badge 
+          [nzStatus]="selectedBlueprint()?.status === 'published' ? 'processing' : 'default'" 
+          [nzText]="selectedBlueprint()?.status">
+        </nz-badge>
+      </nz-descriptions-item>
+    </nz-descriptions>
+  </nz-card>
+}
+
+<!-- Context Switcher Placeholder -->
+<nz-card [nzTitle]="'上下文切換器'" class="mb-md">
+  <nz-alert
+    nzType="info"
+    nzMessage="上下文切換器整合"
+    nzDescription="此處將整合組織上下文切換器，用於切換不同藍圖容器的上下文"
+    nzShowIcon>
+  </nz-alert>
+</nz-card>
+
+<!-- Module Navigation -->
+<nz-card [nzTitle]="'可用模組'">
+  <nz-row [nzGutter]="16">
+    <nz-col [nzSpan]="8">
+      <nz-card 
+        nzHoverable 
+        [nzTitle]="'任務模組'"
+        (click)="navigateToModule('task')"
+        class="module-card">
+        <i nz-icon nzType="project" nzTheme="outline" class="module-icon"></i>
+        <p>管理無限層級的任務樹狀結構</p>
+        <nz-tag [nzColor]="'blue'">已實作</nz-tag>
+      </nz-card>
+    </nz-col>
+    <nz-col [nzSpan]="8">
+      <nz-card 
+        nzHoverable 
+        [nzTitle]="'未來模組'"
+        class="module-card disabled">
+        <i nz-icon nzType="inbox" nzTheme="outline" class="module-icon"></i>
+        <p>更多模組即將推出</p>
+        <nz-tag [nzColor]="'default'">規劃中</nz-tag>
+      </nz-card>
+    </nz-col>
+  </nz-row>
+</nz-card>
+
+<!-- Router Outlet for Child Routes -->
+<div class="blueprint-content">
+  <router-outlet></router-outlet>
+</div>

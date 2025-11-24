@@ -32,6 +32,12 @@
       "@core": [
         "src/app/core/index"
       ],
+      "@features": [
+        "src/app/features/index"
+      ],
+      "@features/*": [
+        "src/app/features/*"
+      ],
       "@env/*": [
         "src/environments/*"
       ],

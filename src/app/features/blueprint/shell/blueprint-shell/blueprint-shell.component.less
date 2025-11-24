@@ -1,0 +1,45 @@
+/**
+ * Blueprint Shell Component Styles
+ *
+ * Styles for blueprint shell container
+ */
+
+:host {
+  display: block;
+}
+
+.module-card {
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
+  .module-icon {
+    margin-bottom: 16px;
+    color: #1890ff;
+    font-size: 48px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: rgb(0 0 0 / 45%);
+  }
+}
+
+.blueprint-content {
+  margin-top: 24px;
+}

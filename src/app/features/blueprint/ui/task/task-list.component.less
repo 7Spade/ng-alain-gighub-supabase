@@ -1,0 +1,75 @@
+/**
+ * Task List Component Styles
+ *
+ * Styles for task list component
+ */
+
+:host {
+  display: block;
+  padding: 16px;
+}
+
+.task-tree-view,
+.task-table-view {
+  .tree-placeholder {
+    .task-node {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:hover {
+        background-color: #fafafa;
+      }
+
+      .task-level {
+        min-width: 32px;
+        color: #1890ff;
+        font-weight: 600;
+      }
+
+      .task-name {
+        flex: 1;
+        font-weight: 500;
+      }
+
+      .task-progress {
+        width: 120px;
+      }
+
+      .task-tag {
+        margin-right: 4px;
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 4px;
+      }
+    }
+  }
+}
+
+.text-primary {
+  color: #1890ff;
+}
+
+.text-success {
+  color: #52c41a;
+}
+
+.text-warning {
+  color: #faad14;
+}
+
+.text-info {
+  color: #13c2c2;
+}
+
+.text-grey {
+  color: rgb(0 0 0 / 45%);
+}
+
+.ml-xs {
+  margin-left: 4px;
+}
