@@ -10,3 +10,10 @@ export * from './supabase.types';
 
 // Account types (includes user, organization, team, bot types in account/ directory)
 export * from './account';
+
+// Blueprint Container types
+export * from './blueprint.types';
+export * from './workspace.types';
+
+// Task Module types
+export * from './task.types';

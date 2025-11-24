@@ -64,8 +64,12 @@
 // Account services (includes user, organization, team, bot via account/index.ts)
 export * from './account';
 
-// Error handling service
-export * from './error-handler.service';
+// Blueprint Container services
+export * from './blueprint';
+export * from './workspace';
+
+// Task Module services
+export * from './task';
 
 // Temporary export to make this a valid module
 export const SERVICES_MODULE = 'services';
