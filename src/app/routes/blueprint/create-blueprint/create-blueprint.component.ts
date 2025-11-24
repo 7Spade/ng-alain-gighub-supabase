@@ -29,7 +29,7 @@ export class CreateBlueprintComponent {
 
   readonly loading = signal(false);
 
-  // @delon/form schema
+  schema: SFSchema = {
     properties: {
       name: {
         type: 'string',
