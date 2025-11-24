@@ -7,6 +7,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { CreateTeamComponent } from '../../account/create-team/create-team.component';
 import { UpdateTeamComponent } from '../../account/update-team/update-team.component';
 import { DeleteTeamComponent } from '../../account/delete-team/delete-team.component';
+import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-member.component';
 
 @Component({
   selector: 'app-org-teams',
@@ -38,6 +39,10 @@ import { DeleteTeamComponent } from '../../account/delete-team/delete-team.compo
                 <td>{{ team['description'] || '-' }}</td>
                 <td>{{ team['memberCount'] || 0 }}</td>
                 <td>
+                  <button nz-button nzType="link" nzSize="small" (click)="addTeamMember(team)"> 添加成員 </button>
+                  <nz-divider nzType="vertical"></nz-divider>
+                  <a [routerLink]="['/team', team['id'], 'members']" nz-button nzType="link" nzSize="small"> 成員列表 </a>
+                  <nz-divider nzType="vertical"></nz-divider>
                   <button nz-button nzType="link" nzSize="small" (click)="editTeam(team)"> 編輯 </button>
                   <nz-divider nzType="vertical"></nz-divider>
                   <button nz-button nzType="link" nzDanger nzSize="small" (click)="deleteTeam(team)"> 刪除 </button>
@@ -115,5 +120,22 @@ export class OrgTeamsComponent implements OnInit {
         this.loadTeams(this.organizationId()!);
       }
     });
+  }
+
+  addTeamMember(team: TeamBusinessModel): void {
+    this.modal
+      .create(
+        AddTeamMemberComponent,
+        {
+          teamId: team['id'],
+          organizationId: this.organizationId()
+        },
+        { size: 'md' }
+      )
+      .subscribe(result => {
+        if (result?.success) {
+          this.msg.success('成員添加成功！');
+        }
+      });
   }
 }
