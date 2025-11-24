@@ -26,11 +26,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
   template: `
     <!-- Application menu -->
     @if (!hasToken()) {
-      <li
-        nz-menu-item
-        (click)="workspaceContext.switchToApp()"
-        [class.ant-menu-item-selected]="workspaceContext.contextType() === 'app'"
-      >
+      <li nz-menu-item (click)="workspaceContext.switchToApp()" [class.ant-menu-item-selected]="workspaceContext.contextType() === 'app'">
         <i nz-icon nzType="appstore" class="mr-sm"></i>
         <span>應用菜單</span>
       </li>
@@ -42,9 +38,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
       <li
         nz-menu-item
         (click)="workspaceContext.switchToUser(getAccountId(account))"
-        [class.ant-menu-item-selected]="
-          workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)
-        "
+        [class.ant-menu-item-selected]="workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)"
       >
         <i nz-icon nzType="user" class="mr-sm"></i>
         <span>{{ getAccountName(account) }}</span>
