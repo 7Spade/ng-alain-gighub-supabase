@@ -1,9 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TeamFacade, WorkspaceContextFacade } from '@core';
+import { TeamFacade, WorkspaceContextFacade, TeamMemberRepository } from '@core';
 import { SHARED_IMPORTS, TeamBusinessModel } from '@shared';
 import { ModalHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { firstValueFrom } from 'rxjs';
 import { CreateTeamComponent } from '../../account/create-team/create-team.component';
 import { UpdateTeamComponent } from '../../account/update-team/update-team.component';
 import { DeleteTeamComponent } from '../../account/delete-team/delete-team.component';
@@ -66,12 +67,13 @@ import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-m
 export class OrgTeamsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly teamFacade = inject(TeamFacade);
+  private readonly teamMemberRepo = inject(TeamMemberRepository);
   private readonly modal = inject(ModalHelper);
   private readonly msg = inject(NzMessageService);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
 
   organizationId = signal<string | null>(null);
-  teams = signal<TeamBusinessModel[]>([]);
+  teams = signal<any[]>([]); // 改為 any[] 以包含 memberCount
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -90,7 +92,19 @@ export class OrgTeamsComponent implements OnInit {
     this.error.set(null);
     try {
       const teams = await this.teamFacade.findByOrganization(organizationId);
-      this.teams.set(teams);
+
+      // ✅ 查詢每個團隊的成員數
+      const teamsWithMemberCount = await Promise.all(
+        teams.map(async team => {
+          const members = await firstValueFrom(this.teamMemberRepo.findByTeam(team['id'] as string));
+          return {
+            ...team,
+            memberCount: members.length
+          };
+        })
+      );
+
+      this.teams.set(teamsWithMemberCount);
     } catch (error) {
       this.error.set(error instanceof Error ? error.message : '載入團隊失敗');
     } finally {
