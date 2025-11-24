@@ -45,11 +45,19 @@ export class AddTeamMemberComponent implements OnInit {
   ngOnInit(): void {
     const config = this.modal.getConfig() as any;
     const params = config?.nzComponentParams || {};
-    this.teamId = params.teamId;
-    this.organizationId = params.organizationId;
+    
+    console.log('[AddTeamMemberComponent] params:', params);
+    console.log('[AddTeamMemberComponent] teamId:', params?.teamId);
+    console.log('[AddTeamMemberComponent] organizationId:', params?.organizationId);
+    
+    this.teamId = params?.teamId || (this as any).teamId;
+    this.organizationId = params?.organizationId || (this as any).organizationId;
+
+    console.log('[AddTeamMemberComponent] Final teamId:', this.teamId);
+    console.log('[AddTeamMemberComponent] Final organizationId:', this.organizationId);
 
     if (!this.teamId || !this.organizationId) {
-      this.msg.error('缺少必要參數');
+      this.msg.error(`缺少必要參數：teamId=${this.teamId}, organizationId=${this.organizationId}`);
       this.cancel();
       return;
     }
