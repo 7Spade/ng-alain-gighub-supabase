@@ -29,7 +29,6 @@ USING (
     SELECT organization_id
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
-      AND deleted_at IS NULL
   )
 );
 
@@ -50,7 +49,6 @@ WITH CHECK (
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 );
 
@@ -72,7 +70,6 @@ USING (
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 )
 WITH CHECK (
@@ -82,7 +79,6 @@ WITH CHECK (
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 );
 
@@ -104,7 +100,6 @@ USING (
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 );
 

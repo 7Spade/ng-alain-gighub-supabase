@@ -27,18 +27,18 @@ FOR SELECT
 TO authenticated
 USING (
   type = 'Organization'
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
   AND (
     -- User is a member of this organization
     id IN (
       SELECT organization_id
       FROM public.organization_members
       WHERE account_id = public.get_user_account_id()
-        AND deleted_at IS NULL
+        AND account_id IS NOT NULL
     )
     OR
-    -- User created this organization
-    created_by = auth.uid()
+    -- User created this organization (auth_user_id matches)
+    auth_user_id = auth.uid()
   )
 );
 
@@ -55,19 +55,18 @@ FOR UPDATE
 TO authenticated
 USING (
   type = 'Organization'
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
   AND id IN (
     SELECT organization_id
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 )
 WITH CHECK (
   -- Ensure updates maintain data integrity
   type = 'Organization'  -- Cannot change account type
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
 );
 
 COMMENT ON POLICY "org_owners_update_organizations" ON public.accounts IS
@@ -89,18 +88,17 @@ USING (
     FROM public.organization_members
     WHERE account_id = public.get_user_account_id()
       AND role = 'owner'
-      AND deleted_at IS NULL
   )
 )
 WITH CHECK (
-  -- Allow setting deleted_at
+  -- Allow setting status to deleted (soft delete)
   type = 'Organization'
-  AND deleted_at IS NOT NULL
+  AND status = 'deleted'
 );
 
 COMMENT ON POLICY "org_owners_delete_organizations" ON public.accounts IS
 'Allows organization owners to soft-delete their organizations.
-Soft delete is implemented by setting deleted_at timestamp.
+Soft delete is implemented by setting status = deleted.
 Uses get_user_account_id() to avoid recursion.';
 
 -- ============================================================================
@@ -112,13 +110,13 @@ FOR INSERT
 TO authenticated
 WITH CHECK (
   type = 'Organization'
-  AND created_by = auth.uid()
-  AND deleted_at IS NULL
+  AND auth_user_id = auth.uid()
+  AND status <> 'deleted'
 );
 
 COMMENT ON POLICY "authenticated_users_create_organizations" ON public.accounts IS
 'Allows authenticated users to create new organizations.
-Sets created_by to the authenticated user.';
+Sets auth_user_id to the authenticated user.';
 
 -- ============================================================================
 -- TRIGGER - Auto-add creator as organization owner
@@ -139,13 +137,13 @@ DECLARE
   v_user_account_id UUID;
 BEGIN
   -- Only run for Organization accounts
-  IF NEW.type = 'Organization' THEN
+  IF NEW.type = 'Organization' AND TG_OP = 'INSERT' THEN
     -- Get the user's account_id
     SELECT id INTO v_user_account_id
     FROM public.accounts
-    WHERE auth_user_id = NEW.created_by
+    WHERE auth_user_id = NEW.auth_user_id
       AND type = 'User'
-      AND deleted_at IS NULL
+      AND status != 'deleted'
     LIMIT 1;
     
     -- If user account exists, add as organization owner
@@ -154,15 +152,14 @@ BEGIN
         organization_id,
         account_id,
         role,
-        created_at,
-        updated_at
+        auth_user_id
       ) VALUES (
         NEW.id,
         v_user_account_id,
         'owner',
-        NOW(),
-        NOW()
-      );
+        NEW.auth_user_id
+      )
+      ON CONFLICT DO NOTHING;
     END IF;
   END IF;
   

@@ -344,5 +344,166 @@
         }
       ]
     }
-  ]
+  ],
+  "menus": {
+    "app": [
+      {
+        "text": "主导航",
+        "i18n": "menu.main",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "仪表盘",
+            "i18n": "menu.dashboard",
+            "icon": "anticon-dashboard",
+            "children": [
+              {
+                "text": "仪表盘V1",
+                "link": "/dashboard/v1",
+                "i18n": "menu.dashboard.v1"
+              },
+              {
+                "text": "分析页",
+                "link": "/dashboard/analysis",
+                "i18n": "menu.dashboard.analysis"
+              },
+              {
+                "text": "监控页",
+                "link": "/dashboard/monitor",
+                "i18n": "menu.dashboard.monitor"
+              },
+              {
+                "text": "工作台",
+                "link": "/dashboard/workplace",
+                "i18n": "menu.dashboard.workplace"
+              }
+            ]
+          },
+          {
+            "text": "快捷菜单",
+            "i18n": "menu.shortcut",
+            "icon": "anticon-rocket",
+            "shortcutRoot": true,
+            "children": []
+          },
+          {
+            "text": "小部件",
+            "i18n": "menu.widgets",
+            "link": "/widgets",
+            "icon": "anticon-appstore",
+            "badge": 2
+          }
+        ]
+      }
+    ],
+    "user": [
+      {
+        "text": "個人工作區",
+        "i18n": "menu.user",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "儀表板",
+            "i18n": "menu.user.dashboard",
+            "icon": "anticon-dashboard",
+            "link": "/user/{userId}/dashboard"
+          },
+          {
+            "text": "我的任務",
+            "i18n": "menu.user.tasks",
+            "icon": "anticon-check-square",
+            "link": "/user/{userId}/tasks"
+          },
+          {
+            "text": "我的專案",
+            "i18n": "menu.user.projects",
+            "icon": "anticon-project",
+            "link": "/user/{userId}/projects"
+          },
+          {
+            "text": "個人設定",
+            "i18n": "menu.user.settings",
+            "icon": "anticon-setting",
+            "link": "/user/{userId}/settings"
+          }
+        ]
+      }
+    ],
+    "organization": [
+      {
+        "text": "組織工作區",
+        "i18n": "menu.organization",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "組織儀表板",
+            "i18n": "menu.organization.dashboard",
+            "icon": "anticon-dashboard",
+            "link": "/org/{organizationId}/dashboard"
+          },
+          {
+            "text": "組織專案",
+            "i18n": "menu.organization.projects",
+            "icon": "anticon-project",
+            "link": "/org/{organizationId}/projects"
+          },
+          {
+            "text": "團隊管理",
+            "i18n": "menu.organization.teams",
+            "icon": "anticon-team",
+            "link": "/org/{organizationId}/teams"
+          },
+          {
+            "text": "成員管理",
+            "i18n": "menu.organization.members",
+            "icon": "anticon-user",
+            "link": "/org/{organizationId}/members"
+          },
+          {
+            "text": "組織設定",
+            "i18n": "menu.organization.settings",
+            "icon": "anticon-setting",
+            "link": "/org/{organizationId}/settings"
+          }
+        ]
+      }
+    ],
+    "team": [
+      {
+        "text": "團隊工作區",
+        "i18n": "menu.team",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "團隊儀表板",
+            "i18n": "menu.team.dashboard",
+            "icon": "anticon-dashboard",
+            "link": "/team/{teamId}/dashboard"
+          },
+          {
+            "text": "團隊任務",
+            "i18n": "menu.team.tasks",
+            "icon": "anticon-check-square",
+            "link": "/team/{teamId}/tasks"
+          },
+          {
+            "text": "團隊專案",
+            "i18n": "menu.team.projects",
+            "icon": "anticon-project",
+            "link": "/team/{teamId}/projects"
+          },
+          {
+            "text": "團隊成員",
+            "i18n": "menu.team.members",
+            "icon": "anticon-user",
+            "link": "/team/{teamId}/members"
+          }
+        ]
+      }
+    ]
+  }
 }

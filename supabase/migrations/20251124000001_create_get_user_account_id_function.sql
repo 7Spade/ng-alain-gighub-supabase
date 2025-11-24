@@ -35,7 +35,7 @@ BEGIN
   FROM public.accounts
   WHERE auth_user_id = auth.uid()
     AND type = 'User'
-    AND deleted_at IS NULL
+    AND status != 'deleted'
   LIMIT 1;
   
   -- Return NULL if no account found (user hasn't created an account yet)
@@ -47,7 +47,7 @@ $$;
 COMMENT ON FUNCTION public.get_user_account_id() IS 
 'Returns the account_id (UUID) for the currently authenticated user (auth.uid()). 
 Uses SECURITY DEFINER to bypass RLS and avoid infinite recursion. 
-Only returns User-type accounts. Returns NULL if no matching account found.';
+Only returns User-type accounts with status != deleted. Returns NULL if no matching account found.';
 
 -- Grant execute permission to authenticated users
 GRANT EXECUTE ON FUNCTION public.get_user_account_id() TO authenticated;

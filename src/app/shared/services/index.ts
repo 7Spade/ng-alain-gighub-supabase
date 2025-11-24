@@ -71,6 +71,9 @@ export * from './workspace';
 // Task Module services
 export * from './task';
 
+// Menu management service
+export * from './menu';
+
 // Error handling service
 export * from './error-handler.service';
 

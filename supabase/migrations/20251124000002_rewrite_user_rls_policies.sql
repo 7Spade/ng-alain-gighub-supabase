@@ -28,7 +28,7 @@ USING (
   -- Direct check against auth_user_id - no JOIN needed
   type = 'User'
   AND auth_user_id = auth.uid()
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
 );
 
 COMMENT ON POLICY "users_view_own_user_account" ON public.accounts IS
@@ -46,12 +46,13 @@ USING (
   -- Check current row before update
   type = 'User'
   AND auth_user_id = auth.uid()
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
 )
 WITH CHECK (
   -- Ensure updates maintain data integrity
   type = 'User'  -- Cannot change account type
   AND auth_user_id = auth.uid()  -- Cannot change owner
+  AND status <> 'deleted'
 );
 
 COMMENT ON POLICY "users_update_own_user_account" ON public.accounts IS
@@ -68,7 +69,7 @@ TO authenticated
 WITH CHECK (
   type = 'User'
   AND auth_user_id = auth.uid()
-  AND deleted_at IS NULL
+  AND status <> 'deleted'
 );
 
 COMMENT ON POLICY "users_insert_own_user_account" ON public.accounts IS
@@ -78,5 +79,5 @@ Ensures auth_user_id matches the authenticated user.';
 -- ============================================================================
 -- NO DELETE POLICY
 -- ============================================================================
--- We use soft delete (deleted_at timestamp) instead of hard delete.
+-- We use soft delete (status = 'deleted') instead of hard delete.
 -- Updates handle soft delete through the update policy above.

@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { EnvironmentProviders, Injectable, Provider, inject, provideAppInitializer } from '@angular/core';
 import { Router } from '@angular/router';
+import { ContextType } from '@core';
 import { ACLService } from '@delon/acl';
 import { ALAIN_I18N_TOKEN, MenuService, SettingsService, TitleService } from '@delon/theme';
+import { MenuManagementService } from '@shared';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
-import { Observable, zip, catchError, map, switchMap, of } from 'rxjs';
+import { Observable, zip, catchError, map, switchMap } from 'rxjs';
 
 import { I18NService } from '../i18n/i18n.service';
 import { SupabaseAuthService } from '../infra/supabase';
@@ -36,6 +38,7 @@ export class StartupService {
   private router = inject(Router);
   private i18n = inject<I18NService>(ALAIN_I18N_TOKEN);
   private supabaseAuth = inject(SupabaseAuthService);
+  private menuManagementService = inject(MenuManagementService);
 
   load(): Observable<void> {
     const defaultLang = this.i18n.defaultLang;
@@ -77,8 +80,20 @@ export class StartupService {
 
             // ACL：设置权限为全量
             this.aclService.setFull(true);
-            // 初始化菜单
-            this.menuService.add(appData.menu);
+
+            // 載入菜單配置（MenuManagementService 會處理菜單更新）
+            this.menuManagementService.loadMenuConfig().subscribe(() => {
+              // 初始化時載入預設菜單（app 菜單）
+              // 注意：LayoutBasicComponent 的 effect 會監聽上下文變化並自動更新菜單
+              // 這裡只是確保菜單配置已載入
+              this.menuManagementService.updateMenu(ContextType.APP);
+            });
+
+            // 向後兼容：如果 MenuManagementService 未載入，使用舊的菜單配置
+            if (appData.menu && !appData.menus) {
+              this.menuService.add(appData.menu);
+            }
+
             // 设置页面标题的后缀
             this.titleService.default = '';
             this.titleService.suffix = appData.app.name;
