@@ -28,6 +28,7 @@ export class AddTeamMemberComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly teamMemberRepo = inject(TeamMemberRepository);
   private readonly orgMemberRepo = inject(OrganizationMemberRepository);
+  private readonly supabaseService = inject(SupabaseService);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
 
@@ -86,17 +87,21 @@ export class AddTeamMemberComponent implements OnInit {
     this.loading.set(true);
     try {
       const formValue = this.form.value;
+      const user = await this.supabaseService.getUser();
+      
       await firstValueFrom(
         this.teamMemberRepo.create({
           team_id: this.teamId,
           account_id: formValue.accountId,
-          role: formValue.role
+          role: formValue.role,
+          auth_user_id: user?.id  // ✅ 添加 auth_user_id
         } as any)
       );
       this.msg.success('成員添加成功！');
       this.modal.close({ success: true });
     } catch (error) {
       this.msg.error(error instanceof Error ? error.message : '添加成員失敗');
+      console.error('[AddTeamMemberComponent] 添加成員錯誤:', error);
     } finally {
       this.loading.set(false);
     }
