@@ -55,6 +55,15 @@ export class WorkspaceContextService {
     return [...created, ...uniqueJoined];
   });
 
+  /**
+   * Groups teams by their organization ID.
+   * 
+   * Note: Uses snake_case field access (organization_id) because Supabase returns
+   * database fields in their original snake_case format. This will be addressed
+   * in a future enhancement with BaseRepository field transformation.
+   * 
+   * @see https://github.com/7Spade/ng-alain-gighub-supabase/pull/[PR_NUMBER]
+   */
   readonly teamsByOrganization = computed(() => {
     const teams = this.userTeams();
     const orgs = this.allOrganizations();
@@ -65,7 +74,7 @@ export class WorkspaceContextService {
     });
 
     teams.forEach(team => {
-      const orgId = (team as any).organizationId;
+      const orgId = (team as any).organization_id;
       if (orgId && teamsMap.has(orgId)) {
         teamsMap.get(orgId)!.push(team);
       }
