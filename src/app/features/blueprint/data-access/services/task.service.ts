@@ -274,20 +274,22 @@ export class TaskService {
       // Get all children of parent
       const children = await firstValueFrom(this.taskRepo.findByParent(parent.id));
 
-      const completedCount = children.filter(c => c.status === TaskStatusEnum.COMPLETED).length;
-      const totalCount = children.length;
-      // Progress is calculated here but actual update requires database triggers
+      // Note: Progress calculation is currently a no-op.
+      // In production, progress should be calculated by database triggers because:
+      // 1. Ensures consistency across concurrent updates
+      // 2. Avoids race conditions
+      // 3. Maintains atomicity
+      //
+      // When implementing, use these calculations:
+      // const completedCount = children.filter(c => c.status === TaskStatusEnum.COMPLETED).length;
+      // const totalCount = children.length;
       // const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-      void completedCount; // Keep reference for future implementation
-      void totalCount;
-
-      // Update parent with calculated progress
-      // Note: In production, this should be a database-level update
-      // to avoid race conditions and ensure atomicity
-
-      // TODO: Implement database-level progress calculation
-      // For now, we skip the update to avoid infinite recursion
-      // and rely on future database triggers
+      //
+      // TODO: Implement database trigger for automatic progress calculation
+      if (children.length === 0) {
+        // No children means no progress to calculate
+        return;
+      }
 
       // Recursively update grandparent
       await this.recalculateParentProgress(parent);

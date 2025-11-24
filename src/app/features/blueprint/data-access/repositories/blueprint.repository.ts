@@ -112,7 +112,9 @@ export class BlueprintRepository extends BaseRepository<Blueprint, BlueprintInse
    *
    * Note: Full-text search implementation requires custom query.
    * This method currently passes searchTerm through filters,
-   * but actual implementation depends on Supabase text search setup.
+   * NOTE: Full-text search is not yet implemented in BaseRepository.
+   * This method currently throws NotImplementedError to prevent silent failures
+   * where users expect filtered results but receive all blueprints.
    *
    * TODO: Implement proper full-text search using Supabase .textSearch() method
    * or PostgreSQL full-text search functions
@@ -120,12 +122,10 @@ export class BlueprintRepository extends BaseRepository<Blueprint, BlueprintInse
    * @param {string} searchTerm - Search term
    * @param {QueryOptions} [options] - Query options
    * @returns {Observable<Blueprint[]>} Array of matching blueprints
+   * @throws {Error} NotImplementedError - Full-text search not yet supported
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   search(searchTerm: string, options?: QueryOptions): Observable<Blueprint[]> {
-    // TODO: Implement full-text search
-    // Example: Use Supabase .textSearch() or PostgreSQL ts_vector
-    return this.findAll({
-      ...options
-    });
+    throw new Error('NotImplementedError: Use findPublicBlueprints and filter client-side.');
   }
 }

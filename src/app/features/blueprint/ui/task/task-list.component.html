@@ -87,7 +87,7 @@
     <input 
       nz-input 
       placeholder="搜尋任務名稱、描述或標籤" 
-      [(ngModel)]="searchTerm"
+      [ngModel]="searchTerm()"
       (ngModelChange)="onSearch($event)"
     />
   </nz-input-group>

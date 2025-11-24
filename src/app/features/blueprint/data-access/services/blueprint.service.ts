@@ -219,14 +219,25 @@ export class BlueprintService {
 
   /**
    * Search blueprints
+   *
+   * Note: Full-text search is not yet implemented in the repository.
+   * This method falls back to client-side filtering of public blueprints.
    */
   async searchBlueprints(searchTerm: string): Promise<BlueprintModel[]> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
     try {
-      const blueprints = await firstValueFrom(this.blueprintRepo.search(searchTerm));
-      return blueprints;
+      // Fallback to client-side filtering until repository search is implemented
+      const blueprints = await firstValueFrom(this.blueprintRepo.findPublicBlueprints());
+      const term = searchTerm.toLowerCase();
+      return blueprints.filter(
+        b =>
+          b.name.toLowerCase().includes(term) ||
+          b.description?.toLowerCase().includes(term) ||
+          b.category?.toLowerCase().includes(term) ||
+          b.tags?.some(tag => tag.toLowerCase().includes(term))
+      );
     } catch (error) {
       this.errorState.set(error instanceof Error ? error.message : 'Failed to search blueprints');
       throw error;

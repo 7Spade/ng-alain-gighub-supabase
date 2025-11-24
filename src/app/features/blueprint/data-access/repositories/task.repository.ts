@@ -128,17 +128,21 @@ export class TaskRepository extends BaseRepository<Task, TaskInsert, TaskUpdate>
   /**
    * Find tasks by assignee
    *
+   * NOTE: Array contains filtering is not yet implemented in BaseRepository.
+   * This method currently throws NotImplementedError to prevent silent failures.
+   *
+   * TODO: Implement when BaseRepository supports Supabase's .contains() or .overlaps() operators
+   *
    * @param {string} assigneeId - Assignee ID
    * @param {QueryOptions} [options] - Query options
    * @returns {Observable<Task[]>} Array of assigned tasks
+   * @throws {Error} NotImplementedError - Array contains filtering not yet supported
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   findByAssignee(assigneeId: string, options?: QueryOptions): Observable<Task[]> {
-    // Note: This requires array contains query
-    // Actual implementation depends on Supabase query capabilities
-    return this.findAll({
-      ...options
-      // TODO: Add array contains filter when BaseRepository supports it
-    });
+    throw new Error(
+      'NotImplementedError: Array contains filtering for assigneeIds not yet supported. Use findByWorkspace and filter client-side.'
+    );
   }
 
   /**
@@ -163,17 +167,21 @@ export class TaskRepository extends BaseRepository<Task, TaskInsert, TaskUpdate>
   /**
    * Find tasks by tags
    *
+   * NOTE: Array contains filtering is not yet implemented in BaseRepository.
+   * This method currently throws NotImplementedError to prevent silent failures.
+   *
+   * TODO: Implement when BaseRepository supports Supabase's .contains() or .overlaps() operators
+   *
    * @param {string} workspaceId - Workspace ID
    * @param {string[]} tags - Tags to filter by
    * @param {QueryOptions} [options] - Query options
    * @returns {Observable<Task[]>} Array of tasks with specified tags
+   * @throws {Error} NotImplementedError - Array contains filtering not yet supported
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   findByTags(workspaceId: string, tags: string[], options?: QueryOptions): Observable<Task[]> {
-    // Note: This requires array contains query
-    // Actual implementation depends on Supabase query capabilities
-    return this.findAll({
-      ...options
-      // TODO: Add array contains filter when BaseRepository supports it
-    });
+    throw new Error(
+      'NotImplementedError: Array contains filtering for tags not yet supported. Use findByWorkspace and filter client-side.'
+    );
   }
 }
