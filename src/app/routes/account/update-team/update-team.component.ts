@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade } from '@core';
-import { SHARED_IMPORTS, UpdateTeamRequest, TeamBusinessModel } from '@shared';
+import { SHARED_IMPORTS, UpdateTeamRequest, TeamBusinessModel, FormUtils } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -63,25 +63,13 @@ export class UpdateTeamComponent implements OnInit {
    * Submit form to update team
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!FormUtils.validateFormNzStyle(this.form)) {
       return;
     }
 
     this.loading.set(true);
     try {
-      const formValue = this.form.value;
-      const request: UpdateTeamRequest = {
-        name: formValue.name.trim(),
-        description: formValue.description?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
+      const request = FormUtils.trimFormValues(this.form.value) as UpdateTeamRequest;
       const updatedTeam = await this.teamFacade.updateTeam(this.team['id'] as string, request);
       this.msg.success('團隊更新成功！');
       this.modal.close(updatedTeam);

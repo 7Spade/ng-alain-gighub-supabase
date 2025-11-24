@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OrganizationFacade } from '@core';
-import { SHARED_IMPORTS, UpdateOrganizationRequest, Account } from '@shared';
+import { SHARED_IMPORTS, UpdateOrganizationRequest, Account, FormUtils } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -63,25 +63,13 @@ export class UpdateOrganizationComponent implements OnInit {
    * Submit form to update organization
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!FormUtils.validateFormNzStyle(this.form)) {
       return;
     }
 
     this.loading = true;
     try {
-      const formValue = this.form.value;
-      const request: UpdateOrganizationRequest = {
-        name: formValue.name.trim(),
-        email: formValue.email?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
+      const request = FormUtils.trimFormValues(this.form.value) as UpdateOrganizationRequest;
       const updatedOrganization = await this.organizationFacade.updateOrganization(this.organization['id'] as string, request);
       this.msg.success('組織更新成功！');
       this.modal.close(updatedOrganization);

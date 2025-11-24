@@ -13,7 +13,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamFacade, WorkspaceContextFacade } from '@core';
-import { SHARED_IMPORTS, CreateTeamRequest } from '@shared';
+import { SHARED_IMPORTS, CreateTeamRequest, FormUtils } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -55,26 +55,13 @@ export class CreateTeamComponent {
    * Submit form to create team
    */
   async submit(): Promise<void> {
-    if (this.form.invalid) {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+    if (!FormUtils.validateFormNzStyle(this.form)) {
       return;
     }
 
     this.loading.set(true);
     try {
-      const formValue = this.form.value;
-      const request: CreateTeamRequest = {
-        organizationId: formValue.organizationId,
-        name: formValue.name.trim(),
-        description: formValue.description?.trim() || undefined,
-        avatar: formValue.avatar?.trim() || undefined
-      };
-
+      const request = FormUtils.trimFormValues(this.form.value) as CreateTeamRequest;
       const team = await this.teamFacade.createTeam(request);
       this.msg.success('團隊創建成功！');
       this.modal.close(team);
