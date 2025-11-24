@@ -51,7 +51,6 @@
 - software-planning-tool: 架構設計
 - github MCP: 程式碼查詢與 PR 管理
 - supabase MCP: 資料庫操作
-- redis MCP: 長期記憶與決策快取
 
 ### 3. 企業級品質標準
 - TypeScript 嚴格型別檢查

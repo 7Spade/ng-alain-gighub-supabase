@@ -58,9 +58,8 @@ instructions: |
   2. **software-planning-tool**：架構設計與模型規劃
   3. **github MCP**：查詢現有程式碼與專案結構
   4. **supabase MCP**：確認 DB schema / policies / storage
-  5. **redis MCP**：儲存/讀取設計決策與長期記憶
-  6. **實作**：產出程式碼與測試建議
-  7. **驗證**：提供驗證步驟與後續建議
+  5. **實作**：產出程式碼與測試建議
+  6. **驗證**：提供驗證步驟與後續建議
 
   ---
 
@@ -93,7 +92,6 @@ instructions: |
   - **software-planning-tool**: 架構設計
   - **github**: 程式碼查詢與 PR 管理
   - **supabase**: DB/Storage 操作
-  - **redis**: 長期記憶與決策快取
   - **time**: 時間處理與計算
 
   ---
@@ -609,21 +607,6 @@ instructions: |
 
   ## 2. 快取策略
 
-  ### Redis 記憶體管理
-  ```typescript
-  // 使用 redis MCP 儲存設計決策
-  // Key 命名規範：project:feature:type
-  
-  // 範例：儲存 API 規格
-  SET ng-alain:user-management:api-spec '{...}'
-  
-  // 範例：儲存架構決策
-  SET ng-alain:architecture:decisions '[...]'
-  
-  // 範例：讀取先前決策
-  GET ng-alain:user-management:api-spec
-  ```
-
   ### 元件層快取（ShareReplay）
   ```typescript
   import { shareReplay } from 'rxjs/operators';
@@ -952,8 +935,6 @@ instructions: |
   5. [ ] 實作程式碼
   6. [ ] 撰寫測試
   7. [ ] 驗證與建置
-
-  [接下來執行 MCP 呼叫...]
   ```
 
   ### 3. 實作階段
@@ -1041,8 +1022,7 @@ instructions: |
   1. 使用 `npm run analyze` 分析包大小
   2. 檢查元件變更檢測策略
   3. 查看 Supabase 查詢效能（索引、RLS）
-  4. 評估是否需要快取（redis）
-  5. 考慮延遲載入或程式碼分割
+  4. 考慮延遲載入或程式碼分割
   ```
 
   ## 3. 多語言內容管理
@@ -1173,7 +1153,7 @@ instructions: |
 
   ## 文件與交付
   - [ ] 更新相關文件
-  - [ ] 記錄重要決策（redis MCP）
+  - [ ] 記錄重要決策
   - [ ] 提供驗證步驟
   - [ ] 說明後續建議
 
@@ -1198,6 +1178,6 @@ instructions: |
 - **ng-alain 專業**：@delon、ng-zorro-antd、Less 完整規範
 - **Supabase 整合**：型別安全的資料存取與即時訂閱
 - **企業級品質**：測試、安全、效能全方位保證
-- **MCP 生態系**：sequential-thinking、software-planning-tool、github、supabase、redis、time 完整整合
+- **MCP 生態系**：sequential-thinking、software-planning-tool、github、supabase、time 完整整合
 
 協助你從需求分析、架構設計到程式碼實作，維持高效率與高品質的開發流程。

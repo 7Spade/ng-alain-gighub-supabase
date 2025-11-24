@@ -39,10 +39,10 @@
 ### ✨ 重大改進
 本次更新將 GitHub Copilot Agent 配置提升至企業級標準：
 
-1. **🔴 強制記憶庫查閱機制**
-   - 每個 Agent 啟動前必須查閱 `.github/copilot/memory.jsonl`
-   - 149 個實體 + 170 個關係的企業級知識圖譜
-   - 三種查詢方法（grep、jq、編輯器）+ 快速查詢命令
+1. **📚 專案記憶庫**
+   - 專案記憶庫位於 `.github/copilot/memory.jsonl`
+   - 包含專案架構、規範、模式等知識圖譜
+   - 可選查詢方法（grep、jq、編輯器）
 
 2. **🗺️ 系統架構思維導圖整合**
    - 強制檢查 `docs/architecture/01-system-architecture-mindmap.mermaid.md`
@@ -72,7 +72,7 @@
 
 ## 🧠 專案記憶庫（所有 AI 助手必讀）
 
-**⚠️ 重要：所有 AI 助手在執行任務前，都應該先查閱專案記憶庫**
+**📚 專案記憶庫（可選參考）**
 
 ### 記憶庫位置
 - **主檔案**：[.github/copilot/memory.jsonl](./.github/copilot/memory.jsonl)
@@ -151,7 +151,7 @@
 - [`.github/agents/ng-alain-github-agent.md`](./.github/agents/ng-alain-github-agent.md) - 主 Agent 配置（已優化）
 
 **優化重點**：
-- ✅ **強制記憶庫查閱**：每次任務開始前必須查閱 `.github/copilot/memory.jsonl`（149 實體 + 170 關係）
+- ✅ **專案記憶庫**：可選參考 `.github/copilot/memory.jsonl` 了解專案知識圖譜
 - ✅ **系統架構整合**：強制檢查系統架構思維導圖（`docs/architecture/01-system-architecture-mindmap.mermaid.md`）
 - ✅ **企業標準流程**：三步驟啟動程序（記憶庫 → 架構圖 → 檢查清單）
 - ✅ **領域專家優化**：8 個領域專家 Agents 完全優化（Angular、TypeScript、代碼質量、安全、測試、效能、無障礙、文檔）

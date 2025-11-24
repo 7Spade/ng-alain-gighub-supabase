@@ -152,7 +152,7 @@
 | 文檔 | 說明 | 用途 |
 |------|------|------|
 | [.github/copilot/README.md](../.github/copilot/README.md) | Copilot Memory 說明 | 記憶庫使用指南 |
-| [.github/copilot/memory.jsonl](../.github/copilot/memory.jsonl) | 企業級開發標準記憶庫 | 181 條知識圖譜記錄 |
+| [.github/copilot/memory.jsonl](../.github/copilot/memory.jsonl) | 專案知識圖譜記憶庫 | 知識圖譜記錄 |
 
 - --
 
