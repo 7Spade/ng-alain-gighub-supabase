@@ -288,14 +288,14 @@ BEGIN
   IF NEW.type = 'Organization' AND TG_OP = 'INSERT' THEN
     SELECT id INTO v_user_account_id
     FROM public.accounts
-    WHERE auth_user_id = NEW.auth_user_id  -- ✅ 使用 auth_user_id
+    WHERE auth_user_id = auth.uid()  -- ✅ 直接使用目前登入者
       AND type = 'User'
-      AND status != 'deleted'  -- ✅ 使用 status 欄位
+      AND status != 'deleted'
     LIMIT 1;
     
     IF v_user_account_id IS NOT NULL THEN
       INSERT INTO public.organization_members (organization_id, account_id, role, auth_user_id)
-      VALUES (NEW.id, v_user_account_id, 'owner', NEW.auth_user_id)
+      VALUES (NEW.id, v_user_account_id, 'owner', auth.uid())  -- ✅ 不再依賴 NEW.auth_user_id
       ON CONFLICT DO NOTHING;
     END IF;
   END IF;
