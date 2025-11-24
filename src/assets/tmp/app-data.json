@@ -411,16 +411,16 @@
             "link": "/user/{userId}/dashboard"
           },
           {
-            "text": "我的任務",
-            "i18n": "menu.user.tasks",
+            "text": "我的待辦",
+            "i18n": "menu.user.todos",
             "icon": "anticon-check-square",
-            "link": "/user/{userId}/tasks"
+            "link": "/user/{userId}/todos"
           },
           {
-            "text": "我的專案",
-            "i18n": "menu.user.projects",
-            "icon": "anticon-project",
-            "link": "/user/{userId}/projects"
+            "text": "我的藍圖",
+            "i18n": "menu.user.blueprints",
+            "icon": "anticon-file-text",
+            "link": "/user/{userId}/blueprints"
           },
           {
             "text": "個人設定",
@@ -445,10 +445,10 @@
             "link": "/org/{organizationId}/dashboard"
           },
           {
-            "text": "組織專案",
-            "i18n": "menu.organization.projects",
-            "icon": "anticon-project",
-            "link": "/org/{organizationId}/projects"
+            "text": "組織藍圖",
+            "i18n": "menu.organization.blueprints",
+            "icon": "anticon-file-text",
+            "link": "/org/{organizationId}/blueprints"
           },
           {
             "text": "團隊管理",
@@ -485,16 +485,16 @@
             "link": "/team/{teamId}/dashboard"
           },
           {
-            "text": "團隊任務",
-            "i18n": "menu.team.tasks",
+            "text": "團隊待辦",
+            "i18n": "menu.team.todos",
             "icon": "anticon-check-square",
-            "link": "/team/{teamId}/tasks"
+            "link": "/team/{teamId}/todos"
           },
           {
-            "text": "團隊專案",
-            "i18n": "menu.team.projects",
-            "icon": "anticon-project",
-            "link": "/team/{teamId}/projects"
+            "text": "團隊藍圖",
+            "i18n": "menu.team.blueprints",
+            "icon": "anticon-file-text",
+            "link": "/team/{teamId}/blueprints"
           },
           {
             "text": "團隊成員",
