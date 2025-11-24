@@ -84,22 +84,6 @@ export class OrganizationRepository extends BaseRepository<Organization, Organiz
   }
 
   /**
-   * 查詢用戶創建的組織
-   * Find organizations created by user
-   *
-   * @param {string} authUserId - Auth user ID
-   * @returns {Observable<Organization[]>} Organizations created by user
-   */
-  findCreatedByUser(authUserId: string): Observable<Organization[]> {
-    return this.findAll({
-      filters: {
-        createdBy: authUserId,
-        status: AccountStatus.ACTIVE
-      } as any
-    });
-  }
-
-  /**
    * 進階查詢（使用 OrganizationQueryOptions）
    * Advanced query with OrganizationQueryOptions
    *
@@ -115,10 +99,6 @@ export class OrganizationRepository extends BaseRepository<Organization, Organiz
       // 預設不包含已刪除的組織
       // By default, exclude deleted organizations
       filters['status'] = [AccountStatus.ACTIVE, AccountStatus.INACTIVE, AccountStatus.SUSPENDED];
-    }
-
-    if (options.createdBy) {
-      filters['createdBy'] = options.createdBy;
     }
 
     return this.findAll({ filters });

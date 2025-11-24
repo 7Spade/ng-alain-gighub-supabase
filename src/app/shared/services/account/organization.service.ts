@@ -64,7 +64,19 @@ export class OrganizationService {
    * @returns {Promise<OrganizationBusinessModel[]>} Organizations created by user
    */
   async getUserCreatedOrganizations(authUserId: string): Promise<OrganizationBusinessModel[]> {
-    const orgs = await firstValueFrom(this.organizationRepo.findCreatedByUser(authUserId));
+    const ownerMemberships = await firstValueFrom(
+      this.organizationMemberRepo.findWithOptions({
+        authUserId,
+        role: OrganizationMemberRole.OWNER
+      })
+    );
+
+    const organizationIds = ownerMemberships.map(m => (m as any).organizationId);
+    if (organizationIds.length === 0) {
+      return [];
+    }
+
+    const orgs = await firstValueFrom(this.organizationRepo.findByIds(organizationIds));
     return orgs as OrganizationBusinessModel[];
   }
 
@@ -120,8 +132,7 @@ export class OrganizationService {
       name: request.name,
       email: request.email || null,
       avatar: request.avatar || null,
-      status: request.status || AccountStatus.ACTIVE,
-      auth_user_id: user.id
+      status: request.status || AccountStatus.ACTIVE
     };
 
     const organization = await firstValueFrom(this.organizationRepo.create(insertData));

@@ -101,8 +101,6 @@ export interface AccountQueryOptions {
   type?: AccountType;
   /** 按狀態過濾 | Filter by status */
   status?: AccountStatus;
-  /** 按創建者過濾（auth_user_id） | Filter by creator (auth_user_id) */
-  createdBy?: string;
   /** 是否包含已刪除的帳戶 | Include deleted accounts */
   includeDeleted?: boolean;
 }

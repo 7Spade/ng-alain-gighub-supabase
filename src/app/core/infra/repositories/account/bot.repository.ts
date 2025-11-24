@@ -64,19 +64,6 @@ export class BotRepository extends BaseRepository<Bot, BotInsert, BotUpdate> {
   }
 
   /**
-   * 根據創建者查詢機器人
-   * Find bots by creator
-   *
-   * @param {string} createdBy - Creator auth_user_id
-   * @returns {Observable<Bot[]>} Bots created by user
-   */
-  findByCreator(createdBy: string): Observable<Bot[]> {
-    return this.findAll({
-      filters: { createdBy } as any
-    });
-  }
-
-  /**
    * 檢查機器人名稱是否已存在
    * Check if bot name exists
    *

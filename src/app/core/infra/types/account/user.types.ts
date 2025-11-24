@@ -23,8 +23,6 @@ export type UserAccountUpdate = Database['public']['Tables']['accounts']['Update
 export interface UserQueryOptions {
   /** 按狀態過濾 | Filter by status */
   status?: 'active' | 'inactive' | 'suspended' | 'deleted';
-  /** 按創建者過濾（auth_user_id） | Filter by creator (auth_user_id) */
-  createdBy?: string;
   /** 是否包含已刪除的用戶 | Include deleted users */
   includeDeleted?: boolean;
 }

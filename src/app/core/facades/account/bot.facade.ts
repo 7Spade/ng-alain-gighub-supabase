@@ -159,17 +159,6 @@ export class BotFacade extends BaseAccountCrudFacade<BotAccountModel, CreateBotR
   }
 
   /**
-   * 根據創建者查詢機器人
-   * Find bots by creator
-   *
-   * @param {string} createdBy - Creator auth_user_id
-   * @returns {Promise<BotAccountModel[]>} Bots created by user
-   */
-  async findByCreator(createdBy: string): Promise<BotAccountModel[]> {
-    return this.botService.findByCreator(createdBy);
-  }
-
-  /**
    * 查詢活躍的機器人
    * Find active bots
    *
@@ -182,10 +171,8 @@ export class BotFacade extends BaseAccountCrudFacade<BotAccountModel, CreateBotR
   /**
    * 載入機器人列表
    * Load bots
-   *
-   * @param {string} [createdBy] - Optional creator filter
    */
-  async loadBots(createdBy?: string): Promise<void> {
-    return this.botService.loadBots(createdBy);
+  async loadBots(): Promise<void> {
+    return this.botService.loadBots();
   }
 }

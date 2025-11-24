@@ -43,8 +43,6 @@ export enum OrganizationMemberRole {
 export interface OrganizationQueryOptions {
   /** 按狀態過濾 | Filter by status */
   status?: 'active' | 'inactive' | 'suspended' | 'deleted';
-  /** 按創建者過濾（auth_user_id） | Filter by creator (auth_user_id) */
-  createdBy?: string;
   /** 是否包含已刪除的組織 | Include deleted organizations */
   includeDeleted?: boolean;
 }
@@ -58,6 +56,8 @@ export interface OrganizationMemberQueryOptions {
   organizationId?: string;
   /** 按帳戶 ID 過濾 | Filter by account ID */
   accountId?: string;
+  /** 按 auth_user_id 過濾 | Filter by auth_user_id */
+  authUserId?: string;
   /** 按角色過濾 | Filter by role */
   role?: OrganizationMemberRole;
 }

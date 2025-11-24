@@ -45,18 +45,6 @@ export class BotService {
   }
 
   /**
-   * 根據創建者查詢機器人
-   * Find bots by creator
-   *
-   * @param {string} createdBy - Creator auth_user_id
-   * @returns {Promise<BotAccountModel[]>} Bots created by user
-   */
-  async findByCreator(createdBy: string): Promise<BotAccountModel[]> {
-    const bots = await firstValueFrom(this.botRepo.findByCreator(createdBy));
-    return bots as BotAccountModel[];
-  }
-
-  /**
    * 查詢活躍的機器人
    * Find active bots
    *
@@ -150,15 +138,13 @@ export class BotService {
   /**
    * 載入機器人列表
    * Load bots
-   *
-   * @param {string} [createdBy] - Optional creator filter
    */
-  async loadBots(createdBy?: string): Promise<void> {
+  async loadBots(): Promise<void> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
     try {
-      const bots = createdBy ? await this.findByCreator(createdBy) : await firstValueFrom(this.botRepo.findAll());
+      const bots = await firstValueFrom(this.botRepo.findAll());
 
       this.botsState.set(bots as BotAccountModel[]);
     } catch (error) {
