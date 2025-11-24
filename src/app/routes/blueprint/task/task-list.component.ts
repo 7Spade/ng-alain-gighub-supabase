@@ -15,10 +15,16 @@
  * @module task-list.component
  */
 
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, input } from '@angular/core';
 import { TaskFacade } from '@core';
+import { ModalHelper } from '@delon/theme';
 import { SHARED_IMPORTS, TaskModel, TaskViewMode } from '@shared';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
+
+import { TaskCreateModalComponent } from './task-create-modal.component';
+import { TaskEditModalComponent } from './task-edit-modal.component';
 
 /**
  * Task List Component
@@ -35,6 +41,12 @@ import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 })
 export class TaskListComponent implements OnInit {
   private readonly taskFacade = inject(TaskFacade);
+  private readonly modal = inject(ModalHelper);
+  private readonly message = inject(NzMessageService);
+  private readonly modalService = inject(NzModalService);
+
+  // Component inputs
+  readonly workspaceId = input.required<string>();
 
   // Facade state
   readonly tasks = this.taskFacade.tasks;
@@ -63,7 +75,11 @@ export class TaskListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Initialization logic would go here when needed
+    // Load tasks for the workspace
+    const wsId = this.workspaceId();
+    if (wsId) {
+      this.taskFacade.loadWorkspaceTasks(wsId);
+    }
   }
 
   /**
@@ -99,24 +115,63 @@ export class TaskListComponent implements OnInit {
    * Handle task creation
    */
   onCreateTask(): void {
-    console.log('Create task clicked');
-    // Placeholder for future implementation
+    const wsId = this.workspaceId();
+    if (!wsId) {
+      this.message.error('無效的工作區 ID');
+      return;
+    }
+
+    this.modal.createStatic(TaskCreateModalComponent, { workspaceId: wsId, parentId: null }, { size: 'md' }).subscribe(result => {
+      if (result) {
+        this.message.success('任務建立成功');
+        // Reload tasks to show the new task
+        this.taskFacade.loadWorkspaceTasks(wsId);
+      }
+    });
   }
 
   /**
    * Handle task edit
    */
   onEditTask(task: TaskModel): void {
-    console.log('Edit task:', task);
-    // Placeholder for future implementation
+    this.modal.createStatic(TaskEditModalComponent, { task }, { size: 'md' }).subscribe(result => {
+      if (result) {
+        this.message.success('任務更新成功');
+        // Reload tasks to show the updated task
+        const wsId = this.workspaceId();
+        if (wsId) {
+          this.taskFacade.loadWorkspaceTasks(wsId);
+        }
+      }
+    });
   }
 
   /**
    * Handle task delete
    */
   onDeleteTask(task: TaskModel): void {
-    console.log('Delete task:', task);
-    // Placeholder for future implementation
+    this.modalService.confirm({
+      nzTitle: '確認刪除',
+      nzContent: `確定要刪除任務「${task.name}」嗎？此操作無法復原。`,
+      nzOkText: '刪除',
+      nzOkDanger: true,
+      nzCancelText: '取消',
+      nzOnOk: async () => {
+        try {
+          await this.taskFacade.deleteTask(task.id);
+          this.message.success('任務刪除成功');
+
+          // Reload tasks
+          const wsId = this.workspaceId();
+          if (wsId) {
+            this.taskFacade.loadWorkspaceTasks(wsId);
+          }
+        } catch (error) {
+          console.error('Failed to delete task:', error);
+          this.message.error(`刪除任務失敗：${(error as Error).message}`);
+        }
+      }
+    });
   }
 
   /**
