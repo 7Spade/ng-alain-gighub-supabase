@@ -316,8 +316,6 @@
 |------|------|
 | [CHANGELOG.md](./CHANGELOG.md) | 變更日誌 |
 | [FINAL-SUMMARY.md](archive/FINAL-SUMMARY.md) | 最終總結 |
-| [MCP-Server-Verification-Report.md](archive/MCP-Server-Verification-Report.md) | MCP 伺服器驗證報告 |
-| [MCP伺服器驗證總結.md](archive/MCP伺服器驗證總結.md) | MCP 驗證總結 |
 | [README.md](./README.md) | 文檔索引（主文檔） |
 | [SRP-檢查清單.md](archive/SRP-檢查清單.md) | SRP 檢查清單 |
 | [SRP-重構完成報告.md](archive/SRP-重構完成報告.md) | SRP 重構報告 |
