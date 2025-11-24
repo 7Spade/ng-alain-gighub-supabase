@@ -88,7 +88,8 @@ export class AccountService {
    */
   async getUserTeams(accountId: string): Promise<TeamBusinessModel[]> {
     const memberships = await firstValueFrom(this.teamMemberRepo.findByAccount(accountId));
-    const teamIds = memberships.map(m => (m as any).teamId);
+    // Note: Supabase returns snake_case field names (team_id)
+    const teamIds = memberships.map(m => (m as any).team_id);
 
     if (teamIds.length === 0) {
       return [];
