@@ -27,6 +27,10 @@ type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
  * 帳戶資料存取層
  * Account data access layer
  *
+ * @deprecated Use UserRepository, BotRepository, or OrganizationRepository instead.
+ * This repository is kept for backward compatibility but should not be used for new code.
+ * Prefer type-specific repositories that enforce type filtering at the repository level.
+ *
  * Provides CRUD operations for accounts (User, Organization, Bot).
  * Extends BaseRepository with account-specific query methods.
  */
@@ -174,6 +178,8 @@ export class AccountRepository extends BaseRepository<Account, AccountInsert, Ac
 // Business Domain Repositories (業務域 Repositories - 扁平化導出)
 // ============================================================================
 
+export * from './user.repository';
+export * from './bot.repository';
 export * from './organization.repository';
 export * from './organization-member.repository';
 export * from './team.repository';
