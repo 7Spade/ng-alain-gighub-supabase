@@ -82,7 +82,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
                 [nzTitle]="blueprint.name"
                 [nzExtra]="extraTemplate"
                 class="blueprint-card"
-                (click)="onSelectBlueprint(blueprint)"
+                (click)="onSelectBlueprint()"
               >
                 <ng-template #extraTemplate>
                   <nz-badge [nzStatus]="getBadgeStatus(blueprint.status)" [nzText]="getStatusText(blueprint.status)"></nz-badge>
