@@ -10,18 +10,9 @@
  */
 
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
-
 import { WorkspaceRepository } from '@core';
-import {
-  WorkspaceModel,
-  WorkspaceSummary,
-  CreateWorkspaceRequest,
-  UpdateWorkspaceRequest,
-  WorkspaceStatistics,
-  WorkspaceFilterOptions,
-  WorkspaceStatusEnum
-} from '@shared';
+import { WorkspaceModel, CreateWorkspaceRequest, UpdateWorkspaceRequest, WorkspaceStatistics, WorkspaceStatusEnum } from '@shared';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Workspace Service

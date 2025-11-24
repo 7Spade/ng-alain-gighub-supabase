@@ -115,15 +115,15 @@ export interface TaskStatistics {
   inProgressCount: number;
   completedCount: number;
   cancelledCount: number;
-  
+
   // By level
-  l0Count: number;  // Root tasks
+  l0Count: number; // Root tasks
   l1Count: number;
   l2Count: number;
-  l3PlusCount: number;  // L3 and deeper
-  
+  l3PlusCount: number; // L3 and deeper
+
   // Progress
-  overallProgress: number;  // Percentage
+  overallProgress: number; // Percentage
   averageDepth: number;
 }
 
@@ -136,7 +136,7 @@ export interface TaskFilterOptions {
   assigneeId?: string;
   area?: string;
   tags?: string[];
-  level?: number;  // depth filter
+  level?: number; // depth filter
   searchTerm?: string;
 }
 
@@ -160,5 +160,5 @@ export interface AssignTaskRequest {
 export interface BulkTaskOperationRequest {
   taskIds: string[];
   operation: 'complete' | 'cancel' | 'delete' | 'assign';
-  payload?: unknown;  // Operation-specific data
+  payload?: unknown; // Operation-specific data
 }

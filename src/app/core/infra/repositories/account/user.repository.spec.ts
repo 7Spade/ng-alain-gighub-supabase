@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { AccountType } from '@core/infra/types/account';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { of, throwError } from 'rxjs';
+
 import { UserRepository } from './user.repository';
-import { AccountType } from '@core/infra/types/account';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
@@ -148,7 +149,7 @@ describe('UserRepository', () => {
       supabaseClientSpy.from.and.returnValue(fromSpy);
 
       repository.findAll().subscribe({
-        next: users => {
+        next: _result => {
           // In real implementation, Supabase would filter this out
           // This test verifies the type filter is applied
           expect(eqSpy).toHaveBeenCalledWith('type', AccountType.USER);

@@ -56,10 +56,10 @@ export class TeamFacade extends BaseAccountCrudFacade<TeamBusinessModel, CreateT
     if (!team) {
       throw new Error('Team not found');
     }
-    
+
     // Then delete it
     await this.teamService.deleteTeam(id);
-    
+
     return team;
   }
 

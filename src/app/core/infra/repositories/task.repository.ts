@@ -12,8 +12,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { BaseRepository } from './base.repository';
-import { Task, TaskInsert, TaskUpdate } from '../types/task.types';
 import { QueryOptions } from '../types/supabase.types';
+import { Task, TaskInsert, TaskUpdate } from '../types/task.types';
 
 /**
  * Task Repository

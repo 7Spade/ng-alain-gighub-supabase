@@ -32,12 +32,10 @@ export class CreateTeamComponent {
   private readonly msg = inject(NzMessageService);
 
   loading = signal(false);
-  
+
   // 從上下文自動獲取組織 ID
-  readonly currentOrgId = this.workspaceContext.contextType() === 'organization' 
-    ? this.workspaceContext.contextId() 
-    : null;
-  
+  readonly currentOrgId = this.workspaceContext.contextType() === 'organization' ? this.workspaceContext.contextId() : null;
+
   readonly showOrgSelector = !this.currentOrgId; // 只有在非組織上下文才顯示選擇器
 
   form: FormGroup = this.fb.group({
@@ -95,6 +93,6 @@ export class CreateTeamComponent {
   getCurrentOrgName(): string {
     if (!this.currentOrgId) return '';
     const org = this.organizations().find(o => o['id'] === this.currentOrgId);
-    return org ? ((org as any).name || '未命名組織') : '';
+    return org ? (org as any).name || '未命名組織' : '';
   }
 }

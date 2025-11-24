@@ -69,14 +69,14 @@ export class WorkspaceDataService {
 
       try {
         createdOrgs = await this.organizationService.getUserCreatedOrganizations(authUserId);
-        console.log('[WorkspaceDataService] ✅ 創建的組織 (' + createdOrgs.length + '):', createdOrgs);
+        console.log(`[WorkspaceDataService] ✅ 創建的組織 (${createdOrgs.length}):`, createdOrgs);
       } catch (error) {
         console.error('[WorkspaceDataService] ❌ Failed to load created organizations:', error);
       }
 
       try {
         joinedOrgs = await this.organizationService.getUserJoinedOrganizations(userAccount['id'] as string);
-        console.log('[WorkspaceDataService] ✅ 加入的組織 (' + joinedOrgs.length + '):', joinedOrgs);
+        console.log(`[WorkspaceDataService] ✅ 加入的組織 (${joinedOrgs.length}):`, joinedOrgs);
       } catch (error) {
         console.error('[WorkspaceDataService] ❌ Failed to load joined organizations:', error);
       }
@@ -98,7 +98,7 @@ export class WorkspaceDataService {
 
       try {
         teams = await this.accountService.getUserTeams(userAccount['id'] as string);
-        console.log('[WorkspaceDataService] ✅ 用戶團隊 (' + teams.length + '):', teams);
+        console.log(`[WorkspaceDataService] ✅ 用戶團隊 (${teams.length}):`, teams);
       } catch (error) {
         console.error('[WorkspaceDataService] ❌ Failed to load teams:', error);
       }

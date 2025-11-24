@@ -11,16 +11,14 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-
-import { BlueprintService, WorkspaceService } from '@shared';
 import {
+  BlueprintService,
+  WorkspaceService,
   BlueprintModel,
   WorkspaceModel,
   CreateBlueprintRequest,
   UpdateBlueprintRequest,
-  CreateWorkspaceRequest,
-  BlueprintStatistics,
-  WorkspaceStatistics
+  CreateWorkspaceRequest
 } from '@shared';
 
 /**
@@ -58,45 +56,28 @@ export class BlueprintFacade {
    * Load blueprints by owner (Account Context aware)
    */
   async loadOwnerBlueprints(ownerId: string): Promise<void> {
-    try {
-      await this.blueprintService.loadBlueprintsByOwner(ownerId);
-    } catch (error) {
-      // Error state already managed by service
-      throw error;
-    }
+    await this.blueprintService.loadBlueprintsByOwner(ownerId);
   }
 
   /**
    * Load public blueprints (marketplace)
    */
   async loadMarketplaceBlueprints(): Promise<void> {
-    try {
-      await this.blueprintService.loadPublicBlueprints();
-    } catch (error) {
-      throw error;
-    }
+    await this.blueprintService.loadPublicBlueprints();
   }
 
   /**
    * Load workspaces for tenant (Account Context aware)
    */
   async loadTenantWorkspaces(tenantId: string): Promise<void> {
-    try {
-      await this.workspaceService.loadWorkspacesByTenant(tenantId);
-    } catch (error) {
-      throw error;
-    }
+    await this.workspaceService.loadWorkspacesByTenant(tenantId);
   }
 
   /**
    * Load active workspaces for tenant
    */
   async loadActiveTenantWorkspaces(tenantId: string): Promise<void> {
-    try {
-      await this.workspaceService.loadActiveWorkspaces(tenantId);
-    } catch (error) {
-      throw error;
-    }
+    await this.workspaceService.loadActiveWorkspaces(tenantId);
   }
 
   /**

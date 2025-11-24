@@ -10,7 +10,7 @@
  * @module shared/utils
  */
 
-import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 
 /**
  * 標記表單組中所有控件為已觸碰
@@ -63,10 +63,7 @@ export function markFormGroupTouched(formGroup: FormGroup): void {
  * }));
  * ```
  */
-export function buildFormConfig<T>(
-  initialValues: Partial<T>,
-  validators: Partial<Record<keyof T, any[]>>
-): Record<string, any> {
+export function buildFormConfig<T>(initialValues: Partial<T>, validators: Partial<Record<keyof T, any[]>>): Record<string, any> {
   const config: Record<string, any> = {};
 
   for (const key in initialValues) {
@@ -105,7 +102,7 @@ export function getTrimmedFormValue<T>(formGroup: FormGroup): Partial<T> {
   for (const key in formValue) {
     if (Object.prototype.hasOwnProperty.call(formValue, key)) {
       const value = formValue[key];
-      
+
       if (typeof value === 'string') {
         const trimmed = value.trim();
         result[key] = trimmed === '' ? undefined : trimmed;

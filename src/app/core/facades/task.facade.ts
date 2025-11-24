@@ -11,15 +11,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-
-import { TaskService } from '@shared';
-import {
-  TaskModel,
-  CreateTaskRequest,
-  UpdateTaskRequest,
-  TaskStatistics,
-  TaskViewMode
-} from '@shared';
+import { TaskService, TaskModel, CreateTaskRequest, UpdateTaskRequest, TaskViewMode } from '@shared';
 
 /**
  * Task Facade
@@ -49,11 +41,7 @@ export class TaskFacade {
    * Load tasks for workspace
    */
   async loadWorkspaceTasks(workspaceId: string): Promise<void> {
-    try {
-      await this.taskService.loadTasksByWorkspace(workspaceId);
-    } catch (error) {
-      throw error;
-    }
+    await this.taskService.loadTasksByWorkspace(workspaceId);
   }
 
   /**
