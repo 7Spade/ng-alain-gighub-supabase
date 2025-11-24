@@ -1,17 +1,21 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { OrganizationMemberRepository } from '@core';
 import { SHARED_IMPORTS } from '@shared';
+import { ModalHelper } from '@delon/theme';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { AddOrganizationMemberComponent } from '../../account/add-organization-member/add-organization-member.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-org-members',
   standalone: true,
-  imports: [SHARED_IMPORTS, DatePipe],
+  imports: [SHARED_IMPORTS, DatePipe, FormsModule],
   template: `
     <page-header />
-    <nz-card [nzTitle]="'成員管理'">
+    <nz-card [nzTitle]="'成員管理'" [nzExtra]="extraTpl">
       @if (loading()) {
         <nz-spin />
       } @else if (error()) {
@@ -32,11 +36,17 @@ import { firstValueFrom } from 'rxjs';
             @for (member of members(); track member.id) {
               <tr>
                 <td>{{ member.account_id }}</td>
-                <td>{{ getRoleName(member.role) }}</td>
+                <td>
+                  <nz-select [ngModel]="member.role" (ngModelChange)="updateMemberRole(member, $event)" style="width: 120px">
+                    <nz-option nzValue="owner" nzLabel="擁有者"></nz-option>
+                    <nz-option nzValue="admin" nzLabel="管理員"></nz-option>
+                    <nz-option nzValue="member" nzLabel="成員"></nz-option>
+                  </nz-select>
+                </td>
                 <td>{{ member.joined_at | date: 'yyyy-MM-dd HH:mm' }}</td>
                 <td>
                   @if (member.role !== 'owner') {
-                    <button nz-button nzType="link" nzDanger nzSize="small"> 移除 </button>
+                    <button nz-button nzType="link" nzDanger nzSize="small" (click)="removeMember(member)"> 移除 </button>
                   }
                 </td>
               </tr>
@@ -45,12 +55,21 @@ import { firstValueFrom } from 'rxjs';
         </nz-table>
       }
     </nz-card>
+
+    <ng-template #extraTpl>
+      <button nz-button nzType="primary" (click)="addMember()">
+        <i nz-icon nzType="plus"></i>
+        添加成員
+      </button>
+    </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrgMembersComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly memberRepo = inject(OrganizationMemberRepository);
+  private readonly modal = inject(ModalHelper);
+  private readonly msg = inject(NzMessageService);
 
   organizationId = signal<string | null>(null);
   members = signal<any[]>([]);
@@ -77,6 +96,45 @@ export class OrgMembersComponent implements OnInit {
       this.error.set(error instanceof Error ? error.message : '載入成員失敗');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  addMember(): void {
+    if (!this.organizationId()) {
+      this.msg.error('缺少組織 ID');
+      return;
+    }
+
+    this.modal.create(
+      AddOrganizationMemberComponent,
+      { organizationId: this.organizationId() },
+      { size: 'md' }
+    ).subscribe(result => {
+      if (result?.success && this.organizationId()) {
+        this.loadMembers(this.organizationId()!);
+      }
+    });
+  }
+
+  async updateMemberRole(member: any, newRole: string): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.memberRepo.update(member.id, { role: newRole } as any)
+      );
+      this.msg.success('角色更新成功！');
+      await this.loadMembers(this.organizationId()!);
+    } catch (error) {
+      this.msg.error(error instanceof Error ? error.message : '更新角色失敗');
+    }
+  }
+
+  async removeMember(member: any): Promise<void> {
+    try {
+      await firstValueFrom(this.memberRepo.delete(member.id));
+      this.msg.success('成員已移除！');
+      await this.loadMembers(this.organizationId()!);
+    } catch (error) {
+      this.msg.error(error instanceof Error ? error.message : '移除成員失敗');
     }
   }
 

@@ -2,9 +2,11 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TeamMemberRepository } from '@core';
+import { TeamMemberRepository, TeamRepository } from '@core';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ModalHelper } from '@delon/theme';
+import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-member.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -93,23 +95,26 @@ import { firstValueFrom } from 'rxjs';
 export class TeamMembersComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly memberRepo = inject(TeamMemberRepository);
+  private readonly teamRepo = inject(TeamRepository);
   private readonly msg = inject(NzMessageService);
+  private readonly modal = inject(ModalHelper);
 
   teamId = signal<string | null>(null);
+  organizationId = signal<string | null>(null);
   members = signal<any[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
-  
-  addMemberModalVisible = false;
-  addingMember = signal<boolean>(false);
-  selectedAccountId = '';
-  selectedRole = 'member';
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe(async params => {
       const tId = params['teamId'];
       if (tId) {
         this.teamId.set(tId);
+        // 獲取團隊所屬組織
+        const team = await firstValueFrom(this.teamRepo.findById(tId));
+        if (team) {
+          this.organizationId.set((team as any).organization_id);
+        }
         this.loadMembers(tId);
       }
     });
@@ -129,38 +134,23 @@ export class TeamMembersComponent implements OnInit {
   }
 
   addMember(): void {
-    this.selectedAccountId = '';
-    this.selectedRole = 'member';
-    this.addMemberModalVisible = true;
-  }
-
-  cancelAddMember(): void {
-    this.addMemberModalVisible = false;
-  }
-
-  async confirmAddMember(): Promise<void> {
-    if (!this.selectedAccountId || !this.teamId()) {
-      this.msg.error('請輸入帳戶 ID');
+    if (!this.teamId() || !this.organizationId()) {
+      this.msg.error('缺少必要參數');
       return;
     }
 
-    this.addingMember.set(true);
-    try {
-      await firstValueFrom(
-        this.memberRepo.create({
-          team_id: this.teamId()!,
-          account_id: this.selectedAccountId,
-          role: this.selectedRole
-        } as any)
-      );
-      this.msg.success('成員添加成功！');
-      this.addMemberModalVisible = false;
-      await this.loadMembers(this.teamId()!);
-    } catch (error) {
-      this.msg.error(error instanceof Error ? error.message : '添加成員失敗');
-    } finally {
-      this.addingMember.set(false);
-    }
+    this.modal.create(
+      AddTeamMemberComponent,
+      {
+        teamId: this.teamId(),
+        organizationId: this.organizationId()
+      },
+      { size: 'md' }
+    ).subscribe(result => {
+      if (result?.success && this.teamId()) {
+        this.loadMembers(this.teamId()!);
+      }
+    });
   }
 
   async updateMemberRole(member: any, newRole: string): Promise<void> {
