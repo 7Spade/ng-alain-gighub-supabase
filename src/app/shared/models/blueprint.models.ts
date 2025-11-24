@@ -71,6 +71,7 @@ export interface CreateBlueprintRequest {
   description: string;
   category: BlueprintCategory;
   visibility?: BlueprintVisibility;
+  status?: BlueprintStatus;
   ownerId: string;
   ownerType: OwnerType;
   tags?: string[];
