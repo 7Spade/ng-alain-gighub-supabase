@@ -1,9 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { BotFacade } from './bot.facade';
-import { BotService } from '@shared/services/account';
-import { WorkspaceDataService } from '@core/services/workspace-data.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { WorkspaceDataService } from '@core/services/workspace-data.service';
 import { TokenService } from '@delon/auth';
+import { BotService } from '@shared/services/account';
+
+import { BotFacade } from './bot.facade';
 
 describe('BotFacade', () => {
   let facade: BotFacade;

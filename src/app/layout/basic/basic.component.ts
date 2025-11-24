@@ -3,11 +3,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { SupabaseAuthService, WorkspaceContextFacade, ContextType } from '@core';
 import { I18nPipe, ModalHelper, SettingsService, User } from '@delon/theme';
-import { MenuManagementService, MenuContextParams } from '@shared';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
 import { environment } from '@env/environment';
+import { MenuManagementService, MenuContextParams } from '@shared';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -15,6 +15,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 import { HeaderClearStorageComponent } from './widgets/clear-storage.component';
+import { HeaderContextSwitcherComponent } from './widgets/context-switcher.component';
 import { HeaderFullScreenComponent } from './widgets/fullscreen.component';
 import { HeaderI18nComponent } from './widgets/i18n.component';
 import { HeaderIconComponent } from './widgets/icon.component';
@@ -23,7 +24,6 @@ import { HeaderRTLComponent } from './widgets/rtl.component';
 import { HeaderSearchComponent } from './widgets/search.component';
 import { HeaderTaskComponent } from './widgets/task.component';
 import { HeaderUserComponent } from './widgets/user.component';
-import { HeaderContextSwitcherComponent } from './widgets/context-switcher.component';
 import { CreateOrganizationComponent } from '../../routes/account/create-organization/create-organization.component';
 
 @Component({
@@ -185,9 +185,23 @@ export class LayoutBasicComponent {
     this.menuManagementService.loadMenuConfig().subscribe();
 
     // 監聽上下文變化並更新菜單
+    // Only update menu when context is actually changed (not initial APP state)
     effect(() => {
       const contextType = this.workspaceContext.contextType();
       const contextId = this.workspaceContext.contextId();
+
+      // Don't update menu if we're in initial APP state and waiting for context restoration
+      // This prevents the flash of "主導航" before the correct context is restored
+      if (contextType === ContextType.APP && !contextId) {
+        // Check if we have a saved context that needs to be restored
+        if (typeof localStorage !== 'undefined') {
+          const saved = localStorage.getItem('workspace_context');
+          if (saved) {
+            // Skip menu update, let context restoration happen first
+            return;
+          }
+        }
+      }
 
       // 構建菜單參數
       const params = this.buildMenuParams(contextType, contextId);

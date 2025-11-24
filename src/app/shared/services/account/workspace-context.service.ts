@@ -57,11 +57,11 @@ export class WorkspaceContextService {
 
   /**
    * Groups teams by their organization ID.
-   * 
+   *
    * Note: Uses snake_case field access (organization_id) because Supabase returns
    * database fields in their original snake_case format. This will be addressed
    * in a future enhancement with BaseRepository field transformation.
-   * 
+   *
    * @see https://github.com/7Spade/ng-alain-gighub-supabase/pull/[PR_NUMBER]
    */
   readonly teamsByOrganization = computed(() => {
@@ -179,6 +179,9 @@ export class WorkspaceContextService {
   /**
    * 恢復上下文（從 localStorage）
    * Restore context from localStorage
+   *
+   * If no saved context exists, defaults to USER context with current user account ID
+   * to avoid flashing the APP menu (which should be empty).
    */
   restoreContext(): void {
     if (typeof localStorage === 'undefined') return;
@@ -187,11 +190,30 @@ export class WorkspaceContextService {
       const saved = localStorage.getItem('workspace_context');
       if (saved) {
         const context = JSON.parse(saved) as ContextState;
-        this.contextTypeState.set(context.type);
-        this.contextIdState.set(context.id);
+
+        // Validate that the context type and ID are valid
+        if (context.type && context.id) {
+          this.contextTypeState.set(context.type);
+          this.contextIdState.set(context.id);
+          console.log('[WorkspaceContextService] ✅ Context restored:', context.type, context.id);
+          return;
+        }
+      }
+
+      // No valid saved context, default to USER context
+      const userAccountId = this.currentUserAccountId();
+      if (userAccountId) {
+        console.log('[WorkspaceContextService] 🔄 No saved context, defaulting to USER:', userAccountId);
+        this.switchToUser(userAccountId);
       }
     } catch (error) {
       console.error('[WorkspaceContextService] Failed to restore context:', error);
+
+      // Fallback to USER context on error
+      const userAccountId = this.currentUserAccountId();
+      if (userAccountId) {
+        this.switchToUser(userAccountId);
+      }
     }
   }
 

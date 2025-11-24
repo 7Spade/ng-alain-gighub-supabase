@@ -114,7 +114,7 @@ export class BlueprintRepository extends BaseRepository<Blueprint, BlueprintInse
    * Note: Full-text search implementation requires custom query.
    * This method currently passes searchTerm through filters,
    * but actual implementation depends on Supabase text search setup.
-   * 
+   *
    * TODO: Implement proper full-text search using Supabase .textSearch() method
    * or PostgreSQL full-text search functions
    *

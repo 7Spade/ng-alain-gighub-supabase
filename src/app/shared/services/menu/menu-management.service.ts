@@ -91,8 +91,10 @@ export class MenuManagementService {
     return this.httpClient.get<AppData>('./assets/tmp/app-data.json').pipe(
       map(data => {
         // 支持新格式 (menus) 和舊格式 (menu) - 向後兼容
+        // New format prioritized: menus.app, menus.user, menus.organization, menus.team
+        // Old format (menu) is deprecated and should not be used for APP context
         const config: MenuConfig = data.menus || {
-          app: data.menu || []
+          app: []
         };
 
         this.menuConfigState.set(config);
@@ -129,7 +131,9 @@ export class MenuManagementService {
     let menu: Menu[] = [];
     switch (contextType) {
       case ContextType.APP:
-        menu = config.app || [];
+        // APP context should have no menu (empty array)
+        // This prevents showing old "主導航" menu
+        menu = [];
         break;
       case ContextType.USER:
         menu = config.user || [];
@@ -144,7 +148,7 @@ export class MenuManagementService {
         menu = config.bot || [];
         break;
       default:
-        menu = config.app || [];
+        menu = [];
     }
 
     // 深拷貝並處理動態參數
@@ -259,4 +263,3 @@ export class MenuManagementService {
     this.menuCache.delete(cacheKey);
   }
 }
-

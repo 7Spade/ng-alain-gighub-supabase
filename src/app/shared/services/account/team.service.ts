@@ -66,7 +66,7 @@ export class TeamService {
    */
   async createTeam(request: CreateTeamRequest): Promise<TeamBusinessModel> {
     const insertData = {
-      organization_id: request.organizationId,  // snake_case for database
+      organization_id: request.organizationId, // snake_case for database
       name: request.name,
       description: request.description || null,
       avatar: request.avatar || null
