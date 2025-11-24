@@ -1691,7 +1691,7 @@ export class RateLimiter {
     const windowStart = now - window;
     const key = `ratelimit:${tenantId}:${endpoint}`;
     
-    // Get current count from Redis or database
+    // Get current count from database
     const { data: requests, error } = await this.supabase
       .from('rate_limit_requests')
       .select('count')

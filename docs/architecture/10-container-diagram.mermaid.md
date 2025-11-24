@@ -37,7 +37,6 @@ C4Container
     System_Ext(email, "SMTP", "SendGrid")
     System_Ext(oauth_ext, "OAuth", "Google/GitHub")
     System_Ext(cdn_ext, "CDN", "Cloudflare")
-    ContainerDb_Ext(redis, "Redis", "快取層 (可選)")
 
     Rel(user, web, "HTTPS/WSS")
     Rel(user, mobile, "HTTPS/PWA")
@@ -66,7 +65,6 @@ C4Container
     Rel(edge, db, "SQL")
     Rel(edge, weather, "HTTPS/REST")
     Rel(edge, email, "SMTP/API")
-    Rel(edge, redis, "Redis Protocol")
 
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="2")
 ```
@@ -149,10 +147,6 @@ C4Container
   - JWT 驗證
 
 ### 外部服務
-
-#### Redis (可選)
-- **用途**: 天氣快取、Session、熱點資料
-- **優勢**: 減少 DB 查詢壓力
 
 #### 天氣 API
 - **服務**: OpenWeather / WeatherAPI.com

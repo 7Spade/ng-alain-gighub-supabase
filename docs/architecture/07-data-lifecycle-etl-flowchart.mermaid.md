@@ -81,7 +81,7 @@ flowchart TD
     Broadcast --> LoadResp[載入回應<br/>JSON序列化]
 
     SelectOp --> QueryCache{快取?}
-    QueryCache -->|命中| CacheHit[快取命中<br/>Redis/Memory]
+    QueryCache -->|命中| CacheHit[快取命中<br/>Memory]
     QueryCache -->|未命中| QueryDB[資料庫查詢<br/>Materialized Views]
 
     CacheHit --> LoadResp
@@ -155,7 +155,7 @@ flowchart TD
 4. **檔案處理**: Storage 上傳 → 圖片優化 (WebP) → EXIF 提取
 
 ### Load (載入)
-1. **快取策略**: Browser → CDN → Redis → PostgreSQL Shared Buffers
+1. **快取策略**: Browser → CDN → PostgreSQL Shared Buffers
 2. **資料載入**: JSON 序列化 → 類型轉換 → Angular Signals
 3. **UI 渲染**: 增量更新 → 樂觀 UI → 變更檢測
 

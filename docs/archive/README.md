@@ -51,14 +51,47 @@ archive/
 
 ## 📚 已封存文檔清單
 
-### 階段完成報告 (Phase Completions)
+### 2025 年封存文檔
+
+#### 完成報告 (Completed Reports)
+**位置**: `archive/2025/completed-reports/`
+
+- **TASK_COMPLETION_SUMMARY.md** - 任務完成總結（Multi-Tenant SaaS 核心設計文檔任務）
+- **REFACTORING_SUMMARY.md** - Account 模組重構總結
+- **CLEANUP_SUMMARY.md** - 文檔清理總結（v1.1.0）
+- **DOCUMENTATION_SUMMARY.md** - Supabase 文件建立任務總結
+
+#### 設計文檔 (Design Documents)
+**位置**: `archive/2025/design-docs/`
+
+- **DESIGN_COORDINATION_REPORT.md** - 設計文檔協調報告
+- **BLUEPRINT_TASK_MODULE_DESIGN.md** - 藍圖任務模組設計文檔
+- **BLUEPRINT_CONTAINER_PLANNING.md** - 藍圖容器規劃文檔
+- **CONTEXT_SWITCHER_DOCUMENTATION_GUIDE.md** - 上下文切換器功能文件指南
+- **SUPABASE_SETUP.md** - Supabase 設置指南（已被 supabase/development/setup.md 取代）
+- **SUPABASE_INTEGRATION.md** - Supabase 整合指南（已被 supabase/ 目錄文檔取代）
+
+#### 實施總結 (Implementation Summaries)
+**位置**: `archive/2025/implementation-summaries/`
+
+- **BLUEPRINT_BASE_IMPLEMENTATION.md** - 藍圖容器基礎實施文檔
+- **TASK_MODULE_BASE_IMPLEMENTATION.md** - 任務模組基礎實施文檔
+
+#### 修復報告 (Fix Reports)
+**位置**: `archive/2025/fix-reports/`
+
+- **RLS_INFINITE_RECURSION_FIX.md** - RLS 無限遞迴修復報告
+
+### 歷史封存文檔
+
+#### 階段完成報告 (Phase Completions)
 
 - **PHASE0_COMPLETION_REPORT.md** - Phase 0 完成報告
 - **WEEK1_COMPLETION_REPORT.md** - 第一週完成報告
 - **WEEK2_COMPLETION_REPORT.md** - 第二週完成報告
 - **facades-phase1-complete-summary.md** - Facades Phase 1 完成總結
 
-### 工作區追蹤記錄 (Workspace Tracking)
+#### 工作區追蹤記錄 (Workspace Tracking)
 
 - **analysis-summary-zh.md** - 分析摘要（中文版）
 - **facades-enhancement-progress-history.md** - Facades 增強進度歷史
@@ -143,8 +176,10 @@ git log -S "關鍵字" --all -- docs/archive/
 
 ## 📊 統計資訊
 
-- **封存文檔總數**: 9+ 個
-- **最後更新**: 2025-11-22
+- **封存文檔總數**: 21+ 個
+  - 2025 年新增: 12 個
+  - 歷史文檔: 9+ 個
+- **最後更新**: 2025-01-20
 - **維護狀態**: 定期整理
 
 ---

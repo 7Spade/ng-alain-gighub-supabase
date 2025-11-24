@@ -245,7 +245,6 @@
 | [54-UI-UX設計規範.md](./54-UI-UX設計規範.md) | UI/UX 設計 | ⭐⭐⭐⭐ |
 | [55-移動端適配指南.md](./55-移動端適配指南.md) | 移動端適配 | ⭐⭐⭐ |
 | [56-第三方服務整合指南.md](./56-第三方服務整合指南.md) | 第三方服務 | ⭐⭐⭐ |
-| [57-Redis使用指南.md](./57-Redis使用指南.md) | Redis 使用 | ⭐⭐⭐⭐ |
 | [58-工作區上下文功能總覽.md](./workspace/workspace-context-overview.md) | 工作區上下文 | ⭐⭐⭐⭐⭐ |
 | [60-開發者快速檢查清單.md](./guides/developer-quick-checklist.md) | 快速檢查 | ⭐⭐⭐⭐⭐ |
 | [61-開發疑難排解指南.md](./guides/development-troubleshooting-guide.md) | 疑難排解 | ⭐⭐⭐⭐⭐ |

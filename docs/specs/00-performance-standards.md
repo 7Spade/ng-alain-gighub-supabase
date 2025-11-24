@@ -77,7 +77,7 @@ CSS Bundle < 50KB（gzipped）。
 
 使用 Connection Pooling。
 
-實作查詢快取（Redis）。
+實作查詢快取。
 
 批次查詢合併。
 
