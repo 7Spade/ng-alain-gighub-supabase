@@ -8,7 +8,7 @@
  */
 
 import { Injectable, inject, signal } from '@angular/core';
-import { AccountRepository, TeamMemberRepository } from '@core';
+import { UserRepository, TeamMemberRepository } from '@core';
 import { firstValueFrom } from 'rxjs';
 
 import { TeamService } from './team.service';
@@ -31,7 +31,7 @@ import { Account, TeamBusinessModel } from '../../models/account';
   providedIn: 'root'
 })
 export class AccountService {
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly userRepo = inject(UserRepository);
   private readonly teamMemberRepo = inject(TeamMemberRepository);
   private readonly teamService = inject(TeamService);
 
@@ -53,7 +53,8 @@ export class AccountService {
    * @returns {Promise<Account | null>} Account or null
    */
   async findByAuthUserId(authUserId: string): Promise<Account | null> {
-    return firstValueFrom(this.accountRepo.findByAuthUserId(authUserId));
+    // 使用 UserRepository 查詢用戶帳戶
+    return firstValueFrom(this.userRepo.findByAuthUserId(authUserId));
   }
 
   /**
@@ -64,7 +65,8 @@ export class AccountService {
    * @returns {Promise<Account | null>} Account or null
    */
   async findById(id: string): Promise<Account | null> {
-    return firstValueFrom(this.accountRepo.findById(id));
+    // 使用 UserRepository 查詢用戶帳戶
+    return firstValueFrom(this.userRepo.findById(id));
   }
 
   /**
@@ -101,8 +103,8 @@ export class AccountService {
 
     try {
       const accounts = await firstValueFrom(
-        this.accountRepo.findAll({
-          filters: { authUserId: authUserId as any, type: 'User' as any }
+        this.userRepo.findAll({
+          filters: { authUserId: authUserId as any }
         })
       );
 
@@ -129,5 +131,6 @@ export * from './workspace-data.service';
 // ============================================================================
 
 export * from './user.service';
+export * from './bot.service';
 export * from './organization.service';
 export * from './team.service';

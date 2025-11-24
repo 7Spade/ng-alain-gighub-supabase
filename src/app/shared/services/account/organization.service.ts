@@ -15,7 +15,7 @@ import {
   AccountType,
   AccountStatus,
   OrganizationMemberRole,
-  AccountRepository,
+  UserRepository,
   SupabaseService,
   OrganizationRepository,
   OrganizationMemberRepository
@@ -31,7 +31,7 @@ import { ErrorHandlerService } from '../error-handler.service';
 export class OrganizationService {
   private readonly organizationRepo = inject(OrganizationRepository);
   private readonly organizationMemberRepo = inject(OrganizationMemberRepository);
-  private readonly accountRepo = inject(AccountRepository);
+  private readonly userRepo = inject(UserRepository);
   private readonly supabaseService = inject(SupabaseService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
@@ -106,11 +106,11 @@ export class OrganizationService {
     }
 
     // 2. 獲取當前用戶的 account_id
-    const userAccount = await firstValueFrom(this.accountRepo.findByAuthUserId(user.id));
+    const userAccount = await firstValueFrom(this.userRepo.findByAuthUserId(user.id));
     if (!userAccount) {
       throw new Error('User account not found');
     }
-    const userAccountId = userAccount['id'] as string;
+    const userAccountId = userAccount['id'];
 
     // 3. 創建組織
     const insertData = {
