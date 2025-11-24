@@ -19,6 +19,20 @@ export * from './domain';
 // Shell components (public components only)
 export { BlueprintShellComponent } from './shell';
 
+// Dialog components (CRUD forms)
+export {
+  BlueprintFormDialogComponent,
+  BlueprintFormDialogData,
+  BlueprintFormMode,
+  TaskFormDialogComponent,
+  TaskFormDialogData,
+  TaskFormMode,
+  BlueprintDeleteConfirmDialogComponent,
+  BlueprintDeleteConfirmDialogData,
+  TaskDeleteConfirmDialogComponent,
+  TaskDeleteConfirmDialogData
+} from './shell';
+
 // UI components (public components only)
 export { TaskListComponent } from './ui';
 
