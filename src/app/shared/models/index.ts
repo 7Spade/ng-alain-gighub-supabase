@@ -4,7 +4,7 @@
  * Exports all business model definitions.
  *
  * NOTE: Blueprint, Workspace, and Task models have been migrated to features/blueprint/domain
- * Use models from @features/blueprint instead
+ * Import from 'src/app/features/blueprint/domain/models' instead
  */
 
 export * from './supabase.models';

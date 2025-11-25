@@ -5,7 +5,7 @@
  * This includes database types and Supabase-specific types.
  *
  * NOTE: Blueprint, Workspace, and Task types have been migrated to features/blueprint/domain
- * Use types from @features/blueprint instead
+ * Import from 'src/app/features/blueprint/domain/types' instead
  */
 
 export * from './database.types';

@@ -65,7 +65,7 @@
 export * from './account';
 
 // NOTE: Blueprint, Workspace, and Task services have been migrated to features/blueprint module
-// Use services from @features/blueprint/data-access instead
+// Import from 'src/app/features/blueprint/data-access/services' or use BlueprintStore/TaskStore as facades
 
 // Menu management service
 export * from './menu';

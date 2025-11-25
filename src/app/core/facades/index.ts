@@ -71,7 +71,7 @@
 export * from './account';
 
 // NOTE: Blueprint and Task facades have been migrated to features/blueprint module
-// Use BlueprintStore and TaskStore from @features/blueprint instead
+// Import BlueprintStore and TaskStore from 'src/app/features/blueprint/data-access/stores' instead
 
 // Temporary export to make this a valid module
 export const FACADES_MODULE = 'facades';
