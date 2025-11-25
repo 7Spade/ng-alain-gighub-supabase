@@ -12,7 +12,8 @@ import { DatePipe, I18nPipe } from '@delon/theme';
 // ============================================
 // 共享模块（Shared Modules）
 // ============================================
-import { SHARED_DELON_MODULES, SHARED_CORE_SERVICES } from './shared-delon.module';
+import { SHARED_DELON_MODULES } from './shared-delon.module';
+import { SHARED_CORE_SERVICES } from './shared-core-services';
 import { SHARED_ZORRO_MODULES } from './shared-zorro.module';
 
 // ============================================

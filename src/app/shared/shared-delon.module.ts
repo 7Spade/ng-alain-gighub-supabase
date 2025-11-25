@@ -62,7 +62,6 @@ import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 // @delon/util - 工具函数/通用库（Utilities）
 // ============================================
 import { CurrencyPricePipe } from '@delon/util';
-import { SupabaseAuthService } from '@core/infra/supabase/supabase-auth.service';
 
 // ============================================
 // 导出共享模块数组
@@ -126,7 +125,3 @@ export const SHARED_DELON_MODULES = [
   // @delon/util - 工具
   CurrencyPricePipe
 ];
-
-// Core services that should be considered early in the app bootstrap
-// (Supabase Auth must be wired before relying on @delon/auth TokenService)
-export const SHARED_CORE_SERVICES = [SupabaseAuthService];
