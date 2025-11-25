@@ -2,11 +2,48 @@
 
 ## 1. 專案分層架構與單一職責原則 (SRP)
 
-### 1.1 分層順序
-所有功能必須依照以下層級順序流動,禁止跨層或反方向依賴:
+### 1.1 架構模式說明（重要：避免混淆）
+
+本專案採用**混合架構模式**，不同目錄使用不同的架構組織方式：
+
+#### 橫向分層架構（適用於 core、shared、routes、layout）
+
+以下目錄採用**橫向分層架構**，必須遵守以下層級順序流動，禁止跨層或反方向依賴：
+
 ```
 Types → Repositories → Models → Services → Facades → Routes/Components
 ```
+
+**適用範圍**：
+- `src/app/core/` - 核心模組（Facades、Infrastructure、Types）
+- `src/app/shared/` - 共享模組（UI 元件、Pipes、Directives、Services）
+- `src/app/routes/` - 路由頁面（對應 URL 的頁面元件）
+- `src/app/layout/` - 佈局元件（basic、blank、passport）
+
+**特點**：
+- 代碼按層級橫向組織（所有 Types 在一起，所有 Repositories 在一起）
+- 清晰的層級劃分，符合傳統企業級架構
+- 跨功能模組共享基礎設施
+
+#### 垂直切片架構（適用於 features）
+
+以下目錄採用**垂直切片架構**（Vertical Slice Architecture），依賴方向相同但代碼組織方式不同：
+
+```
+domain/types → data-access/repositories → domain/models 
+→ data-access/services → shell/ui
+```
+
+**適用範圍**：
+- `src/app/features/` - 功能模組（業務領域，支援 Lazy Load）
+
+**特點**：
+- 代碼按功能垂直組織（所有相關代碼集中在同一 feature 目錄下）
+- 每個 feature 包含完整的 domain、data-access、ui、shell 等層級
+- 功能完全獨立，易於並行開發
+- **邏輯容器（Blueprint Container）**：`blueprint` 是邏輯容器範例，提供共享上下文，能最大幅度減少 RLS 開發，且能搭配上下文切換器（Account Context Switcher）
+
+**重要**：兩種架構模式的**依賴方向完全相同**，只是**代碼組織方式不同**。在開發時必須明確區分當前工作在哪個目錄，並遵循對應的架構模式。
 
 ### 1.2 各層職責定義
 
@@ -156,17 +193,48 @@ def should_use_context7_mcp(agent_confident: bool) -> bool:
 
 ## 3. 模組邊界管理 (Module Boundary)
 
-### 3.1 Feature Module
+### 3.1 Feature Module（垂直切片架構）
 - 每個業務領域建立獨立 Feature Module
-- 包含該領域的 Facade、Service、UI
+- 採用**垂直切片架構**（Vertical Slice Architecture），所有相關代碼集中在同一 feature 目錄下
+- 包含該領域的 domain、data-access、ui、shell 等層級
 - 各 Feature 之間禁止互相 import
 - 必須支援 Lazy Load
 - 可獨立維護與測試
+
+**垂直切片架構結構**：
+```
+features/blueprint/
+├── domain/              # 領域層（types、models、interfaces、enums）
+├── data-access/         # 數據訪問層（repositories、services、stores）
+├── ui/                  # 展示層（Dumb Components）
+├── shell/               # 容器層（Smart Components、Dialogs）
+├── directives/          # 自定義指令
+├── pipes/               # 自定義管道
+├── guards/              # 路由守衛
+└── utils/               # 工具函數
+```
+
+**依賴方向**（在垂直切片中仍保持）：
+```
+domain/types → data-access/repositories → domain/models 
+→ data-access/services → shell/ui
+```
+
+**邏輯容器（Blueprint Container）**：
+- `blueprint` 是邏輯容器範例，用於管理可重用的工作區模板（blueprints）
+- **共享上下文設計**：邏輯容器內部提供共享上下文（Shared Context），所有相關的資料存取、業務邏輯、UI 組件都在同一上下文中運作
+- **RLS 開發優勢**：共享上下文能最大幅度減少 RLS（Row Level Security）開發複雜度，因為：
+  - 所有相關的資料表、查詢邏輯、權限檢查都在同一 feature 目錄下，context 完整可見
+  - 撰寫 RLS policy 時不需要在多個目錄間切換查找資訊
+  - 權限邏輯與業務邏輯緊密結合，易於理解和維護
+- **上下文切換器整合**：設計用於與 Account Context Switcher 整合，支援多租戶隔離
+- 採用垂直切片架構，所有相關代碼集中在 `features/blueprint/` 目錄下
 
 ### 3.2 Infrastructure Module
 - 放置 Supabase Client、Repositories、Http Adapter
 - 可依賴 Domain Module
 - 禁止依賴 Feature Module
+- **注意**：在垂直切片架構中，部分 Repositories 已遷移至 `features/*/data-access/repositories/`，但核心 Infrastructure 仍保留在 `core/infra/`
 
 ### 3.3 Domain Module
 - 包含 Types、Models、Mappers
@@ -181,11 +249,12 @@ def should_use_context7_mcp(agent_confident: bool) -> bool:
 - 禁止依賴 Feature Module
 
 ### 3.5 邊界禁止規則
-- Component 不可呼叫 Repository / Service
+- Component 不可呼叫 Repository / Service（應透過 Facade 或 Shell Component）
 - Feature Module 不可 import 另一個 Feature Module
 - Domain 不可引用 Infrastructure 層
 - Shared 不可含商業邏輯
 - Supabase client 僅可在 Repository 中使用
+- **垂直切片架構**：在 `features/` 下的模組，依賴方向仍保持 Types → Repositories → Models → Services → Shell/UI，但代碼組織方式為垂直切片
 
 ---
 
