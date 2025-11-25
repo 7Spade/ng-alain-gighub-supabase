@@ -6,4 +6,10 @@
  * @module features/blueprint/ui/task
  */
 
-export * from './task-list.component';
+// Shared utilities
+export * from './shared';
+
+// Components
+export * from './task-tree';
+export * from './task-table';
+export * from './task-list';
