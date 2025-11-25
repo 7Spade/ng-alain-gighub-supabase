@@ -5,10 +5,13 @@
  * Acts as Facade layer providing unified API to components
  * Following vertical slice architecture
  *
+ * Integrates with WorkspaceContextFacade for context-aware operations
+ *
  * @module features/blueprint/data-access/stores/blueprint.store
  */
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
+import { WorkspaceContextFacade, ContextType } from '@core';
 
 import {
   BlueprintModel,
@@ -16,7 +19,8 @@ import {
   UpdateBlueprintRequest,
   WorkspaceModel,
   CreateWorkspaceRequest,
-  TenantType
+  TenantType,
+  OwnerType
 } from '../../domain';
 import { BlueprintService, WorkspaceService } from '../services';
 
@@ -24,12 +28,17 @@ import { BlueprintService, WorkspaceService } from '../services';
  * Blueprint Store (Facade)
  *
  * Provides unified API for Blueprint Container system
- * Integrates with Account Context (to be added later)
+ * Integrates with WorkspaceContextFacade for context-aware operations
+ *
+ * Following vertical slice architecture pattern:
+ * - Feature Stores are Feature-internal Facades
+ * - Can integrate with Core Facades like WorkspaceContextFacade
  */
 @Injectable({ providedIn: 'root' })
 export class BlueprintStore {
   private readonly blueprintService = inject(BlueprintService);
   private readonly workspaceService = inject(WorkspaceService);
+  private readonly workspaceContext = inject(WorkspaceContextFacade);
 
   // Expose Blueprint Service state
   readonly blueprints = this.blueprintService.blueprints;
@@ -50,6 +59,113 @@ export class BlueprintStore {
   readonly draftBlueprints = this.blueprintService.draftBlueprints;
   readonly activeWorkspaces = this.workspaceService.activeWorkspaces;
   readonly archivedWorkspaces = this.workspaceService.archivedWorkspaces;
+
+  // Context-aware computed signals
+  readonly currentContextId = this.workspaceContext.contextId;
+  readonly currentContextType = this.workspaceContext.contextType;
+  readonly hasValidContext = this.workspaceContext.hasValidContext;
+
+  // Combined loading state
+  readonly loading = computed(() => this.blueprintLoading() || this.workspaceLoading());
+
+  // Combined error state
+  readonly error = computed(() => this.blueprintError() || this.workspaceError());
+
+  // ============================================================================
+  // Context-Aware Methods (新增：上下文感知方法)
+  // ============================================================================
+
+  /**
+   * Load blueprints for current context (自動使用當前上下文)
+   * Automatically uses the current context ID from WorkspaceContextFacade
+   */
+  async loadCurrentContextBlueprints(): Promise<void> {
+    const contextId = this.currentContextId();
+    const contextType = this.currentContextType();
+
+    if (!contextId || contextType === ContextType.APP) {
+      console.warn('[BlueprintStore] No valid context, skipping blueprint load');
+      return;
+    }
+
+    await this.blueprintService.loadBlueprintsByOwner(contextId);
+  }
+
+  /**
+   * Load workspaces for current context (自動使用當前上下文)
+   * Automatically uses the current context ID from WorkspaceContextFacade
+   */
+  async loadCurrentContextWorkspaces(): Promise<void> {
+    const contextId = this.currentContextId();
+    const contextType = this.currentContextType();
+
+    if (!contextId || contextType === ContextType.APP) {
+      console.warn('[BlueprintStore] No valid context, skipping workspace load');
+      return;
+    }
+
+    await this.workspaceService.loadWorkspacesByTenant(contextId);
+  }
+
+  /**
+   * Load all data for current context (藍圖 + 工作區)
+   * Convenience method to load both blueprints and workspaces
+   */
+  async loadCurrentContextData(): Promise<void> {
+    const contextId = this.currentContextId();
+    const contextType = this.currentContextType();
+
+    if (!contextId || contextType === ContextType.APP) {
+      console.warn('[BlueprintStore] No valid context, skipping data load');
+      return;
+    }
+
+    await Promise.all([this.loadCurrentContextBlueprints(), this.loadCurrentContextWorkspaces()]);
+  }
+
+  /**
+   * Create blueprint in current context (自動填充 owner 資訊)
+   * Automatically fills in owner information from current context
+   */
+  async createBlueprintInCurrentContext(request: Omit<CreateBlueprintRequest, 'ownerId' | 'ownerType'>): Promise<BlueprintModel | null> {
+    const contextId = this.currentContextId();
+    const contextType = this.currentContextType();
+
+    if (!contextId || contextType === ContextType.APP) {
+      console.error('[BlueprintStore] Cannot create blueprint without valid context');
+      return null;
+    }
+
+    const ownerType = this.mapContextTypeToOwnerType(contextType);
+    const fullRequest: CreateBlueprintRequest = {
+      ...request,
+      ownerId: contextId,
+      ownerType
+    };
+
+    return this.blueprintService.createBlueprint(fullRequest);
+  }
+
+  /**
+   * Map ContextType to OwnerType
+   * @private
+   */
+  private mapContextTypeToOwnerType(contextType: ContextType): OwnerType {
+    switch (contextType) {
+      case ContextType.USER:
+        return 'user';
+      case ContextType.ORGANIZATION:
+        return 'organization';
+      case ContextType.TEAM:
+        return 'team';
+      default:
+        return 'user';
+    }
+  }
+
+  // ============================================================================
+  // Original Methods (保留原有方法)
+  // ============================================================================
 
   /**
    * Load blueprints by owner (Account Context aware)

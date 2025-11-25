@@ -3,6 +3,7 @@
   
   Main container for blueprint modules
   Provides navigation and context display
+  Integrated with WorkspaceContextFacade for context switching
 -->
 
 <page-header [title]="'藍圖容器'">
@@ -16,7 +17,7 @@
 </page-header>
 
 <!-- Loading State -->
-@if (loading()) {
+@if (loading() || switching()) {
   <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
 }
 
@@ -29,6 +30,46 @@
     nzShowIcon
   ></nz-alert>
 }
+
+<!-- Current Context Display -->
+<nz-card [nzTitle]="'當前上下文'" class="mb-md">
+  @if (hasValidContext()) {
+    <nz-descriptions [nzColumn]="3" nzBordered>
+      <nz-descriptions-item [nzTitle]="'上下文類型'">
+        <nz-tag [nzColor]="contextTagColor()">
+          <i nz-icon [nzType]="contextIcon()" nzTheme="outline" class="mr-xs"></i>
+          {{ contextTypeLabel() }}
+        </nz-tag>
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'名稱'">
+        {{ contextLabel() }}
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'狀態'">
+        <nz-badge nzStatus="success" nzText="已連接"></nz-badge>
+      </nz-descriptions-item>
+    </nz-descriptions>
+    <nz-alert
+      nzType="success"
+      nzMessage="上下文切換器已整合"
+      nzDescription="藍圖容器已與上下文切換器成功整合。當您切換帳戶、組織或團隊時，藍圖資料將自動更新。"
+      nzShowIcon
+      class="mt-md">
+    </nz-alert>
+  } @else {
+    <nz-alert
+      nzType="warning"
+      nzMessage="請選擇上下文"
+      nzDescription="請點擊左側的用戶頭像，在下拉選單中選擇一個帳戶、組織或團隊以啟用藍圖功能。"
+      nzShowIcon>
+    </nz-alert>
+    <div class="text-center mt-md">
+      <button nz-button nzType="primary" (click)="navigateToAccount()">
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+        前往帳戶頁面
+      </button>
+    </div>
+  }
+</nz-card>
 
 <!-- Blueprint Info -->
 @if (selectedBlueprint()) {
@@ -58,16 +99,6 @@
     </nz-descriptions>
   </nz-card>
 }
-
-<!-- Context Switcher Placeholder -->
-<nz-card [nzTitle]="'上下文切換器'" class="mb-md">
-  <nz-alert
-    nzType="info"
-    nzMessage="上下文切換器整合"
-    nzDescription="此處將整合組織上下文切換器，用於切換不同藍圖容器的上下文"
-    nzShowIcon>
-  </nz-alert>
-</nz-card>
 
 <!-- Module Navigation -->
 <nz-card [nzTitle]="'可用模組'">
