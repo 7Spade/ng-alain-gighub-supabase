@@ -119,7 +119,6 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
   imports: [
     RouterOutlet,
     RouterLink,
-    I18nPipe,
     LayoutDefaultModule,
     NzIconModule,
     NzMenuModule,
