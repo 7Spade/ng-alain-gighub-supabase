@@ -28,15 +28,30 @@ import { STModule } from '@delon/abc/st';
 import { SVModule } from '@delon/abc/sv';
 import { TagSelectModule } from '@delon/abc/tag-select';
 import { XlsxModule } from '@delon/abc/xlsx';
+import { ACLDirective, ACLIfDirective } from '@delon/acl';
+import { G2BarModule } from '@delon/chart/bar';
+import { G2CardModule } from '@delon/chart/card';
+import { G2GaugeModule } from '@delon/chart/gauge';
+import { G2MiniAreaModule } from '@delon/chart/mini-area';
+import { G2MiniBarModule } from '@delon/chart/mini-bar';
+import { G2MiniProgressModule } from '@delon/chart/mini-progress';
+import { NumberInfoModule } from '@delon/chart/number-info';
+import { G2PieModule } from '@delon/chart/pie';
+import { G2RadarModule } from '@delon/chart/radar';
+import { G2TagCloudModule } from '@delon/chart/tag-cloud';
+import { G2TimelineModule } from '@delon/chart/timeline';
+import { TrendModule } from '@delon/chart/trend';
+import { G2WaterWaveModule } from '@delon/chart/water-wave';
+import { DelonFormModule } from '@delon/form';
+import { LayoutDefaultModule } from '@delon/theme/layout-default';
+import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 // Note: ZipService is a service and doesn't require module import
 // ============================================
 // @delon/acl - 权限控制（ACL - Access Control List）
 // ============================================
-import { ACLDirective, ACLIfDirective } from '@delon/acl';
 // ============================================
 // @delon/form - 基于 JSON-Schema 的表单模块
 // ============================================
-import { DelonFormModule } from '@delon/form';
 // ============================================
 // @delon/util - 工具函数/通用库（Utilities）
 // ============================================
@@ -74,6 +89,25 @@ export const SHARED_DELON_MODULES = [
   SVModule,
   TagSelectModule,
   XlsxModule,
+
+  // @delon/theme - layout & settings
+  LayoutDefaultModule,
+  SettingDrawerModule,
+
+  // @delon/chart - charts
+  G2BarModule,
+  G2CardModule,
+  G2MiniAreaModule,
+  G2MiniBarModule,
+  G2MiniProgressModule,
+  NumberInfoModule,
+  G2PieModule,
+  G2TimelineModule,
+  TrendModule,
+  G2GaugeModule,
+  G2TagCloudModule,
+  G2WaterWaveModule,
+  G2RadarModule,
 
   // @delon/acl - 权限控制
   ACLDirective,

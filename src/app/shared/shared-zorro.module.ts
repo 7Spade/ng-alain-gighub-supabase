@@ -5,6 +5,7 @@
 import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAnchorModule } from 'ng-zorro-antd/anchor';
+import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBackTopModule } from 'ng-zorro-antd/back-top';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
@@ -38,6 +39,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzQRCodeModule } from 'ng-zorro-antd/qr-code';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzRateModule } from 'ng-zorro-antd/rate';
 import { NzResultModule } from 'ng-zorro-antd/result';
@@ -58,13 +60,9 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTransferModule } from 'ng-zorro-antd/transfer';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
+import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
-import { NzMessageModule } from 'ng-zorro-antd/message';
-import { NzNotificationModule } from 'ng-zorro-antd/notification';
-import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
-import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
-import { NzQRCodeModule } from 'ng-zorro-antd/qr-code';
 
 // ============================================
 // 导出共享模块数组（按功能分类排序）
@@ -138,8 +136,6 @@ export const SHARED_ZORRO_MODULES = [
   NzAlertModule,
   NzDrawerModule,
   NzModalModule,
-  NzMessageModule,
-  NzNotificationModule,
   NzPopconfirmModule,
   NzProgressModule,
   NzResultModule,
