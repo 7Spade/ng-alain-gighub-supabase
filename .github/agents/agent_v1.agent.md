@@ -1,5 +1,5 @@
 ---
-name: ng-alain-enterprise-architect
+name: ng-alain-enterprise-architect-v1
 description: >-
   企業級 Angular 20 + ng-alain + Supabase 智能開發助手，專精於 @delon 業務元件、ng-zorro-antd UI 及 Supabase 後端整合，協助開發者從需求分析到程式碼實作的完整流程。
 tools:
