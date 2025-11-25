@@ -73,6 +73,21 @@ export const TASK_STATUS_CONFIG = {
     icon: 'close-circle',
     description: '任務已取消',
     sortOrder: 5
+  },
+  // Legacy aliases
+  [TaskStatusEnum.PENDING]: {
+    label: '待處理',
+    color: 'default',
+    icon: 'clock-circle',
+    description: '任務尚未開始',
+    sortOrder: 1
+  },
+  [TaskStatusEnum.COMPLETED]: {
+    label: '已完成',
+    color: 'success',
+    icon: 'check-circle',
+    description: '任務已完成',
+    sortOrder: 4
   }
 } as const;
 
@@ -109,6 +124,13 @@ export const TASK_PRIORITY_CONFIG = {
     color: 'red',
     icon: 'double-right',
     weight: 5
+  },
+  // Legacy alias
+  [TaskPriorityEnum.URGENT]: {
+    label: '緊急',
+    color: 'red',
+    icon: 'double-right',
+    weight: 6
   }
 } as const;
 

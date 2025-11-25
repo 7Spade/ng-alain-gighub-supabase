@@ -11,7 +11,7 @@
     [formData]="formData()"
     [loading]="loading()"
     button="none"
-    (formSubmit)="onSubmit($event)">
+    (formSubmit)="onFormSubmit($event)">
   </sf>
 
   <!-- Form actions -->
@@ -30,7 +30,7 @@
         nz-button
         nzType="primary"
         [nzLoading]="loading()"
-        (click)="sf.submit()">
+        (click)="submitForm()">
         @if (isEditMode) {
           更新
         } @else {

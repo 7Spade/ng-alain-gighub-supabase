@@ -17,7 +17,7 @@ export const BLUEPRINT_ROUTES: Routes = [
   },
   {
     path: 'task',
-    loadComponent: () => import('./ui/task/task-list.component').then(m => m.TaskListComponent),
+    loadComponent: () => import('./ui/task/task-list/task-list.component').then(m => m.TaskListComponent),
     data: { title: '任務管理' }
   }
 ];

@@ -37,19 +37,23 @@ export { BlueprintShellComponent } from './shell';
 // Dialog components (CRUD forms)
 export {
   BlueprintFormDialogComponent,
+  TaskFormDialogComponent,
+  BlueprintDeleteConfirmDialogComponent,
+  TaskDeleteConfirmDialogComponent
+} from './shell';
+
+// Dialog types
+export type {
   BlueprintFormDialogData,
   BlueprintFormMode,
-  TaskFormDialogComponent,
   TaskFormDialogData,
   TaskFormMode,
-  BlueprintDeleteConfirmDialogComponent,
   BlueprintDeleteConfirmDialogData,
-  TaskDeleteConfirmDialogComponent,
   TaskDeleteConfirmDialogData
 } from './shell';
 
 // UI components (public components only)
-export { TaskListComponent } from './ui';
+export { TaskListComponent, TaskTreeComponent, TaskTableComponent } from './ui';
 
 // Stores (facade layer - main API for components)
 export { BlueprintStore, TaskStore } from './data-access';

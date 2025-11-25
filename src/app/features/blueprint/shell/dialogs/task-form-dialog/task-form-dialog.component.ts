@@ -11,8 +11,8 @@
  * @module features/blueprint/shell/dialogs/task-form-dialog
  */
 
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { SFSchema, SFUISchema } from '@delon/form';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
@@ -61,6 +61,8 @@ interface TaskFormValues {
   templateUrl: './task-form-dialog.component.html'
 })
 export class TaskFormDialogComponent implements OnInit {
+  @ViewChild('sf') private sf!: SFComponent;
+
   private readonly modalRef = inject(NzModalRef);
   private readonly messageService = inject(NzMessageService);
   private readonly taskStore = inject(TaskStore);
@@ -190,6 +192,23 @@ export class TaskFormDialogComponent implements OnInit {
         status: 'pending'
       });
     }
+  }
+
+  /**
+   * Trigger form submission
+   */
+  submitForm(): void {
+    if (this.sf?.valid) {
+      const value = this.sf.value as TaskFormValues;
+      this.onSubmit(value);
+    }
+  }
+
+  /**
+   * Handle form submission from sf component
+   */
+  onFormSubmit(value: Record<string, unknown>): void {
+    this.onSubmit(value as unknown as TaskFormValues);
   }
 
   /**

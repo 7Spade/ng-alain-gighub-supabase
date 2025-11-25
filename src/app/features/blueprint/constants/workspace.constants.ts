@@ -7,10 +7,7 @@
  * @module features/blueprint/constants/workspace.constants
  */
 
-/**
- * Workspace status types
- */
-export type WorkspaceStatus = 'active' | 'archived' | 'deleted';
+import { WorkspaceStatus } from '../domain/types/workspace.types';
 
 /**
  * Workspace tenant types

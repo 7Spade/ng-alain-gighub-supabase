@@ -1,0 +1,114 @@
+/**
+ * Task Tree Component Styles
+ *
+ * Styles for tree view component
+ */
+
+:host {
+  display: block;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.task-node {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+
+  &.expandable {
+    font-weight: 500;
+  }
+}
+
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+
+  .task-level {
+    flex-shrink: 0;
+  }
+
+  .task-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .child-count {
+    flex-shrink: 0;
+  }
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .task-progress {
+    width: 100px;
+  }
+
+  .task-counts {
+    font-size: 12px;
+    color: rgb(0 0 0 / 45%);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .task-tag {
+    margin-right: 0;
+  }
+}
+
+.task-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  .task-node:hover & {
+    opacity: 1;
+  }
+}
+
+/* Tree view customizations */
+::ng-deep {
+  .ant-tree-treenode {
+    width: 100%;
+    padding: 0;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .ant-tree-node-content-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ant-tree-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+  }
+}

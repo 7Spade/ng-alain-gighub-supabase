@@ -1,0 +1,125 @@
+<!--
+  Task Tree Component Template
+
+  Tree view using NzTreeViewModule
+  Displays tasks in hierarchical structure
+-->
+
+@if (loading()) {
+  <div class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+} @else if (treeData().length === 0) {
+  <nz-empty [nzNotFoundContent]="'暫無任務'">
+    <ng-template #nzNotFoundFooter>
+      <button nz-button nzType="primary" (click)="onAddChild($event, null)">
+        <i nz-icon nzType="plus"></i>
+        新增任務
+      </button>
+    </ng-template>
+  </nz-empty>
+} @else {
+  <nz-tree-view [nzDataSource]="dataSource" [nzTreeControl]="treeControl">
+    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+      <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+      <div class="task-node" (click)="onNodeClick(node)">
+        <div class="task-info">
+          <nz-tag [nzColor]="getLevelColor(node.task.depth)" class="task-level">
+            {{ getTaskLevel(node.task.depth) }}
+          </nz-tag>
+          <nz-badge 
+            [nzStatus]="getStatusColor(node.task.status)" 
+            [nzText]="getStatusText(node.task.status)">
+          </nz-badge>
+          <span class="task-name">{{ node.task.name }}</span>
+        </div>
+        <div class="task-meta">
+          <nz-progress 
+            [nzPercent]="node.task.progress" 
+            [nzSize]="'small'"
+            [nzShowInfo]="true"
+            class="task-progress">
+          </nz-progress>
+          <span class="task-counts">
+            {{ node.task.completedCount }}/{{ node.task.totalCount }}
+          </span>
+          @for (tag of node.task.tags.slice(0, 2); track tag) {
+            <nz-tag [nzColor]="'blue'" class="task-tag">{{ tag }}</nz-tag>
+          }
+        </div>
+        <div class="task-actions">
+          <button nz-button nzType="text" nzSize="small" 
+                  nz-tooltip nzTooltipTitle="新增子任務"
+                  (click)="onAddChild($event, node.task.id)">
+            <i nz-icon nzType="plus"></i>
+          </button>
+          <button nz-button nzType="text" nzSize="small"
+                  nz-tooltip nzTooltipTitle="編輯"
+                  (click)="onEdit($event, node.task)">
+            <i nz-icon nzType="edit"></i>
+          </button>
+          <button nz-button nzType="text" nzSize="small" nzDanger
+                  nz-tooltip nzTooltipTitle="刪除"
+                  (click)="onDelete($event, node.task)">
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </div>
+      </div>
+    </nz-tree-node>
+
+    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+      <nz-tree-node-toggle>
+        <i nz-icon [nzType]="treeControl.isExpanded(node) ? 'minus-square' : 'plus-square'"></i>
+      </nz-tree-node-toggle>
+      <div class="task-node expandable" (click)="onNodeClick(node)">
+        <div class="task-info">
+          <nz-tag [nzColor]="getLevelColor(node.task.depth)" class="task-level">
+            {{ getTaskLevel(node.task.depth) }}
+          </nz-tag>
+          <nz-badge 
+            [nzStatus]="getStatusColor(node.task.status)" 
+            [nzText]="getStatusText(node.task.status)">
+          </nz-badge>
+          <span class="task-name">{{ node.task.name }}</span>
+          <nz-tag [nzColor]="'default'" class="child-count">
+            {{ node.task.childCount }} 個子任務
+          </nz-tag>
+        </div>
+        <div class="task-meta">
+          <nz-progress 
+            [nzPercent]="node.task.progress" 
+            [nzSize]="'small'"
+            [nzShowInfo]="true"
+            class="task-progress">
+          </nz-progress>
+          <span class="task-counts">
+            {{ node.task.completedCount }}/{{ node.task.totalCount }}
+          </span>
+          @if (node.task.area) {
+            <nz-tag>{{ node.task.area }}</nz-tag>
+          }
+          @for (tag of node.task.tags.slice(0, 2); track tag) {
+            <nz-tag [nzColor]="'blue'" class="task-tag">{{ tag }}</nz-tag>
+          }
+        </div>
+        <div class="task-actions">
+          <button nz-button nzType="text" nzSize="small"
+                  nz-tooltip nzTooltipTitle="新增子任務"
+                  (click)="onAddChild($event, node.task.id)">
+            <i nz-icon nzType="plus"></i>
+          </button>
+          <button nz-button nzType="text" nzSize="small"
+                  nz-tooltip nzTooltipTitle="編輯"
+                  (click)="onEdit($event, node.task)">
+            <i nz-icon nzType="edit"></i>
+          </button>
+          <button nz-button nzType="text" nzSize="small" nzDanger
+                  nz-tooltip nzTooltipTitle="刪除"
+                  (click)="onDelete($event, node.task)">
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </div>
+      </div>
+    </nz-tree-node>
+  </nz-tree-view>
+}

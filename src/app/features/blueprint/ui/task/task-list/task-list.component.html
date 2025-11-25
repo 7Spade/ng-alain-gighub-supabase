@@ -1,0 +1,129 @@
+<!--
+  Task List Container Template
+
+  Dual view modes: Tree View and Table View
+  Delegates to child components for actual rendering
+-->
+
+<page-header [title]="'任務管理'">
+  <ng-template #action>
+    <nz-space>
+      <!-- View Mode Toggle -->
+      <button 
+        *nzSpaceItem
+        nz-button 
+        [nzType]="viewMode() === 'tree' ? 'primary' : 'default'"
+        (click)="setViewMode('tree')">
+        <i nz-icon nzType="apartment" nzTheme="outline"></i>
+        樹狀視圖
+      </button>
+      <button 
+        *nzSpaceItem
+        nz-button 
+        [nzType]="viewMode() === 'table' ? 'primary' : 'default'"
+        (click)="setViewMode('table')">
+        <i nz-icon nzType="table" nzTheme="outline"></i>
+        表格視圖
+      </button>
+      <button *nzSpaceItem nz-button nzType="primary" (click)="onCreateTask()">
+        <i nz-icon nzType="plus" nzTheme="outline"></i>
+        新增任務
+      </button>
+    </nz-space>
+  </ng-template>
+</page-header>
+
+<!-- Statistics Summary -->
+<nz-card [nzTitle]="'任務統計'" class="stats-card">
+  <nz-row [nzGutter]="16">
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().totalCount" 
+        [nzTitle]="'總數量'"
+        [nzPrefix]="totalIcon">
+      </nz-statistic>
+      <ng-template #totalIcon>
+        <i nz-icon nzType="bars" class="icon-primary"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().completedCount" 
+        [nzTitle]="'已完成'"
+        [nzPrefix]="completedIcon">
+      </nz-statistic>
+      <ng-template #completedIcon>
+        <i nz-icon nzType="check-circle" class="icon-success"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().inProgressCount" 
+        [nzTitle]="'進行中'"
+        [nzPrefix]="progressIcon">
+      </nz-statistic>
+      <ng-template #progressIcon>
+        <i nz-icon nzType="loading" class="icon-warning"></i>
+      </ng-template>
+    </nz-col>
+    <nz-col [nzSpan]="6">
+      <nz-statistic 
+        [nzValue]="statistics().overallProgress" 
+        [nzTitle]="'整體進度'"
+        [nzSuffix]="'%'"
+        [nzPrefix]="dashIcon">
+      </nz-statistic>
+      <ng-template #dashIcon>
+        <i nz-icon nzType="dashboard" class="icon-info"></i>
+      </ng-template>
+    </nz-col>
+  </nz-row>
+</nz-card>
+
+<!-- Search -->
+<nz-card class="search-card">
+  <nz-input-group [nzPrefix]="searchIcon">
+    <input 
+      nz-input 
+      placeholder="搜尋任務名稱、描述或標籤" 
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearch($event)"
+    />
+  </nz-input-group>
+  <ng-template #searchIcon>
+    <i nz-icon nzType="search"></i>
+  </ng-template>
+</nz-card>
+
+<!-- Error State -->
+@if (error()) {
+  <nz-alert
+    nzType="error"
+    [nzMessage]="'載入失敗'"
+    [nzDescription]="error()"
+    nzShowIcon
+    class="error-alert">
+  </nz-alert>
+}
+
+<!-- Content Area -->
+<nz-card class="content-card">
+  @if (viewMode() === 'tree') {
+    <app-task-tree
+      [tasks]="filteredTasks()"
+      [loading]="loading()"
+      (taskSelect)="onTaskSelect($event)"
+      (taskEdit)="onEditTask($event)"
+      (taskDelete)="onDeleteTask($event)"
+      (taskCreate)="onCreateTask($event)">
+    </app-task-tree>
+  } @else {
+    <app-task-table
+      [tasks]="filteredTasks()"
+      [loading]="loading()"
+      (taskSelect)="onTaskSelect($event)"
+      (taskEdit)="onEditTask($event)"
+      (taskDelete)="onDeleteTask($event)">
+    </app-task-table>
+  }
+</nz-card>
