@@ -60,6 +60,11 @@ import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
+import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
+import { NzQRCodeModule } from 'ng-zorro-antd/qr-code';
 
 // ============================================
 // 导出共享模块数组（按功能分类排序）
@@ -125,10 +130,16 @@ export const SHARED_ZORRO_MODULES = [
   NzToolTipModule,
   NzTreeModule,
 
+  // 其他顯示/工具: QR / Tree View
+  NzTreeViewModule,
+  NzQRCodeModule,
+
   // 反馈组件 (Feedback)
   NzAlertModule,
   NzDrawerModule,
   NzModalModule,
+  NzMessageModule,
+  NzNotificationModule,
   NzPopconfirmModule,
   NzProgressModule,
   NzResultModule,
