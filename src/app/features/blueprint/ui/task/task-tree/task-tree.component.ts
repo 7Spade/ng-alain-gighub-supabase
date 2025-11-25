@@ -8,7 +8,7 @@
  */
 
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, Input, Output, EventEmitter, computed, ChangeDetectionStrategy, Signal, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed, ChangeDetectionStrategy, Signal, effect } from '@angular/core';
 import { SHARED_IMPORTS } from '@shared';
 import { NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 
@@ -41,7 +41,7 @@ import {
   styleUrl: './task-tree.component.less',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TaskTreeComponent implements OnChanges {
+export class TaskTreeComponent {
   /** Tasks signal from parent */
   @Input({ required: true }) tasks!: Signal<Task[]>;
 
@@ -74,6 +74,7 @@ export class TaskTreeComponent implements OnChanges {
       name: task.name,
       level,
       expandable: children.length > 0,
+      childCount: task.childCount,
       status: task.status,
       progress: task.progress,
       completedCount: task.completedCount,
@@ -109,16 +110,13 @@ export class TaskTreeComponent implements OnChanges {
   getProgressStatus = getProgressStatus;
   formatAssigneeInitials = formatAssigneeInitials;
 
-  /** Update data source when tasks change */
-  ngOnChanges(): void {
-    this.updateDataSource();
-  }
-
-  /** Refresh data source with root tasks */
-  private updateDataSource(): void {
-    const roots = this.rootTasks();
-    this.dataSource.setData(roots);
-    this.treeControl.expandAll();
+  /** Effect to update data source when tasks signal changes */
+  constructor() {
+    effect(() => {
+      const roots = this.rootTasks();
+      this.dataSource.setData(roots);
+      this.treeControl.expandAll();
+    });
   }
 
   /** Handle node click */

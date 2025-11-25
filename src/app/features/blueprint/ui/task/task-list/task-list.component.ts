@@ -72,22 +72,25 @@ export class TaskListComponent {
   }
 
   /** Handle task selection */
-  onTaskSelect(task: TaskModel): void {
-    console.log('Task selected:', task);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onTaskSelect(_task: TaskModel): void {
+    // TODO: Implement task detail view or selection handling
   }
 
   /** Handle create task */
   onCreateTask(): void {
-    console.log('Create task clicked');
+    // TODO: Open task creation dialog
   }
 
   /** Handle task edit */
-  onEditTask(task: TaskModel): void {
-    console.log('Edit task:', task);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onEditTask(_task: TaskModel): void {
+    // TODO: Open task edit dialog
   }
 
   /** Handle task delete */
-  onDeleteTask(task: TaskModel): void {
-    console.log('Delete task:', task);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onDeleteTask(_task: TaskModel): void {
+    // TODO: Show delete confirmation dialog
   }
 }

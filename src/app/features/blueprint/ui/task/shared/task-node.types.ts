@@ -25,6 +25,9 @@ export interface TaskFlatNode {
   /** Whether node is expandable (has children) */
   expandable: boolean;
 
+  /** Direct child count */
+  childCount: number;
+
   /** Task status */
   status: TaskStatus;
 
@@ -130,6 +133,7 @@ export function taskToFlatNode(task: Task, childrenMap: TaskChildrenMap): TaskFl
     name: task.name,
     level: task.depth,
     expandable: children.length > 0,
+    childCount: task.childCount,
     status: task.status,
     progress: task.progress,
     completedCount: task.completedCount,
