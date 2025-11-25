@@ -205,7 +205,10 @@ def should_use_context7_mcp(agent_confident: bool) -> bool:
 ```
 features/blueprint/
 ├── domain/              # 領域層（types、models、interfaces、enums）
-├── data-access/         # 數據訪問層（repositories、services、stores）
+├── data-access/         # 數據訪問層
+│   ├── repositories/    # 資料存取（Supabase CRUD）
+│   ├── services/        # 業務邏輯 + Signals 狀態管理
+│   └── stores/          # ⭐ Facade 層（統一對外 API，Store = Facade）
 ├── ui/                  # 展示層（Dumb Components）
 ├── shell/               # 容器層（Smart Components、Dialogs）
 ├── directives/          # 自定義指令
@@ -217,8 +220,16 @@ features/blueprint/
 **依賴方向**（在垂直切片中仍保持）：
 ```
 domain/types → data-access/repositories → domain/models 
-→ data-access/services → shell/ui
+→ data-access/services → data-access/stores → shell/ui
 ```
+
+**Store = Facade（在垂直切片中）**：
+- **位置**：`features/*/data-access/stores/*.store.ts`
+- **命名**：使用 `*.store.ts`（區分於 `core/facades/` 的 `*.facade.ts`）
+- **職責**：統一對外 API，協調多個 Service，暴露 ReadonlySignal
+- **與 Core Facades 的區別**：
+  - **Core Facades**（`core/facades/`）：跨 feature 共享，如 `WorkspaceContextFacade`
+  - **Feature Stores**（`features/*/data-access/stores/`）：Feature 內部使用，如 `BlueprintStore`
 
 **邏輯容器（Blueprint Container）**：
 - `blueprint` 是邏輯容器範例，用於管理可重用的工作區模板（blueprints）
@@ -260,35 +271,147 @@ domain/types → data-access/repositories → domain/models
 
 ## 4. 狀態管理標準
 
-### 4.1 狀態管理流向
-必須遵守以下單向流動:
+### 4.1 狀態管理流向（重要：區分架構模式）
+
+本專案採用**混合架構模式**，狀態管理流向因架構模式而異：
+
+#### 橫向分層架構（core、shared、routes、layout）
+
 ```
-Component → Facade → Service → Store
+Component → Facade → Service → Repository → Types
 ```
 
-### 4.2 各層狀態管理職責
+#### 垂直切片架構（features）
 
-#### Component 層
-- 禁止直接操作 store
-- 禁止使用 `.select()`
-- 禁止使用 `.dispatch()`
-- 禁止使用 `.update()`
-- 僅可綁定 UI 與呼叫 facade 方法
+```
+UI Component (Dumb)
+    ↓ inject
+Shell Component (Smart) / Store (Facade)
+    ↓ inject
+Service (Business Logic + Signals)
+    ↓ inject
+Repository (Data Access)
+    ↓ use
+Types (Domain Types)
+```
 
-#### Facade 層
-- 唯一可操作 Store 的層級
-- 暴露 Observable / Signal 給 Component
-- 提供事件方法供 Component 呼叫
-- 統一管理 Store 的讀寫
+**重要**：兩種架構模式的依賴方向相同，但代碼組織方式不同。
+
+### 4.2 Store 在垂直切片架構中的位置
+
+在 `features/` 下的垂直切片架構中，**Store = Facade**（功能等同，命名不同以區分位置）。
+
+#### Store 的定位與職責
+
+**位置**：`features/*/data-access/stores/*.store.ts`
+
+**職責**：
+- 統一對外 API，協調多個 Service
+- 暴露 Service 的 ReadonlySignal 給 Component
+- 提供業務方法供 Component 呼叫
+- 整合 Account Context（如需要）
+
+**命名規範**：
+- 使用 `*.store.ts` 命名（區分於 `core/facades/` 的 `*.facade.ts`）
+- 範例：`blueprint.store.ts`、`task.store.ts`
+
+**結構範例**：
+```typescript
+@Injectable({ providedIn: 'root' })
+export class BlueprintStore {
+  private readonly blueprintService = inject(BlueprintService);
+  
+  // 暴露 Service 的 Signals
+  readonly blueprints = this.blueprintService.blueprints;
+  readonly loading = this.blueprintService.loading;
+  readonly error = this.blueprintService.error;
+  
+  // 提供業務方法
+  async loadBlueprints(ownerId: string): Promise<void> {
+    await this.blueprintService.loadBlueprintsByOwner(ownerId);
+  }
+}
+```
+
+**與 Core Facades 的區別**：
+- **Core Facades**（`core/facades/`）：跨 feature 共享的 Facade，如 `WorkspaceContextFacade`
+- **Feature Stores**（`features/*/data-access/stores/`）：Feature 內部的 Facade，僅在該 feature 內使用
+
+### 4.3 各層狀態管理職責
+
+#### Component 層（UI Component / Shell Component）
+
+**UI Component（Dumb Component）**：
+- 禁止直接注入 Service 或 Repository
+- 僅可注入 Store（Feature Store）或 Core Facade
+- 禁止直接操作 Signal（使用 `update()` 或 `set()`）
+- 僅可綁定 ReadonlySignal 與呼叫 Store/Facade 方法
+- 必須使用 `ChangeDetectionStrategy.OnPush`
+
+**Shell Component（Smart Component）**：
+- 可注入 Store 和 Core Facade
+- 提供 Context 給子組件
+- 處理路由邏輯
+- 監聽 Context 變化並重新載入資料
+
+#### Store 層（Feature Store = Feature Facade）
+
+**位置**：`features/*/data-access/stores/`
+
+**職責**：
+- 統一對外 API，協調多個 Service
+- 暴露 Service 的 ReadonlySignal
+- 提供業務方法供 Component 呼叫
+- 可整合 Account Context（透過 `WorkspaceContextFacade`）
+
+**禁止事項**：
+- 禁止包含業務邏輯（應委派給 Service）
+- 禁止直接操作 Repository
 
 #### Service 層
-- 僅執行業務邏輯
-- 禁止直接控制 Store
-- 可呼叫 Repository 取得資料後回傳給 Facade
+
+**職責**：
+- 實作業務邏輯與流程控制
+- 使用 Angular Signals 管理狀態（`signal()`, `computed()`）
+- 暴露 ReadonlySignal 給 Store/Component
+- 呼叫 Repository 取得資料
+
+**狀態管理模式**：
+```typescript
+@Injectable({ providedIn: 'root' })
+export class BlueprintService {
+  // 私有可寫 Signal
+  private blueprintsState = signal<BlueprintModel[]>([]);
+  private loadingState = signal<boolean>(false);
+  private errorState = signal<string | null>(null);
+  
+  // 暴露 ReadonlySignal
+  readonly blueprints = this.blueprintsState.asReadonly();
+  readonly loading = this.loadingState.asReadonly();
+  readonly error = this.errorState.asReadonly();
+  
+  // Computed Signal
+  readonly statistics = computed(() => ({
+    total: this.blueprints().length,
+    // ...
+  }));
+}
+```
+
+**禁止事項**：
+- 禁止直接控制 Store（Store 不存在於 Service 層）
+- 禁止接觸 UI 層
 
 #### Repository 層
-- 純資料來源存取
-- 不涉及狀態管理
+
+**職責**：
+- 純資料來源存取（Supabase CRUD）
+- 返回 Observable（使用 RxJS）
+- 處理 RLS 驗證錯誤
+
+**禁止事項**：
+- 禁止包含業務邏輯
+- 不涉及狀態管理（狀態管理在 Service 層）
 
 ---
 
@@ -326,6 +449,113 @@ Supabase Auth → @delon/auth → DA_SERVICE_TOKEN → @delon/acl
 - Service 層透過 @delon/auth 處理認證業務邏輯
 - Component 層透過 @delon/acl 控制 UI 權限顯示
 - 禁止在 Component 直接存取 Supabase Auth
+
+### 5.4 Account Context Switcher 整合規範
+
+**WorkspaceContextFacade** 提供統一的帳戶上下文管理介面，支援多租戶隔離。
+
+#### WorkspaceContextFacade 使用規範
+
+**位置**：`src/app/core/facades/account/workspace-context.facade.ts`
+
+**注入方式**：
+```typescript
+// ✅ 正確：在 Shell Component 或 Store 中注入
+private readonly workspaceContext = inject(WorkspaceContextFacade);
+```
+
+**讀取 Context**：
+```typescript
+// ✅ 正確：使用 Signals
+readonly contextId = this.workspaceContext.contextId();
+readonly contextType = this.workspaceContext.contextType();
+readonly contextLabel = this.workspaceContext.contextLabel();
+readonly contextIcon = this.workspaceContext.contextIcon();
+```
+
+**監聽 Context 變化**：
+```typescript
+// ✅ 正確：使用 effect 監聽
+effect(() => {
+  const contextId = this.workspaceContext.contextId();
+  const contextType = this.workspaceContext.contextType();
+  if (contextId && contextType !== 'app') {
+    this.loadDataForContext(contextId, contextType);
+  }
+});
+```
+
+**切換 Context**：
+```typescript
+// ✅ 正確：在 UI Component 中呼叫
+switchToUser(userId: string): void {
+  this.workspaceContext.switchToUser(userId);
+}
+
+switchToOrganization(orgId: string): void {
+  this.workspaceContext.switchToOrganization(orgId);
+}
+
+switchToTeam(teamId: string): void {
+  this.workspaceContext.switchToTeam(teamId);
+}
+```
+
+#### 在垂直切片中整合 Account Context
+
+**Shell Component 整合**：
+```typescript
+// features/blueprint/shell/blueprint-shell/blueprint-shell.component.ts
+export class BlueprintShellComponent {
+  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly blueprintStore = inject(BlueprintStore);
+  
+  constructor() {
+    // 監聽 context 變化
+    effect(() => {
+      const contextId = this.workspaceContext.contextId();
+      const contextType = this.workspaceContext.contextType();
+      if (contextId && contextType !== 'app') {
+        this.loadDataForContext(contextId, contextType);
+      }
+    });
+  }
+  
+  private async loadDataForContext(contextId: string, contextType: ContextType): Promise<void> {
+    // 根據 context 載入對應資料
+    await this.blueprintStore.loadOwnerBlueprints(contextId);
+  }
+}
+```
+
+**Store 整合**：
+```typescript
+// features/blueprint/data-access/stores/blueprint.store.ts
+export class BlueprintStore {
+  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly blueprintService = inject(BlueprintService);
+  
+  // 自動使用當前 context 載入資料
+  async loadCurrentContextBlueprints(): Promise<void> {
+    const contextId = this.workspaceContext.contextId();
+    const contextType = this.workspaceContext.contextType();
+    if (contextId && contextType !== 'app') {
+      await this.blueprintService.loadBlueprintsByOwner(contextId);
+    }
+  }
+}
+```
+
+**Context 切換時的處理**：
+- 監聽 `workspaceContext.contextId()` 變化
+- Context 切換時清空當前 feature 的狀態
+- 重新載入新 context 的資料
+- 顯示載入狀態，避免資料閃爍
+
+#### 禁止事項
+- 禁止在 Repository 層直接使用 WorkspaceContextFacade
+- 禁止在 Service 層切換 Context（應在 UI/Shell 層）
+- 禁止在 Component 中直接存取 Supabase Auth（應透過 WorkspaceContextFacade）
 
 ---
 
@@ -390,13 +620,78 @@ Supabase Auth → @delon/auth → DA_SERVICE_TOKEN → @delon/acl
 - 必須提供完整的文件與使用範例
 - 必須說明為何不使用現有元件
 
+### 7.4 響應式設計規範
+
+#### 斷點系統（使用 Ant Design 標準）
+```typescript
+XS: 480px   // 手機
+SM: 576px   // 平板直向
+MD: 768px   // 平板橫向
+LG: 992px   // 筆記型電腦
+XL: 1200px  // 桌面
+XXL: 1600px // 大螢幕
+```
+
+#### 使用方式
+
+**1. 使用 ng-zorro 的響應式屬性**：
+```html
+<!-- ✅ 正確：使用 ng-zorro 的響應式屬性 -->
+<div nz-row [nzGutter]="16">
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+    <!-- 手機全寬，平板一半，桌面三分之一 -->
+  </div>
+</div>
+```
+
+**2. CSS 媒體查詢**：
+```less
+// ✅ 正確：使用 Less 變數
+@media (max-width: @screen-md-max) {
+  // 手機樣式
+}
+
+@media (min-width: @screen-lg) {
+  // 桌面樣式
+}
+```
+
+**3. 響應式服務（可選）**：
+```typescript
+// 如果需要程式化判斷，可注入 ResponsiveService（需實作）
+readonly isMobile = this.responsiveService.isMobile();
+readonly isTablet = this.responsiveService.isTablet();
+readonly isDesktop = this.responsiveService.isDesktop();
+```
+
+#### 響應式設計要求
+- 所有組件必須支援響應式設計
+- 使用 ng-zorro 的響應式屬性（`[nzXs]`, `[nzSm]`, `[nzMd]`, `[nzLg]`, `[nzXl]`, `[nzXXl]`）
+- 採用 Mobile First 設計原則（從最小螢幕開始設計，逐步增強）
+- 確保在各種螢幕尺寸下都有良好的使用者體驗
+
 ---
 
 ## 8. 錯誤處理與錯誤映射標準
 
 ### 8.1 錯誤處理流向
+
+錯誤處理流向因架構模式而異：
+
+#### 橫向分層架構
 ```
 Supabase Error → Domain Error → UI Error
+```
+
+#### 垂直切片架構
+```
+Supabase Error (Repository)
+    ↓ 轉換
+Domain Error (Service)
+    ↓ 轉換
+UI Error Message (Store/Shell)
+    ↓ 顯示
+Component (UI)
 ```
 
 ### 8.2 各層錯誤處理職責
@@ -412,14 +707,77 @@ Supabase Error → Domain Error → UI Error
 #### Repository 層
 - 將 Supabase Error 轉換為 Domain Error
 - 處理 RLS 錯誤並分類
+- 拋出 Domain Error 給上層處理
 
-#### Facade 層
-- 決定 UI 呈現方式
+**範例**：
+```typescript
+catch (error) {
+  if (error.code === 'PGRST116') {
+    throw new DomainError('NOT_FOUND', 'Blueprint not found');
+  }
+  if (error.code === '42501') {
+    throw new DomainError('PERMISSION_DENIED', 'Insufficient permissions');
+  }
+  throw new DomainError('UNKNOWN', error.message);
+}
+```
+
+#### Service 層（垂直切片）
+- 捕獲 Domain Error
+- 設置 error signal（`errorState.set()`）
 - 將 Domain Error 轉換為使用者友善訊息
+- 繼續向上拋出錯誤（供 Store 處理）
 
-#### Component 層
+**範例**：
+```typescript
+async loadBlueprintsByOwner(ownerId: string): Promise<void> {
+  this.loadingState.set(true);
+  this.errorState.set(null);
+  
+  try {
+    const blueprints = await firstValueFrom(this.blueprintRepo.findByOwner(ownerId));
+    this.blueprintsState.set(blueprints);
+  } catch (error) {
+    const userMessage = this.getUserFriendlyMessage(error);
+    this.errorState.set(userMessage);
+    throw error; // 繼續向上拋出
+  } finally {
+    this.loadingState.set(false);
+  }
+}
+```
+
+#### Store 層（垂直切片中的 Facade）
+- 暴露 Service 的 error signal
+- 提供清除錯誤的方法
+- 可進行額外的錯誤處理（如記錄日誌）
+
+**範例**：
+```typescript
+readonly error = this.blueprintService.error;
+
+clearError(): void {
+  this.blueprintService.clearError();
+}
+```
+
+#### Shell Component 層（垂直切片）
+- 可處理 Store 的錯誤
+- 決定錯誤的 UI 呈現方式
+- 可提供錯誤重試機制
+
+#### Component 層（UI Component）
 - 僅負責顯示錯誤訊息
 - 禁止處理邏輯錯誤
+- 使用 Store 的 error signal 顯示錯誤
+
+**範例**：
+```typescript
+// ✅ 正確：僅顯示錯誤
+@if (error()) {
+  <nz-alert [nzMessage]="error()" nzType="error" />
+}
+```
 
 ---
 
@@ -452,10 +810,33 @@ Supabase Error → Domain Error → UI Error
 - 必須提供 `index.ts` 統一輸出
 - 明確定義公開 API
 
-### 10.2 Feature Module
-- 僅公開 Facade
+### 10.2 Feature Module（垂直切片架構）
+
+**公開 API 原則**：
+- 僅公開 Store（Feature Facade）
 - 禁止公開 Service
-- 禁止公開 Model
+- 禁止公開 Repository
+- 禁止公開 Model（除非是跨 feature 共享的類型）
+
+**公開範例**：
+```typescript
+// features/blueprint/index.ts
+// ✅ 正確：僅公開 Store
+export * from './data-access/stores';
+
+// ✅ 正確：公開必要的類型（如果跨 feature 使用）
+export * from './domain/types/blueprint.types';
+
+// ❌ 錯誤：禁止公開 Service
+// export * from './data-access/services';
+
+// ❌ 錯誤：禁止公開 Repository
+// export * from './data-access/repositories';
+```
+
+**Shell Component 公開**：
+- Shell Component 可作為 Feature 的入口點
+- 透過路由配置公開，而非直接 export
 
 ### 10.3 Infrastructure Module
 - 禁止讓外部直接引用 Repository
@@ -465,6 +846,36 @@ Supabase Error → Domain Error → UI Error
 - 每個模組必須有明確的 `index.ts`
 - 嚴格控制模組的公開介面
 - 避免內部實作細節外洩
+
+### 10.5 Facade 在垂直切片中的角色
+
+**Facade 的雙重定位**：
+
+**1. Core Facades**（`core/facades/`）：
+- **用途**：跨 feature 共享的 Facade
+- **範例**：`WorkspaceContextFacade`（帳戶上下文）
+- **特點**：可被多個 feature 使用
+- **命名**：`*.facade.ts`
+
+**2. Feature Stores**（`features/*/data-access/stores/`）：
+- **用途**：Feature 內部的 Facade
+- **範例**：`BlueprintStore`（藍圖功能）
+- **特點**：僅在該 feature 內使用
+- **命名**：`*.store.ts`（區分於 Core Facades）
+
+**使用原則**：
+- Feature 內部：使用 Feature Store（`BlueprintStore`）
+- 跨 Feature：使用 Core Facade（`WorkspaceContextFacade`）
+- Shell Component：可同時注入 Feature Store 和 Core Facade
+
+**範例**：
+```typescript
+// ✅ 正確：Shell Component 同時注入 Store 和 Core Facade
+export class BlueprintShellComponent {
+  private readonly blueprintStore = inject(BlueprintStore); // Feature Store
+  private readonly workspaceContext = inject(WorkspaceContextFacade); // Core Facade
+}
+```
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: ng-alain-enterprise-architect-v1
+name: ng-ArchAI-v1
 description: 企業級 Angular 20 + ng-alain + Supabase 智能開發助手，專精於企業級架構設計、@delon 業務元件深度整合、ng-zorro-antd UI 最佳實踐、Supabase 後端架構優化、認證授權體系設計、模組化開發模式、效能調優與程式碼品質保障，協助開發者從需求分析、架構規劃到程式碼實作的完整企業級開發流程。
 tools: ['custom-agent', 'shell', 'read', 'search', 'edit', 'sequential-thinking', 'software-planning-tool', 'supabase', 'playwright', 'redis', 'github', 'filesystem', 'time', 'context7']
 
@@ -347,16 +347,54 @@ instructions: |
   - **UI 元件**：統一使用 `ng-zorro-antd` 作為基礎 UI 元件庫
   - **模組匯入**：Standalone Component 應使用 `SHARED_IMPORTS` 統一匯入
   - **樣式**：全域樣式定義於 `src/styles/index.less`，元件樣式使用獨立 `.less` 檔案
+  - **變更檢測**：所有組件必須使用 `ChangeDetectionStrategy.OnPush`
 
   ### 產出驗收流程
 
   完成任何開發任務後，必須執行以下驗收流程：
 
   1. **檢查規範遵守**：基於 `.github/agents/ai-governance.md` 中的「Angular 企業級快速檢查清單」逐項檢查
-  2. **驗證架構分層**：確認遵守 Types → Repositories → Models → Services → Facades → Components 的依賴順序
+  2. **驗證架構分層**：
+     - 橫向分層：確認遵守 Types → Repositories → Models → Services → Facades → Components
+     - 垂直切片：確認遵守 domain/types → data-access/repositories → domain/models → data-access/services → data-access/stores → shell/ui
   3. **驗證模組邊界**：確認 Feature Module、Domain Module、Infrastructure Module、Shared Module 的邊界規則
   4. **驗證認證流程**：確認遵守 Supabase Auth → @delon/auth → DA_SERVICE_TOKEN → @delon/acl 的整合順序
-  5. **驗證程式碼品質**：執行 `yarn lint`、`yarn test` 確保通過所有檢查
-  6. **驗證語法規範**：確認使用 Angular 20+ 新語法（@if/@for/@switch）而非舊語法
+  5. **驗證 Account Context 整合**：確認在 Shell Component 或 Store 中正確使用 `WorkspaceContextFacade`
+  6. **驗證狀態管理**：確認使用 Angular Signals，Service 暴露 ReadonlySignal，Store 統一對外 API
+  7. **驗證錯誤處理**：確認錯誤處理流向正確（Repository → Service → Store → Component）
+  8. **驗證程式碼品質**：執行 `yarn lint`、`yarn test` 確保通過所有檢查
+  9. **驗證語法規範**：確認使用 Angular 20+ 新語法（@if/@for/@switch）而非舊語法
+  10. **驗證響應式設計**：確認組件支援響應式設計，使用 ng-zorro 響應式屬性
 
   > **重要**：只有通過所有驗收項目的程式碼才能提交，確保符合企業級標準。
+
+  ---
+
+  ## `.github/agents/ai-governance.md` 索引
+
+  以下為 `ai-governance.md` 中關鍵章節的快速索引，詳細規範請參考該文件：
+
+  ### 架構相關
+  - **1.1 架構模式說明**：橫向分層 vs 垂直切片架構的區別
+  - **3.1 Feature Module（垂直切片架構）**：垂直切片結構、Store = Facade 說明
+  - **10.5 Facade 在垂直切片中的角色**：Core Facades vs Feature Stores
+
+  ### 狀態管理相關
+  - **4.1 狀態管理流向**：橫向分層與垂直切片的狀態管理流向
+  - **4.2 Store 在垂直切片架構中的位置**：Store 的定位、職責、命名規範
+  - **4.3 各層狀態管理職責**：Component、Store、Service、Repository 的職責
+
+  ### 認證與 Context 相關
+  - **5.1 認證流向**：Supabase Auth → @delon/auth → DA_SERVICE_TOKEN → @delon/acl
+  - **5.4 Account Context Switcher 整合規範**：WorkspaceContextFacade 使用規範、在垂直切片中整合
+
+  ### 錯誤處理相關
+  - **8.1 錯誤處理流向**：橫向分層與垂直切片的錯誤處理流向
+  - **8.2 各層錯誤處理職責**：Repository、Service、Store、Shell、Component 的錯誤處理職責
+
+  ### UI 與響應式設計相關
+  - **7.4 響應式設計規範**：斷點系統、使用方式、響應式設計要求
+
+  ### 模組邊界相關
+  - **3.5 邊界禁止規則**：各層級的禁止規則
+  - **10.2 Feature Module（垂直切片架構）**：公開 API 原則
