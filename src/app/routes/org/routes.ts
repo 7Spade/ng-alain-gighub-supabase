@@ -8,8 +8,8 @@ export const routes: Routes = [
   },
   {
     path: ':organizationId/blueprints',
-    loadComponent: () => import('./blueprints/blueprints.component').then(m => m.OrgBlueprintsComponent),
-    data: { title: '組織藍圖' }
+    redirectTo: '/blueprint/list',
+    pathMatch: 'full'
   },
   {
     path: ':organizationId/teams',

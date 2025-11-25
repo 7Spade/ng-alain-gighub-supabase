@@ -11,8 +11,8 @@
  * @module features/blueprint/shell/dialogs/blueprint-form-dialog
  */
 
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { SFSchema, SFUISchema } from '@delon/form';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
@@ -68,6 +68,8 @@ interface BlueprintFormValues {
   templateUrl: './blueprint-form-dialog.component.html'
 })
 export class BlueprintFormDialogComponent implements OnInit {
+  @ViewChild('sf') sf!: SFComponent;
+
   private readonly modalRef = inject(NzModalRef);
   private readonly messageService = inject(NzMessageService);
   private readonly blueprintStore = inject(BlueprintStore);
@@ -192,6 +194,15 @@ export class BlueprintFormDialogComponent implements OnInit {
         iconUrl: blueprint.iconUrl,
         thumbnailUrl: blueprint.thumbnailUrl
       });
+    }
+  }
+
+  /**
+   * Trigger form submit programmatically
+   */
+  triggerSubmit(): void {
+    if (this.sf?.valid) {
+      this.onSubmit(this.sf.value as BlueprintFormValues);
     }
   }
 

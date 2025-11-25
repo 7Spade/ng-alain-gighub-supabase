@@ -13,8 +13,8 @@ export const routes: Routes = [
   },
   {
     path: ':teamId/blueprints',
-    loadComponent: () => import('./blueprints/blueprints.component').then(m => m.TeamBlueprintsComponent),
-    data: { title: '團隊藍圖' }
+    redirectTo: '/blueprint/list',
+    pathMatch: 'full'
   },
   {
     path: ':teamId/members',

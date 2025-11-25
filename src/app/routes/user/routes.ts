@@ -13,8 +13,8 @@ export const routes: Routes = [
   },
   {
     path: ':userId/blueprints',
-    loadComponent: () => import('./blueprints/blueprints.component').then(m => m.UserBlueprintsComponent),
-    data: { title: '我的藍圖' }
+    redirectTo: '/blueprint/list',
+    pathMatch: 'full'
   },
   {
     path: ':userId/settings',
