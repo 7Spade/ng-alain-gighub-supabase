@@ -8,35 +8,34 @@
   - Conditional view rendering
 -->
 
-<page-header [title]="'任務管理'">
-  <ng-template #action>
-    <nz-space>
-      <!-- View Mode Toggle -->
-      <button 
-        *nzSpaceItem
-        nz-button 
-        [nzType]="viewMode() === 'tree' ? 'primary' : 'default'"
-        (click)="setTreeView()">
-        <i nz-icon nzType="apartment" nzTheme="outline"></i>
-        樹狀視圖
-      </button>
-      <button 
-        *nzSpaceItem
-        nz-button 
-        [nzType]="viewMode() === 'table' ? 'primary' : 'default'"
-        (click)="setTableView()">
-        <i nz-icon nzType="table" nzTheme="outline"></i>
-        表格視圖
-      </button>
-    
-      <!-- Create Button -->
-      <button *nzSpaceItem nz-button nzType="primary" (click)="onCreateTask()">
-        <i nz-icon nzType="plus" nzTheme="outline"></i>
-        新增任務
-      </button>
-    </nz-space>
-  </ng-template>
-</page-header>
+<page-header [title]="'任務管理'" [action]="actionTpl"></page-header>
+<ng-template #actionTpl>
+  <nz-space>
+    <!-- View Mode Toggle -->
+    <button 
+      *nzSpaceItem
+      nz-button 
+      [nzType]="viewMode() === 'tree' ? 'primary' : 'default'"
+      (click)="setTreeView()">
+      <i nz-icon nzType="apartment" nzTheme="outline"></i>
+      樹狀視圖
+    </button>
+    <button 
+      *nzSpaceItem
+      nz-button 
+      [nzType]="viewMode() === 'table' ? 'primary' : 'default'"
+      (click)="setTableView()">
+      <i nz-icon nzType="table" nzTheme="outline"></i>
+      表格視圖
+    </button>
+  
+    <!-- Create Button -->
+    <button *nzSpaceItem nz-button nzType="primary" (click)="onCreateTask()">
+      <i nz-icon nzType="plus" nzTheme="outline"></i>
+      新增任務
+    </button>
+  </nz-space>
+</ng-template>
 
 <!-- Statistics Summary -->
 <nz-card [nzTitle]="'任務統計'" class="mb-md">

@@ -19,16 +19,22 @@
             "link": "/account/dashboard"
           },
           {
-            "text": "我的待辦",
-            "i18n": "menu.user.todos",
-            "icon": "anticon-check-square",
-            "link": "/account/user/{userId}/todos"
-          },
-          {
             "text": "我的藍圖",
             "i18n": "menu.user.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/user/{userId}/blueprints"
+            "link": "/blueprint/list"
+          },
+          {
+            "text": "待辦事項",
+            "i18n": "menu.user.todos",
+            "icon": "anticon-check-square",
+            "link": "/blueprint/todo"
+          },
+          {
+            "text": "日誌",
+            "i18n": "menu.user.diary",
+            "icon": "anticon-book",
+            "link": "/blueprint/diary"
           },
           {
             "text": "個人設定",
@@ -56,7 +62,19 @@
             "text": "組織藍圖",
             "i18n": "menu.organization.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/org/{organizationId}/blueprints"
+            "link": "/blueprint/list"
+          },
+          {
+            "text": "待辦事項",
+            "i18n": "menu.organization.todos",
+            "icon": "anticon-check-square",
+            "link": "/blueprint/todo"
+          },
+          {
+            "text": "日誌",
+            "i18n": "menu.organization.diary",
+            "icon": "anticon-book",
+            "link": "/blueprint/diary"
           },
           {
             "text": "團隊管理",
@@ -93,16 +111,22 @@
             "link": "/account/dashboard"
           },
           {
-            "text": "團隊待辦",
-            "i18n": "menu.team.todos",
-            "icon": "anticon-check-square",
-            "link": "/account/team/{teamId}/todos"
-          },
-          {
             "text": "團隊藍圖",
             "i18n": "menu.team.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/team/{teamId}/blueprints"
+            "link": "/blueprint/list"
+          },
+          {
+            "text": "待辦事項",
+            "i18n": "menu.team.todos",
+            "icon": "anticon-check-square",
+            "link": "/blueprint/todo"
+          },
+          {
+            "text": "日誌",
+            "i18n": "menu.team.diary",
+            "icon": "anticon-book",
+            "link": "/blueprint/diary"
           },
           {
             "text": "團隊成員",
@@ -131,6 +155,24 @@
             "i18n": "menu.blueprint.overview",
             "icon": "anticon-file-text",
             "link": "/blueprint/{blueprintId}/overview"
+          },
+          {
+            "text": "任務管理",
+            "i18n": "menu.blueprint.tasks",
+            "icon": "anticon-project",
+            "link": "/blueprint/task"
+          },
+          {
+            "text": "待辦事項",
+            "i18n": "menu.blueprint.todos",
+            "icon": "anticon-check-square",
+            "link": "/blueprint/todo"
+          },
+          {
+            "text": "日誌",
+            "i18n": "menu.blueprint.diary",
+            "icon": "anticon-book",
+            "link": "/blueprint/diary"
           },
           {
             "text": "藍圖編輯器",

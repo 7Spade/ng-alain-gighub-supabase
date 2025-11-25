@@ -5,15 +5,14 @@
   Provides navigation and context display
 -->
 
-<page-header [title]="'藍圖容器'">
-  <ng-template #action>
-    <button nz-button nzType="default" (click)="navigateToModule('task')">
-      <i nz-icon nzType="project" nzTheme="outline"></i>
-      任務模組
-    </button>
-    <!-- Future modules can be added here -->
-  </ng-template>
-</page-header>
+<page-header [title]="'藍圖容器'" [action]="actionTpl"></page-header>
+<ng-template #actionTpl>
+  <button nz-button nzType="default" (click)="navigateToModule('task')">
+    <i nz-icon nzType="project" nzTheme="outline"></i>
+    任務模組
+  </button>
+  <!-- Future modules can be added here -->
+</ng-template>
 
 <!-- Loading State -->
 @if (loading()) {

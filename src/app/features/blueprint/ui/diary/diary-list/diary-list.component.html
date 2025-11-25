@@ -1,11 +1,10 @@
-<page-header [title]="'日誌管理'">
-  <ng-template #extra>
-    <button nz-button nzType="primary" (click)="onCreateDiary()">
-      <i nz-icon nzType="plus"></i>
-      新增日誌
-    </button>
-  </ng-template>
-</page-header>
+<page-header [title]="'日誌管理'" [action]="actionTpl"></page-header>
+<ng-template #actionTpl>
+  <button nz-button nzType="primary" (click)="onCreateDiary()">
+    <i nz-icon nzType="plus"></i>
+    新增日誌
+  </button>
+</ng-template>
 
 <nz-card [nzBordered]="false">
   <!-- Statistics -->
