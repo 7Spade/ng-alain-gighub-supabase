@@ -101,7 +101,7 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
     <!-- No Context Selected -->
     @if (!hasValidContext() && !loading()) {
       <nz-card>
-        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="'請使用上方的上下文切換器選擇一個帳戶、組織或團隊'"></nz-empty>
+        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="'請點擊左側的用戶頭像，在下拉選單中選擇一個帳戶、組織或團隊'"></nz-empty>
       </nz-card>
     }
 
@@ -247,7 +247,7 @@ export class BlueprintListComponent implements OnInit {
       case 'team':
         return '顯示此團隊的所有藍圖。團隊成員可以協作管理這些藍圖。';
       default:
-        return '使用上方的上下文切換器選擇一個帳戶、組織或團隊以查看相關藍圖。';
+        return '請點擊左側的用戶頭像，在「切換工作區」下拉選單中選擇一個帳戶、組織或團隊以查看相關藍圖。';
     }
   });
 
