@@ -16,7 +16,7 @@
             "text": "儀表板",
             "i18n": "menu.user.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/account/user/{userId}/dashboard"
+            "link": "/account/dashboard"
           },
           {
             "text": "我的待辦",
@@ -34,7 +34,7 @@
             "text": "個人設定",
             "i18n": "menu.user.settings",
             "icon": "anticon-setting",
-            "link": "/account/user/{userId}/settings"
+            "link": "/account/settings"
           }
         ]
       }
@@ -50,7 +50,7 @@
             "text": "組織儀表板",
             "i18n": "menu.organization.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/account/org/{organizationId}/dashboard"
+            "link": "/account/dashboard"
           },
           {
             "text": "組織藍圖",
@@ -74,7 +74,7 @@
             "text": "組織設定",
             "i18n": "menu.organization.settings",
             "icon": "anticon-setting",
-            "link": "/account/org/{organizationId}/settings"
+            "link": "/account/settings"
           }
         ]
       }
@@ -90,7 +90,7 @@
             "text": "團隊儀表板",
             "i18n": "menu.team.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/account/team/{teamId}/dashboard"
+            "link": "/account/dashboard"
           },
           {
             "text": "團隊待辦",
@@ -109,6 +109,52 @@
             "i18n": "menu.team.members",
             "icon": "anticon-user",
             "link": "/account/team/{teamId}/members"
+          }
+        ]
+      }
+    ],
+    "blueprint": [
+      {
+        "text": "藍圖工作區",
+        "i18n": "menu.blueprint",
+        "group": true,
+        "hideInBreadcrumb": true,
+        "children": [
+          {
+            "text": "藍圖儀表板",
+            "i18n": "menu.blueprint.dashboard",
+            "icon": "anticon-dashboard",
+            "link": "/blueprint/{blueprintId}/dashboard"
+          },
+          {
+            "text": "藍圖概覽",
+            "i18n": "menu.blueprint.overview",
+            "icon": "anticon-file-text",
+            "link": "/blueprint/{blueprintId}/overview"
+          },
+          {
+            "text": "藍圖編輯器",
+            "i18n": "menu.blueprint.editor",
+            "icon": "anticon-edit",
+            "link": "/blueprint/{blueprintId}/editor"
+          },
+          {
+            "text": "版本管理",
+            "i18n": "menu.blueprint.versions",
+            "icon": "anticon-history",
+            "link": "/blueprint/{blueprintId}/versions"
+          },
+          {
+            "text": "協作成員",
+            "i18n": "menu.blueprint.collaborators",
+            "icon": "anticon-team",
+            "link": "/blueprint/{blueprintId}/collaborators"
+          },
+          {
+            "text": "藍圖設定",
+            "i18n": "menu.blueprint.settings",
+            "icon": "anticon-setting",
+            "link": "/blueprint/{blueprintId}/settings"
           }
         ]
       }

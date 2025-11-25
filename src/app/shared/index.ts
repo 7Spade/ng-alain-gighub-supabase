@@ -1,3 +1,6 @@
+// Base Context-Aware Component
+export * from './base/base-context-aware.component';
+
 // Components
 export * from './upload';
 

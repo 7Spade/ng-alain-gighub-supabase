@@ -10,19 +10,15 @@
  * @module layout/basic/widgets
  */
 
-import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { WorkspaceContextFacade } from '@core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
-import { AccountService } from '@shared';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { AccountService, SHARED_IMPORTS } from '@shared';
 
 @Component({
   selector: 'header-context-switcher',
   standalone: true,
-  imports: [CommonModule, NzDropDownModule, NzMenuModule, NzIconModule],
+  imports: [SHARED_IMPORTS],
   template: `
     <!-- Application menu -->
     @if (!hasToken()) {
