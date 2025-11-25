@@ -394,30 +394,15 @@ export class BlueprintListComponent implements OnInit {
       nzContent: BlueprintDeleteConfirmDialogComponent,
       nzWidth: 400,
       nzData: {
-        blueprintName: blueprint.name,
-        blueprintId: blueprint.id
+        blueprint
       },
       nzFooter: null
     });
 
     modalRef.afterClose.subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.performDelete(blueprint.id);
+        this.loadBlueprints();
       }
     });
-  }
-
-  /**
-   * Perform actual delete operation
-   */
-  private async performDelete(id: string): Promise<void> {
-    try {
-      await this.blueprintStore.deleteBlueprint(id);
-      this.message.success('藍圖已刪除');
-      this.loadBlueprints();
-    } catch (error) {
-      this.message.error('刪除失敗');
-      console.error('[BlueprintList] Failed to delete blueprint:', error);
-    }
   }
 }
