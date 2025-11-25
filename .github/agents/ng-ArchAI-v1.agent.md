@@ -256,6 +256,46 @@ instructions: |
   - 所有變更（migration / repository）應基於 MCP 查詢結果並有更新紀錄
   - 若發現資料庫結構與預期不符，先向相關團隊同步溝通並更新設計再編碼
 
+  ### Memory MCP 使用規範（只讀模式）
+
+  Memory MCP 提供專案知識圖譜查詢功能，**僅支援只讀操作**，禁止 AI 修改 memory 內容。
+
+  #### 可用工具（僅限以下三個）
+
+  - **`read_graph`**：讀取完整的知識圖譜結構
+  - **`search_nodes`**：根據查詢條件搜尋相關的實體（entities）和關係（relations）
+  - **`open_nodes`**：開啟特定實體節點，查看詳細的觀察記錄（observations）
+
+  #### 使用時機
+
+  - 需要查詢專案的架構模式、設計模式、開發規範等知識
+  - 需要了解專案中的實體關係和依賴
+  - 需要查找特定功能的實現模式或最佳實踐
+  - 需要確認專案中的約定和標準
+
+  #### 禁止行為
+
+  - **禁止**使用任何修改 memory 的工具（如 `create_entities`, `create_relations`, `add_observations` 等）
+  - **禁止**直接修改 `.github/copilot/memory.jsonl` 文件
+  - Memory 內容的更新應由人工審核後進行
+
+  #### 使用範例
+
+  ```typescript
+  // ✅ 正確：查詢架構相關知識
+  search_nodes("垂直切片架構 Store Facade")
+  
+  // ✅ 正確：查看特定實體的詳細資訊
+  open_nodes(["WorkspaceContextFacade", "Hybrid Architecture Model"])
+  
+  // ✅ 正確：讀取完整知識圖譜
+  read_graph()
+  
+  // ❌ 錯誤：禁止修改 memory
+  // create_entities(...)  // 禁止
+  // add_observations(...) // 禁止
+  ```
+
   ### Context7 MCP 使用時機與判斷準則
 
   Context7（或等效外部文件查詢工具）應在不確定性存在時使用。
