@@ -1,0 +1,115 @@
+<!--
+  Task Tree Component Template
+  
+  Displays tasks in tree structure with all required information:
+  - Status badges
+  - Level indicators (L0, L1, L2, L3+)
+  - Task name
+  - Progress bars
+  - Completed/Total counts
+  - Assignee avatars
+  - Area tags
+  - Labels
+-->
+
+@if (rootTasks().length === 0) {
+  <nz-empty [nzNotFoundContent]="'暫無任務'"></nz-empty>
+} @else {
+  <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" class="task-tree">
+    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+      <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+      <ng-container [ngTemplateOutlet]="nodeContent" [ngTemplateOutletContext]="{ $implicit: node }"></ng-container>
+    </nz-tree-node>
+
+    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+      <nz-tree-node-toggle>
+        <span nz-icon [nzType]="treeControl.isExpanded(node) ? 'minus-square' : 'plus-square'"></span>
+      </nz-tree-node-toggle>
+      <ng-container [ngTemplateOutlet]="nodeContent" [ngTemplateOutletContext]="{ $implicit: node }"></ng-container>
+    </nz-tree-node>
+  </nz-tree-view>
+}
+
+<!-- Node Content Template -->
+<ng-template #nodeContent let-node>
+  <div class="tree-node-content" (click)="onNodeClick(node)">
+    <!-- Level Badge -->
+    <nz-tag [nzColor]="getLevelColor(node.level)" class="level-tag">
+      {{ formatLevel(node.level) }}
+    </nz-tag>
+
+    <!-- Status Badge -->
+    <nz-badge [nzStatus]="getStatusColor(node.status)" [nzText]="getStatusText(node.status)"></nz-badge>
+
+    <!-- Task Name -->
+    <span class="task-name" [class.completed]="node.status === 'completed'">
+      {{ node.name }}
+    </span>
+
+    <!-- Child Count -->
+    @if (node.expandable) {
+      <nz-tag nzColor="default" class="child-count">
+        {{ node.childCount }} 子任務
+      </nz-tag>
+    }
+
+    <!-- Progress Bar -->
+    <div class="progress-wrapper">
+      <nz-progress 
+        [nzPercent]="node.progress" 
+        [nzSize]="'small'"
+        [nzStatus]="getProgressStatus(node.progress)"
+        [nzShowInfo]="true">
+      </nz-progress>
+    </div>
+
+    <!-- Count Display -->
+    <span class="count-display">
+      {{ formatProgress(node.completedCount, node.totalCount) }}
+    </span>
+
+    <!-- Assignees -->
+    @if (node.assigneeIds.length > 0) {
+      <nz-avatar-group class="assignee-group">
+        @for (assigneeId of node.assigneeIds.slice(0, 3); track assigneeId) {
+          <nz-avatar 
+            [nzText]="formatAssigneeInitials(assigneeId)"
+            nzSize="small">
+          </nz-avatar>
+        }
+        @if (node.assigneeIds.length > 3) {
+          <nz-avatar 
+            [nzText]="'+' + (node.assigneeIds.length - 3)"
+            nzSize="small">
+          </nz-avatar>
+        }
+      </nz-avatar-group>
+    }
+
+    <!-- Area Tag -->
+    @if (node.area) {
+      <nz-tag nzColor="geekblue" class="area-tag">
+        <i nz-icon nzType="environment" nzTheme="outline"></i>
+        {{ node.area }}
+      </nz-tag>
+    }
+
+    <!-- Labels -->
+    @for (tag of node.tags.slice(0, 2); track tag) {
+      <nz-tag nzColor="blue">{{ tag }}</nz-tag>
+    }
+    @if (node.tags.length > 2) {
+      <nz-tag>+{{ node.tags.length - 2 }}</nz-tag>
+    }
+
+    <!-- Actions -->
+    <div class="node-actions">
+      <button nz-button nzType="text" nzSize="small" (click)="onEdit($event, node)" nz-tooltip nzTooltipTitle="編輯">
+        <i nz-icon nzType="edit" nzTheme="outline"></i>
+      </button>
+      <button nz-button nzType="text" nzSize="small" nzDanger (click)="onDelete($event, node)" nz-tooltip nzTooltipTitle="刪除">
+        <i nz-icon nzType="delete" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+</ng-template>
