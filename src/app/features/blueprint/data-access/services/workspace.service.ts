@@ -2,25 +2,25 @@
  * Workspace Service
  *
  * Business logic for Workspace management
- * Following docs/00-順序.md Step 4: Services 層
+ * Following vertical slice architecture
  *
  * Uses Angular Signals for reactive state management
  *
- * @module workspace.service
+ * @module features/blueprint/data-access/services/workspace.service
  */
 
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { WorkspaceRepository } from '@core';
+import { firstValueFrom } from 'rxjs';
+
 import {
   WorkspaceModel,
-  WorkspaceSummary,
   CreateWorkspaceRequest,
   UpdateWorkspaceRequest,
   WorkspaceStatistics,
-  WorkspaceFilterOptions,
-  WorkspaceStatusEnum
-} from '@shared';
-import { Observable, firstValueFrom } from 'rxjs';
+  WorkspaceStatusEnum,
+  TenantType
+} from '../../domain';
+import { WorkspaceRepository, BlueprintRepository } from '../repositories';
 
 /**
  * Workspace Service
@@ -30,6 +30,7 @@ import { Observable, firstValueFrom } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class WorkspaceService {
   private readonly workspaceRepo = inject(WorkspaceRepository);
+  private readonly blueprintRepo = inject(BlueprintRepository);
 
   // State management with Signals
   private workspacesState = signal<WorkspaceModel[]>([]);
@@ -52,14 +53,13 @@ export class WorkspaceService {
 
   readonly statistics = computed<WorkspaceStatistics>(() => {
     const workspaces = this.workspaces();
+
     return {
       totalCount: workspaces.length,
       activeCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.ACTIVE).length,
       archivedCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.ARCHIVED).length,
       templateCount: workspaces.filter(w => w.status === WorkspaceStatusEnum.TEMPLATE).length,
-      // TODO: Calculate from workspace_members when loaded
-      // Will be implemented when WorkspaceMemberService is added
-      totalMemberCount: 0
+      totalMemberCount: 0 // Would require joining with members table
     };
   });
 
@@ -89,7 +89,7 @@ export class WorkspaceService {
     this.errorState.set(null);
 
     try {
-      const workspaces = await firstValueFrom(this.workspaceRepo.findActiveTenantWorkspaces(tenantId));
+      const workspaces = await firstValueFrom(this.workspaceRepo.findActiveByTenant(tenantId));
       this.workspacesState.set(workspaces);
     } catch (error) {
       this.errorState.set(error instanceof Error ? error.message : 'Failed to load active workspaces');
@@ -130,7 +130,12 @@ export class WorkspaceService {
 
     try {
       const workspaceInsert = {
-        ...request,
+        name: request.name,
+        description: request.description,
+        blueprintId: request.blueprintId,
+        tenantId: request.tenantId,
+        tenantType: request.tenantType,
+        status: 'active' as const,
         settings: {
           allowGuestAccess: false,
           requireApprovalForJoin: true,
@@ -156,20 +161,42 @@ export class WorkspaceService {
   }
 
   /**
-   * Create workspace from blueprint
+   * Create workspace from blueprint (instantiation)
    */
-  async createWorkspaceFromBlueprint(
-    blueprintId: string,
-    name: string,
-    tenantId: string,
-    tenantType: 'user' | 'organization' | 'team'
-  ): Promise<WorkspaceModel> {
-    return this.createWorkspace({
-      name,
-      blueprintId,
-      tenantId,
-      tenantType
-    });
+  async createWorkspaceFromBlueprint(blueprintId: string, name: string, tenantId: string, tenantType: TenantType): Promise<WorkspaceModel> {
+    this.loadingState.set(true);
+    this.errorState.set(null);
+
+    try {
+      // Get blueprint
+      const blueprint = await firstValueFrom(this.blueprintRepo.findById(blueprintId));
+      if (!blueprint) {
+        throw new Error('Blueprint not found');
+      }
+
+      // Create workspace with blueprint settings
+      const workspaceInsert = {
+        name,
+        blueprintId,
+        blueprintVersion: blueprint.version,
+        tenantId,
+        tenantType,
+        status: 'active' as const,
+        settings: blueprint.structure.settings
+      };
+
+      const newWorkspace = await firstValueFrom(this.workspaceRepo.create(workspaceInsert));
+
+      // Update state
+      this.workspacesState.update(workspaces => [...workspaces, newWorkspace]);
+
+      return newWorkspace;
+    } catch (error) {
+      this.errorState.set(error instanceof Error ? error.message : 'Failed to create workspace from blueprint');
+      throw error;
+    } finally {
+      this.loadingState.set(false);
+    }
   }
 
   /**

@@ -9,10 +9,16 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { WorkspaceService, WorkspaceModel, CreateWorkspaceRequest } from '@shared';
 
-import { BlueprintModel, CreateBlueprintRequest, UpdateBlueprintRequest } from '../../domain';
-import { BlueprintService } from '../services';
+import {
+  BlueprintModel,
+  CreateBlueprintRequest,
+  UpdateBlueprintRequest,
+  WorkspaceModel,
+  CreateWorkspaceRequest,
+  TenantType
+} from '../../domain';
+import { BlueprintService, WorkspaceService } from '../services';
 
 /**
  * Blueprint Store (Facade)
@@ -132,12 +138,7 @@ export class BlueprintStore {
   /**
    * Create workspace from blueprint (instantiation)
    */
-  async instantiateWorkspace(
-    blueprintId: string,
-    name: string,
-    tenantId: string,
-    tenantType: 'user' | 'organization' | 'team'
-  ): Promise<WorkspaceModel> {
+  async instantiateWorkspace(blueprintId: string, name: string, tenantId: string, tenantType: TenantType): Promise<WorkspaceModel> {
     return this.workspaceService.createWorkspaceFromBlueprint(blueprintId, name, tenantId, tenantType);
   }
 
