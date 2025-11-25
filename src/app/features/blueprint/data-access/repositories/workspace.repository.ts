@@ -2,17 +2,16 @@
  * Workspace Repository
  *
  * Repository for Workspace data access layer
- * Following docs/00-順序.md Step 2: Repositories 層
+ * Following vertical slice architecture
  *
- * @module workspace.repository
+ * @module features/blueprint/data-access/repositories/workspace.repository
  */
 
 import { Injectable } from '@angular/core';
+import { BaseRepository, QueryOptions } from '@core';
 import { Observable } from 'rxjs';
 
-import { BaseRepository } from './base.repository';
-import { QueryOptions } from '../types/supabase.types';
-import { Workspace, WorkspaceInsert, WorkspaceUpdate } from '../types/workspace.types';
+import { Workspace, WorkspaceInsert, WorkspaceUpdate } from '../../domain';
 
 /**
  * Workspace Repository
@@ -81,13 +80,31 @@ export class WorkspaceRepository extends BaseRepository<Workspace, WorkspaceInse
    * @param {QueryOptions} [options] - Query options
    * @returns {Observable<Workspace[]>} Array of active workspaces
    */
-  findActiveTenantWorkspaces(tenantId: string, options?: QueryOptions): Observable<Workspace[]> {
+  findActiveByTenant(tenantId: string, options?: QueryOptions): Observable<Workspace[]> {
     return this.findAll({
       ...options,
       filters: {
         ...options?.filters,
         tenantId,
         status: 'active'
+      }
+    });
+  }
+
+  /**
+   * Find archived workspaces for tenant
+   *
+   * @param {string} tenantId - Tenant ID
+   * @param {QueryOptions} [options] - Query options
+   * @returns {Observable<Workspace[]>} Array of archived workspaces
+   */
+  findArchivedByTenant(tenantId: string, options?: QueryOptions): Observable<Workspace[]> {
+    return this.findAll({
+      ...options,
+      filters: {
+        ...options?.filters,
+        tenantId,
+        status: 'archived'
       }
     });
   }

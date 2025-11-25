@@ -64,12 +64,8 @@
 // Account services (includes user, organization, team, bot via account/index.ts)
 export * from './account';
 
-// Blueprint Container services
-export * from './blueprint';
-export * from './workspace';
-
-// Task Module services
-export * from './task';
+// NOTE: Blueprint, Workspace, and Task services have been migrated to features/blueprint module
+// Use services from @features/blueprint/data-access instead
 
 // Menu management service
 export * from './menu';

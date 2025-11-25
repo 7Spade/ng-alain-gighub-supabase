@@ -8,3 +8,4 @@
 
 export * from './blueprint.repository';
 export * from './task.repository';
+export * from './workspace.repository';
