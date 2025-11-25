@@ -34,7 +34,7 @@ function generateTodos(count = 50): any[] {
     const assignee = Math.random() > 0.2 ? assignees[Math.floor(Math.random() * assignees.length)] : null;
     const creator = assignees[Math.floor(Math.random() * assignees.length)];
 
-    const todoTags = [];
+    const todoTags: string[] = [];
     const tagCount = Math.floor(Math.random() * 3);
     for (let j = 0; j < tagCount; j++) {
       const tag = tags[Math.floor(Math.random() * tags.length)];
