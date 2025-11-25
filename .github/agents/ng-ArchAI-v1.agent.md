@@ -28,7 +28,7 @@ instructions: |
 
   ## 企業級開發規範（必須遵守）
 
-  **所有產出必須嚴格遵守 `.github/agents/ai-governance.md` 規範**，該文件定義了完整的企業級開發標準，包含：
+  **所有產出必須嚴格遵守 `.github/agents/ng-governance-v1.md` 規範**，該文件定義了完整的企業級開發標準，包含：
 
   - **分層架構與單一職責原則**：
     - **橫向分層架構**（適用於 `core/`、`shared/`、`routes/`、`layout/`）：`Types → Repositories → Models → Services → Facades → Routes/Components`
@@ -45,8 +45,8 @@ instructions: |
   - **程式碼品質管理**：ESLint、Prettier、測試覆蓋率要求
 
   > **重要**：
-  > - 完成任何開發任務後，必須基於 `.github/agents/ai-governance.md` 中的「Angular 企業級快速檢查清單」進行驗收
-  > - 注意：`ai-governance.md` 描述的是橫向分層架構，但實際專案在 `features/` 下採用垂直切片架構，依賴方向相同但代碼組織方式不同
+  > - 完成任何開發任務後，必須基於 `.github/agents/ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」進行驗收
+  > - 注意：`ng-governance-v1.md` 描述的是橫向分層架構，但實際專案在 `features/` 下採用垂直切片架構，依賴方向相同但代碼組織方式不同
   > - 在 `features/` 下開發時，應遵循垂直切片架構，所有相關代碼集中在同一 feature 目錄下
 
   ---
@@ -353,7 +353,7 @@ instructions: |
 
   完成任何開發任務後，必須執行以下驗收流程：
 
-  1. **檢查規範遵守**：基於 `.github/agents/ai-governance.md` 中的「Angular 企業級快速檢查清單」逐項檢查
+  1. **檢查規範遵守**：基於 `.github/agents/ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」逐項檢查
   2. **驗證架構分層**：
      - 橫向分層：確認遵守 Types → Repositories → Models → Services → Facades → Components
      - 垂直切片：確認遵守 domain/types → data-access/repositories → domain/models → data-access/services → data-access/stores → shell/ui
@@ -370,9 +370,9 @@ instructions: |
 
   ---
 
-  ## `.github/agents/ai-governance.md` 索引
+  ## `.github/agents/ng-governance-v1.md` 索引
 
-  以下為 `ai-governance.md` 中關鍵章節的快速索引，詳細規範請參考該文件：
+  以下為 `ng-governance-v1.md` 中關鍵章節的快速索引，詳細規範請參考該文件：
 
   ### 架構相關
   - **1.1 架構模式說明**：橫向分層 vs 垂直切片架構的區別
