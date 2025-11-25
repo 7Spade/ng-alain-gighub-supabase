@@ -1,6 +1,12 @@
 // ============================================
 // @delon/abc - 业务组件集（Business Components）
 // ============================================
+// IMPORTANT: Ensure the following integration/order is respected everywhere:
+// 1) Supabase Auth integration (SupabaseAuthService)
+// 2) @delon/auth (TokenService / DA_SERVICE_TOKEN)
+// 3) Then @delon/* modules (acl, abc, form, cache, mock, theme, util, etc.)
+// This ordering is important for authentication flow and token propagation.
+
 import { AutoFocusModule } from '@delon/abc/auto-focus';
 import { CellModule } from '@delon/abc/cell';
 import { CountDownModule } from '@delon/abc/count-down';
@@ -56,6 +62,7 @@ import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 // @delon/util - 工具函数/通用库（Utilities）
 // ============================================
 import { CurrencyPricePipe } from '@delon/util';
+import { SupabaseAuthService } from '@core/infra/supabase/supabase-auth.service';
 
 // ============================================
 // 导出共享模块数组
@@ -119,3 +126,7 @@ export const SHARED_DELON_MODULES = [
   // @delon/util - 工具
   CurrencyPricePipe
 ];
+
+// Core services that should be considered early in the app bootstrap
+// (Supabase Auth must be wired before relying on @delon/auth TokenService)
+export const SHARED_CORE_SERVICES = [SupabaseAuthService];

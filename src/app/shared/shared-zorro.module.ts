@@ -2,6 +2,10 @@
 // NG-ZORRO-ANTD - 所有可用组件（All Available Components）
 // 组件按功能分类枚举：通用/布局/导航/数据录入/数据展示/反馈
 // ============================================
+// Preference: Use `ng-zorro-antd` components as the primary UI library.
+// When creating or refactoring components, prefer ng-zorro equivalents
+// before introducing other UI libraries. This file exposes shared
+// ng-zorro modules for application-wide use.
 import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAnchorModule } from 'ng-zorro-antd/anchor';

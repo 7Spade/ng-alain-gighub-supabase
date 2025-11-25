@@ -12,7 +12,7 @@ import { DatePipe, I18nPipe } from '@delon/theme';
 // ============================================
 // 共享模块（Shared Modules）
 // ============================================
-import { SHARED_DELON_MODULES } from './shared-delon.module';
+import { SHARED_DELON_MODULES, SHARED_CORE_SERVICES } from './shared-delon.module';
 import { SHARED_ZORRO_MODULES } from './shared-zorro.module';
 
 // ============================================
@@ -38,3 +38,7 @@ export const SHARED_IMPORTS = [
   // NG-ZORRO 组件
   ...SHARED_ZORRO_MODULES
 ];
+
+// 注意：下列 providers 列表僅為參考，方便在 AppModule 或 bootstrap 時優先註冊
+// 建議在應用啟動階段（bootstrap）先註冊 SupabaseAuthService / 授權相關服務
+export const SHARED_PROVIDERS = [...SHARED_CORE_SERVICES];
