@@ -7,12 +7,11 @@
  * @module routes/org/blueprints
  */
 
-import { Component, ChangeDetectionStrategy, inject, OnInit, effect } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SHARED_IMPORTS } from '@shared';
+import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { WorkspaceContextFacade, ContextType } from '@core';
-
 import { TaskListComponent } from '@features/blueprint';
+import { SHARED_IMPORTS } from '@shared';
 
 @Component({
   selector: 'app-org-blueprints',
@@ -31,34 +30,27 @@ import { TaskListComponent } from '@features/blueprint';
     <!-- Task List from Blueprint Feature -->
     <app-task-list></app-task-list>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrgBlueprintsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
 
-  constructor() {
-    // Ensure context is set to organization when navigating here
-    effect(() => {
-      const orgId = this.route.snapshot.paramMap.get('organizationId');
-      const currentType = this.workspaceContext.contextType();
-      const currentId = this.workspaceContext.contextId();
-
-      if (orgId && (currentType !== ContextType.ORGANIZATION || currentId !== orgId)) {
-        this.workspaceContext.switchToOrganization(orgId);
-      }
-    });
-  }
-
   ngOnInit(): void {
+    // Set context to organization when navigating here
     const orgId = this.route.snapshot.paramMap.get('organizationId');
-    if (orgId) {
+    const currentType = this.workspaceContext.contextType();
+    const currentId = this.workspaceContext.contextId();
+
+    // Only switch if context is different to avoid redundant calls
+    if (orgId && (currentType !== ContextType.ORGANIZATION || currentId !== orgId)) {
       this.workspaceContext.switchToOrganization(orgId);
     }
   }

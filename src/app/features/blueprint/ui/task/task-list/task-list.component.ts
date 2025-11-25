@@ -15,13 +15,13 @@
 
 import { Component, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SHARED_IMPORTS } from '@shared';
 import { WorkspaceContextFacade } from '@core';
+import { SHARED_IMPORTS } from '@shared';
 
 import { TaskStore } from '../../../data-access';
 import { TaskModel, TaskViewMode } from '../../../domain';
-import { TaskTreeComponent } from '../task-tree';
 import { TaskTableComponent } from '../task-table';
+import { TaskTreeComponent } from '../task-tree';
 
 @Component({
   selector: 'app-task-list',

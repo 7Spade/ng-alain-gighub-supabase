@@ -7,12 +7,11 @@
  * @module routes/team/blueprints
  */
 
-import { Component, ChangeDetectionStrategy, inject, OnInit, effect } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SHARED_IMPORTS } from '@shared';
+import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { WorkspaceContextFacade, ContextType } from '@core';
-
 import { TaskListComponent } from '@features/blueprint';
+import { SHARED_IMPORTS } from '@shared';
 
 @Component({
   selector: 'app-team-blueprints',
@@ -31,34 +30,27 @@ import { TaskListComponent } from '@features/blueprint';
     <!-- Task List from Blueprint Feature -->
     <app-task-list></app-task-list>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TeamBlueprintsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly workspaceContext = inject(WorkspaceContextFacade);
 
-  constructor() {
-    // Ensure context is set to team when navigating here
-    effect(() => {
-      const teamId = this.route.snapshot.paramMap.get('teamId');
-      const currentType = this.workspaceContext.contextType();
-      const currentId = this.workspaceContext.contextId();
-
-      if (teamId && (currentType !== ContextType.TEAM || currentId !== teamId)) {
-        this.workspaceContext.switchToTeam(teamId);
-      }
-    });
-  }
-
   ngOnInit(): void {
+    // Set context to team when navigating here
     const teamId = this.route.snapshot.paramMap.get('teamId');
-    if (teamId) {
+    const currentType = this.workspaceContext.contextType();
+    const currentId = this.workspaceContext.contextId();
+
+    // Only switch if context is different to avoid redundant calls
+    if (teamId && (currentType !== ContextType.TEAM || currentId !== teamId)) {
       this.workspaceContext.switchToTeam(teamId);
     }
   }

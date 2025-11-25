@@ -11,22 +11,34 @@ import { TaskStatus, TaskPriority } from '../../../domain';
 
 /**
  * Status color mapping for badges
+ * Supports both TaskStatus type and TaskStatusEnum values
  */
-export const STATUS_COLOR_MAP: Record<TaskStatus, string> = {
+export const STATUS_COLOR_MAP: Record<string, string> = {
+  // TaskStatus type values
   pending: 'default',
   in_progress: 'processing',
   completed: 'success',
-  cancelled: 'error'
+  cancelled: 'error',
+  // TaskStatusEnum values (for compatibility)
+  todo: 'default',
+  in_review: 'warning',
+  done: 'success'
 };
 
 /**
  * Status text mapping for display
+ * Supports both TaskStatus type and TaskStatusEnum values
  */
-export const STATUS_TEXT_MAP: Record<TaskStatus, string> = {
+export const STATUS_TEXT_MAP: Record<string, string> = {
+  // TaskStatus type values
   pending: '待處理',
   in_progress: '進行中',
   completed: '已完成',
-  cancelled: '已取消'
+  cancelled: '已取消',
+  // TaskStatusEnum values (for compatibility)
+  todo: '待處理',
+  in_review: '審核中',
+  done: '已完成'
 };
 
 /**
@@ -42,14 +54,14 @@ export const PRIORITY_COLOR_MAP: Record<TaskPriority, string> = {
 /**
  * Get status badge color
  */
-export function getStatusColor(status: TaskStatus): string {
+export function getStatusColor(status: TaskStatus | string): string {
   return STATUS_COLOR_MAP[status] || 'default';
 }
 
 /**
  * Get status display text
  */
-export function getStatusText(status: TaskStatus): string {
+export function getStatusText(status: TaskStatus | string): string {
   return STATUS_TEXT_MAP[status] || status;
 }
 

@@ -17,13 +17,7 @@ import { Component, input, output } from '@angular/core';
 import { SHARED_IMPORTS } from '@shared';
 
 import { TaskModel } from '../../../domain';
-import { 
-  getStatusColor, 
-  getStatusText, 
-  getTaskLevel, 
-  getLevelColor, 
-  getPriorityColor 
-} from '../shared';
+import { getStatusColor, getStatusText, getTaskLevel, getLevelColor, getPriorityColor } from '../shared';
 
 @Component({
   selector: 'app-task-table',

@@ -13,10 +13,10 @@
  * @module features/blueprint/ui/task/task-tree
  */
 
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, input, output, computed, effect } from '@angular/core';
 import { SHARED_IMPORTS } from '@shared';
 import { NzTreeViewModule, NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
-import { FlatTreeControl } from '@angular/cdk/tree';
 
 import { TaskModel } from '../../../domain';
 import { getStatusColor, getStatusText, getTaskLevel, getLevelColor } from '../shared';
@@ -49,6 +49,9 @@ export class TaskTreeComponent {
   readonly taskDelete = output<TaskModel>();
   readonly taskCreate = output<string | null>();
 
+  // Pre-built children map for O(1) lookup
+  private childrenMap = new Map<string | null, TaskModel[]>();
+
   // Tree control
   private transformer = (task: TaskModel, level: number): FlatNode => ({
     expandable: task.childCount > 0,
@@ -58,7 +61,7 @@ export class TaskTreeComponent {
   });
 
   private getChildrenFn = (task: TaskModel): TaskModel[] => {
-    return this.tasks().filter(t => t.parentId === task.id);
+    return this.childrenMap.get(task.id) || [];
   };
 
   treeControl = new FlatTreeControl<FlatNode>(
@@ -75,10 +78,21 @@ export class TaskTreeComponent {
 
   dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  // Build tree data from flat tasks
+  // Build tree data from flat tasks with optimized children lookup
   readonly treeData = computed(() => {
     const tasks = this.tasks();
-    return tasks.filter(t => t.parentId === null);
+
+    // Build children map for O(1) lookup
+    this.childrenMap.clear();
+    for (const task of tasks) {
+      const parentId = task.parentId;
+      if (!this.childrenMap.has(parentId)) {
+        this.childrenMap.set(parentId, []);
+      }
+      this.childrenMap.get(parentId)!.push(task);
+    }
+
+    return this.childrenMap.get(null) || [];
   });
 
   constructor() {
@@ -97,32 +111,24 @@ export class TaskTreeComponent {
   getTaskLevel = getTaskLevel;
   getLevelColor = getLevelColor;
 
-  /**
-   * Handle task node click
-   */
+  /** Handle task node click */
   onNodeClick(node: FlatNode): void {
     this.taskSelect.emit(node.task);
   }
 
-  /**
-   * Handle edit action
-   */
+  /** Handle edit action */
   onEdit(event: Event, task: TaskModel): void {
     event.stopPropagation();
     this.taskEdit.emit(task);
   }
 
-  /**
-   * Handle delete action
-   */
+  /** Handle delete action */
   onDelete(event: Event, task: TaskModel): void {
     event.stopPropagation();
     this.taskDelete.emit(task);
   }
 
-  /**
-   * Handle add child task
-   */
+  /** Handle add child task */
   onAddChild(event: Event, parentId: string | null): void {
     event.stopPropagation();
     this.taskCreate.emit(parentId);
