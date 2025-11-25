@@ -11,7 +11,7 @@
  */
 
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
-import { WorkspaceContextFacade } from '@core';
+import { WorkspaceContextFacade, ContextType } from '@core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
 import { AccountService, SHARED_IMPORTS } from '@shared';
 
@@ -22,7 +22,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
   template: `
     <!-- Application menu -->
     @if (!hasToken()) {
-      <li nz-menu-item (click)="workspaceContext.switchToApp()" [class.ant-menu-item-selected]="workspaceContext.contextType() === 'app'">
+      <li nz-menu-item (click)="workspaceContext.switchToApp()" [class.ant-menu-item-selected]="isAppContext()">
         <i nz-icon nzType="appstore" class="mr-sm"></i>
         <span>應用菜單</span>
       </li>
@@ -34,7 +34,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
       <li
         nz-menu-item
         (click)="workspaceContext.switchToUser(getAccountId(account))"
-        [class.ant-menu-item-selected]="workspaceContext.contextType() === 'user' && workspaceContext.contextId() === getAccountId(account)"
+        [class.ant-menu-item-selected]="isUserContext(getAccountId(account))"
       >
         <i nz-icon nzType="user" class="mr-sm"></i>
         <span>{{ getAccountName(account) }}</span>
@@ -51,9 +51,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
             <li
               nz-menu-item
               (click)="workspaceContext.switchToOrganization(getAccountId(org))"
-              [class.ant-menu-item-selected]="
-                workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(org)
-              "
+              [class.ant-menu-item-selected]="isOrganizationContext(getAccountId(org))"
             >
               <i nz-icon nzType="team" class="mr-sm"></i>
               <span>{{ getAccountName(org) }}</span>
@@ -64,9 +62,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
               <li
                 nz-menu-item
                 (click)="workspaceContext.switchToTeam(getTeamId(team))"
-                [class.ant-menu-item-selected]="
-                  workspaceContext.contextType() === 'team' && workspaceContext.contextId() === getTeamId(team)
-                "
+                [class.ant-menu-item-selected]="isTeamContext(getTeamId(team))"
               >
                 <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
                 <span>{{ getTeamName(team) }}</span>
@@ -79,9 +75,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
         <li
           nz-menu-item
           (click)="workspaceContext.switchToOrganization(getAccountId(org))"
-          [class.ant-menu-item-selected]="
-            workspaceContext.contextType() === 'organization' && workspaceContext.contextId() === getAccountId(org)
-          "
+          [class.ant-menu-item-selected]="isOrganizationContext(getAccountId(org))"
         >
           <i nz-icon nzType="team" class="mr-sm"></i>
           <span>{{ getAccountName(org) }}</span>
@@ -116,19 +110,22 @@ export class HeaderContextSwitcherComponent {
   readonly workspaceContext = inject(WorkspaceContextFacade);
   private readonly tokenService = inject(DA_SERVICE_TOKEN);
 
+  // Expose ContextType enum to template
+  readonly ContextType = ContextType;
+
   // Use WorkspaceContextFacade signals
-  readonly userAccounts = computed(() => {
-    const accounts = this.accountService.userAccounts() as any[];
+  readonly userAccounts = computed<Array<Record<string, unknown>>>(() => {
+    const accounts = this.accountService.userAccounts() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 👤 用戶帳戶:', accounts);
     return accounts;
   });
-  readonly organizationAccounts = computed(() => {
-    const orgs = this.workspaceContext.allOrganizations();
+  readonly organizationAccounts = computed<Array<Record<string, unknown>>>(() => {
+    const orgs = this.workspaceContext.organizations() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 🏢 組織帳戶:', orgs);
     return orgs;
   });
-  readonly userTeams = computed(() => {
-    const teams = this.workspaceContext.userTeams();
+  readonly userTeams = computed<Array<Record<string, unknown>>>(() => {
+    const teams = this.workspaceContext.teams() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 👥 用戶團隊:', teams);
     return teams;
   });
@@ -136,6 +133,44 @@ export class HeaderContextSwitcherComponent {
   readonly contextLabel = this.workspaceContext.contextLabel;
   readonly contextIcon = this.workspaceContext.contextIcon;
   readonly switching = this.workspaceContext.switching;
+
+  // Computed signals for type-safe comparisons
+  readonly currentContextType = this.workspaceContext.contextType;
+  readonly currentContextId = this.workspaceContext.contextId;
+
+  // Helper methods for type-safe comparisons
+  isContextType(type: ContextType): boolean {
+    const current = this.currentContextType();
+    return current === type;
+  }
+
+  isContextId(id: string | null): boolean {
+    const current = this.currentContextId();
+    return current === id;
+  }
+
+  isSelectedContext(type: ContextType, id: string | null): boolean {
+    return this.isContextType(type) && this.isContextId(id);
+  }
+
+  // Helper methods for template (type-safe)
+  // Using method instead of computed signal for better template compatibility
+  isAppContext(): boolean {
+    return this.isContextType(ContextType.APP);
+  }
+
+  // Helper methods that accept IDs
+  isUserContext(id: string): boolean {
+    return this.isSelectedContext(ContextType.USER, id);
+  }
+
+  isOrganizationContext(id: string): boolean {
+    return this.isSelectedContext(ContextType.ORGANIZATION, id);
+  }
+
+  isTeamContext(id: string): boolean {
+    return this.isSelectedContext(ContextType.TEAM, id);
+  }
 
   /**
    * Check if user is logged in
@@ -150,7 +185,7 @@ export class HeaderContextSwitcherComponent {
    * Get account ID with type safety
    * 獲取帳戶 ID（類型安全）
    */
-  getAccountId(account: any): string {
+  getAccountId(account: Record<string, unknown>): string {
     return (account['id'] as string) || '';
   }
 
@@ -158,7 +193,7 @@ export class HeaderContextSwitcherComponent {
    * Get team ID with type safety
    * 獲取團隊 ID（類型安全）
    */
-  getTeamId(team: any): string {
+  getTeamId(team: Record<string, unknown>): string {
     return (team['id'] as string) || '';
   }
 
@@ -166,15 +201,15 @@ export class HeaderContextSwitcherComponent {
    * Get account name with fallback
    * 獲取帳戶名稱（帶回退）
    */
-  getAccountName(account: any): string {
-    return account['name'] || account['email'] || '未命名帳戶';
+  getAccountName(account: Record<string, unknown>): string {
+    return (account['name'] as string) || (account['email'] as string) || '未命名帳戶';
   }
 
   /**
    * Get team name with fallback
    * 獲取團隊名稱（帶回退）
    */
-  getTeamName(team: any): string {
-    return team['name'] || '未命名團隊';
+  getTeamName(team: Record<string, unknown>): string {
+    return (team['name'] as string) || '未命名團隊';
   }
 }

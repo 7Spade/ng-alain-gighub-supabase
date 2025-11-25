@@ -37,7 +37,6 @@ export abstract class BaseContextAwareComponent implements OnInit {
   /**
    * Define context-specific configurations
    * Must be implemented by derived classes
-   * Note: APP context is optional and will use defaultConfig
    */
   protected abstract readonly contextConfigs: ContextConfigMap;
 

@@ -82,12 +82,18 @@ export class StartupService {
             this.aclService.setFull(true);
 
             // 載入菜單配置（MenuManagementService 會處理菜單更新）
-            this.menuManagementService.loadMenuConfig().subscribe(() => {
-              // 初始化時載入預設菜單（app 菜單）
-              // 注意：LayoutBasicComponent 的 effect 會監聽上下文變化並自動更新菜單
-              // 這裡只是確保菜單配置已載入
-              this.menuManagementService.updateMenu(ContextType.APP);
-            });
+            // 使用 async/await 現代化模式
+            this.menuManagementService
+              .loadConfig()
+              .then(() => {
+                // 初始化時載入預設菜單（app 菜單）
+                // 注意：LayoutBasicComponent 的 effect 會監聽上下文變化並自動更新菜單
+                // 這裡只是確保菜單配置已載入
+                this.menuManagementService.updateMenu(ContextType.APP);
+              })
+              .catch(error => {
+                console.error('[StartupService] Failed to load menu config:', error);
+              });
 
             // 向後兼容：如果 MenuManagementService 未載入，使用舊的菜單配置
             if (appData.menu && !appData.menus) {

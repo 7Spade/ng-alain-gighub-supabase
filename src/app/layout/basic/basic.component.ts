@@ -7,7 +7,7 @@ import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-d
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
 import { environment } from '@env/environment';
-import { MenuManagementService, MenuContextParams } from '@shared';
+import { MenuManagementService, ContextParams } from '@shared';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -176,8 +176,10 @@ export class LayoutBasicComponent {
   });
 
   constructor() {
-    // 載入菜單配置
-    this.menuManagementService.loadMenuConfig().subscribe();
+    // 載入菜單配置（使用 async/await 現代化模式）
+    this.menuManagementService.loadConfig().catch(error => {
+      console.error('[LayoutBasicComponent] Failed to load menu config:', error);
+    });
 
     // 監聽上下文變化並更新菜單
     // Only update menu when context is actually changed (not initial APP state)
@@ -210,8 +212,8 @@ export class LayoutBasicComponent {
    * 構建菜單參數
    * Build menu parameters from context
    */
-  private buildMenuParams(contextType: ContextType, contextId: string | null): MenuContextParams {
-    const params: MenuContextParams = {};
+  private buildMenuParams(contextType: ContextType, contextId: string | null): ContextParams {
+    const params: ContextParams = {};
 
     switch (contextType) {
       case ContextType.USER:

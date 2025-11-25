@@ -1,31 +1,27 @@
 /**
  * Menu Management Service
  *
- * 菜單管理服務（Shared 層）
- * Menu management service (Shared layer)
+ * 菜單管理服務 - 簡化版
+ * Menu management service - Simplified version
  *
  * 職責：
- * - 載入和管理菜單配置
- * - 根據上下文動態生成菜單
- * - 支持動態路由參數替換
- * - 權限過濾（未來擴展）
- * - 菜單緩存
+ * - 載入菜單配置
+ * - 根據上下文生成菜單
+ * - 動態路由參數替換
  *
- * @module shared/services/menu
+ * @module core/services
  */
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { ContextType } from '@core';
 import { Menu, MenuService } from '@delon/theme';
-import { Observable, of, catchError, map, shareReplay } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 /**
- * 菜單配置介面
- * Menu configuration interface
+ * 菜單配置
  */
-export interface MenuConfig {
-  app?: Menu[];
+interface MenuConfig {
   user?: Menu[];
   organization?: Menu[];
   team?: Menu[];
@@ -33,10 +29,10 @@ export interface MenuConfig {
 }
 
 /**
- * 菜單上下文參數
- * Menu context parameters
+ * 上下文參數
+ * Context parameters for menu generation
  */
-export interface MenuContextParams {
+export interface ContextParams {
   userId?: string;
   organizationId?: string;
   teamId?: string;
@@ -44,222 +40,101 @@ export interface MenuContextParams {
 }
 
 /**
- * 應用數據結構（從 app-data.json 載入）
- * Application data structure (loaded from app-data.json)
+ * 應用資料結構
  */
 interface AppData {
-  app?: {
-    name?: string;
-    description?: string;
-  };
-  menu?: Menu[]; // 舊格式（向後兼容）
-  menus?: MenuConfig; // 新格式
+  menus?: MenuConfig;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class MenuManagementService {
-  private readonly httpClient = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   private readonly menuService = inject(MenuService);
 
-  // 菜單配置狀態
-  private menuConfigState = signal<MenuConfig | null>(null);
-  private loadingState = signal<boolean>(false);
-  private errorState = signal<string | null>(null);
+  private readonly configState = signal<MenuConfig | null>(null);
+  private readonly loadingState = signal<boolean>(false);
 
-  // 菜單緩存（按上下文類型）
-  private menuCache = new Map<string, Menu[]>();
-
-  // Readonly signals
-  readonly menuConfig = this.menuConfigState.asReadonly();
+  readonly config = this.configState.asReadonly();
   readonly loading = this.loadingState.asReadonly();
-  readonly error = this.errorState.asReadonly();
 
   /**
    * 載入菜單配置
-   * Load menu configuration from app-data.json
    */
-  loadMenuConfig(): Observable<MenuConfig> {
-    if (this.menuConfigState()) {
-      return of(this.menuConfigState()!);
-    }
+  async loadConfig(): Promise<void> {
+    if (this.configState()) return; // 已載入
 
     this.loadingState.set(true);
-    this.errorState.set(null);
-
-    return this.httpClient.get<AppData>('./assets/tmp/app-data.json').pipe(
-      map(data => {
-        // 支持新格式 (menus) 和舊格式 (menu) - 向後兼容
-        // New format prioritized: menus.app, menus.user, menus.organization, menus.team
-        // Old format (menu) is deprecated and should not be used for APP context
-        const config: MenuConfig = data.menus || {
-          app: []
-        };
-
-        this.menuConfigState.set(config);
-        this.loadingState.set(false);
-        return config;
-      }),
-      catchError(error => {
-        this.errorState.set(error.message || 'Failed to load menu config');
-        this.loadingState.set(false);
-        console.error('[MenuManagementService] Failed to load menu config:', error);
-        return of({ app: [] });
-      }),
-      shareReplay(1)
-    );
+    try {
+      const data = await firstValueFrom(this.http.get<AppData>('./assets/tmp/app-data.json'));
+      this.configState.set(data.menus || {});
+    } catch (error) {
+      console.error('[MenuManagementService] Load failed:', error);
+      this.configState.set({});
+    } finally {
+      this.loadingState.set(false);
+    }
   }
 
   /**
-   * 根據上下文類型獲取菜單
-   * Get menu by context type
+   * 更新菜單
    */
-  getMenuByContext(contextType: ContextType, params?: MenuContextParams): Menu[] {
-    const config = this.menuConfigState();
-    if (!config) {
-      return [];
-    }
+  updateMenu(contextType: ContextType, params?: ContextParams): void {
+    const config = this.configState();
+    if (!config) return;
 
-    // 生成緩存鍵
-    const cacheKey = this.generateCacheKey(contextType, params);
-    if (this.menuCache.has(cacheKey)) {
-      return this.menuCache.get(cacheKey)!;
-    }
-
-    // 獲取基礎菜單配置
     let menu: Menu[] = [];
-    switch (contextType) {
-      case ContextType.APP:
-        // APP context should have no menu (empty array)
-        // This prevents showing old "主導航" menu
-        menu = [];
-        break;
-      case ContextType.USER:
-        menu = config.user || [];
-        break;
-      case ContextType.ORGANIZATION:
-        menu = config.organization || [];
-        break;
-      case ContextType.TEAM:
-        menu = config.team || [];
-        break;
-      case ContextType.BOT:
-        menu = config.bot || [];
-        break;
-      default:
-        menu = [];
+
+    // APP 上下文不顯示菜單
+    if (contextType !== ContextType.APP) {
+      const baseMenu = this.getBaseMenu(contextType, config);
+      menu = this.processParams(baseMenu, params);
     }
 
-    // 深拷貝並處理動態參數
-    const processedMenu = this.processMenuParams(JSON.parse(JSON.stringify(menu)), params);
-
-    // 緩存處理後的菜單
-    this.menuCache.set(cacheKey, processedMenu);
-
-    return processedMenu;
-  }
-
-  /**
-   * 更新菜單（根據上下文）
-   * Update menu based on context
-   */
-  updateMenu(contextType: ContextType, params?: MenuContextParams): void {
-    const menu = this.getMenuByContext(contextType, params);
     this.menuService.add(menu);
   }
 
   /**
-   * 處理菜單中的動態參數
-   * Process dynamic parameters in menu items
+   * 獲取基礎菜單
    */
-  private processMenuParams(menu: Menu[], params?: MenuContextParams): Menu[] {
+  private getBaseMenu(contextType: ContextType, config: MenuConfig): Menu[] {
+    switch (contextType) {
+      case ContextType.USER:
+        return config.user || [];
+      case ContextType.ORGANIZATION:
+        return config.organization || [];
+      case ContextType.TEAM:
+        return config.team || [];
+      case ContextType.BOT:
+        return config.bot || [];
+      default:
+        return [];
+    }
+  }
+
+  /**
+   * 處理動態參數
+   */
+  private processParams(menu: Menu[], params?: ContextParams): Menu[] {
     if (!params) return menu;
 
-    return menu.map(item => {
-      const processed: Menu = { ...item };
-
-      // 處理 link 中的動態參數
-      if (processed.link) {
-        processed.link = this.replaceRouteParams(processed.link, params);
-      }
-
-      // 遞歸處理子菜單
-      if (processed.children && processed.children.length > 0) {
-        processed.children = this.processMenuParams(processed.children, params);
-      }
-
-      return processed;
-    });
+    return menu.map(item => ({
+      ...item,
+      link: item.link ? this.replaceParams(item.link, params) : item.link,
+      children: item.children ? this.processParams(item.children, params) : undefined
+    }));
   }
 
   /**
-   * 替換路由中的動態參數
-   * Replace dynamic parameters in route
-   *
-   * 支持以下格式：
-   * - {userId}, {organizationId}, {teamId}, {botId}
-   * - :userId, :organizationId, :teamId, :botId
-   * - {orgId} (organizationId 的別名)
+   * 替換路由參數
+   * 支持: {userId}, :userId, {orgId}, :organizationId 等
    */
-  private replaceRouteParams(route: string, params: MenuContextParams): string {
-    let result = route;
-
-    if (params.userId) {
-      result = result.replace(/\{userId\}/g, params.userId);
-      result = result.replace(/:userId/g, params.userId);
-    }
-
-    if (params.organizationId) {
-      result = result.replace(/\{organizationId\}/g, params.organizationId);
-      result = result.replace(/:organizationId/g, params.organizationId);
-      result = result.replace(/\{orgId\}/g, params.organizationId);
-      result = result.replace(/:orgId/g, params.organizationId);
-    }
-
-    if (params.teamId) {
-      result = result.replace(/\{teamId\}/g, params.teamId);
-      result = result.replace(/:teamId/g, params.teamId);
-    }
-
-    if (params.botId) {
-      result = result.replace(/\{botId\}/g, params.botId);
-      result = result.replace(/:botId/g, params.botId);
-    }
-
-    return result;
-  }
-
-  /**
-   * 生成緩存鍵
-   * Generate cache key
-   */
-  private generateCacheKey(contextType: ContextType, params?: MenuContextParams): string {
-    if (!params) return contextType;
-
-    const parts: string[] = [contextType];
-    if (params.userId) parts.push(`user:${params.userId}`);
-    if (params.organizationId) parts.push(`org:${params.organizationId}`);
-    if (params.teamId) parts.push(`team:${params.teamId}`);
-    if (params.botId) parts.push(`bot:${params.botId}`);
-
-    return parts.join('|');
-  }
-
-  /**
-   * 清除菜單緩存
-   * Clear menu cache
-   */
-  clearCache(): void {
-    this.menuCache.clear();
-  }
-
-  /**
-   * 清除特定上下文的緩存
-   * Clear cache for specific context
-   */
-  clearCacheForContext(contextType: ContextType, params?: MenuContextParams): void {
-    const cacheKey = this.generateCacheKey(contextType, params);
-    this.menuCache.delete(cacheKey);
+  private replaceParams(route: string, params: ContextParams): string {
+    return route
+      .replace(/\{userId\}|:userId/g, params.userId || '')
+      .replace(/\{organizationId\}|\{orgId\}|:organizationId|:orgId/g, params.organizationId || '')
+      .replace(/\{teamId\}|:teamId/g, params.teamId || '')
+      .replace(/\{botId\}|:botId/g, params.botId || '');
   }
 }

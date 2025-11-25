@@ -34,25 +34,29 @@ export class CreateTeamComponent {
   loading = signal(false);
 
   // 從上下文自動獲取組織 ID
-  readonly currentOrgId = this.workspaceContext.contextType() === 'organization' ? this.workspaceContext.contextId() : null;
+  readonly currentOrgId = computed<string | null>(() => {
+    const contextType = this.workspaceContext.contextType();
+    const contextId = this.workspaceContext.contextId();
+    return contextType === 'organization' ? contextId : null;
+  });
 
-  readonly showOrgSelector = !this.currentOrgId; // 只有在非組織上下文才顯示選擇器
+  readonly showOrgSelector = computed(() => !this.currentOrgId()); // 只有在非組織上下文才顯示選擇器
 
   form: FormGroup = this.fb.group({
-    organizationId: [this.currentOrgId || '', [Validators.required]],
+    organizationId: [this.currentOrgId() || '', [Validators.required]],
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
     description: ['', [Validators.maxLength(500)]],
     avatar: ['']
   });
 
-  readonly organizations = this.workspaceContext.allOrganizations;
-  readonly loadingOrganizations = this.workspaceContext.loadingOrganizations;
+  readonly organizations = this.workspaceContext.organizations;
+  readonly loadingOrganizations = this.workspaceContext.loading;
 
   readonly organizationOptions = computed(() => {
     const orgs = this.organizations();
-    return orgs.map(org => ({
+    return orgs.map((org: Record<string, unknown>) => ({
       value: org['id'] as string,
-      label: (org as any).name || '未命名組織'
+      label: (org['name'] as string) || '未命名組織'
     }));
   });
 
@@ -91,8 +95,9 @@ export class CreateTeamComponent {
    * Get current organization name
    */
   getCurrentOrgName(): string {
-    if (!this.currentOrgId) return '';
-    const org = this.organizations().find(o => o['id'] === this.currentOrgId);
-    return org ? (org as any).name || '未命名組織' : '';
+    const orgId = this.currentOrgId();
+    if (!orgId) return '';
+    const org = this.organizations().find((o: Record<string, unknown>) => o['id'] === orgId);
+    return org ? (org['name'] as string) || '未命名組織' : '';
   }
 }

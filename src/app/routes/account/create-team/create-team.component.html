@@ -14,7 +14,7 @@
     ></nz-alert>
   } @else {
     <form nz-form [formGroup]="form" nzLayout="vertical">
-      @if (showOrgSelector) {
+      @if (showOrgSelector()) {
         <nz-form-item>
           <nz-form-label [nzRequired]="true">所屬組織</nz-form-label>
           <nz-form-control [nzErrorTip]="'請選擇組織'">
