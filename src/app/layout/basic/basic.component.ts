@@ -100,10 +100,6 @@ import { CreateOrganizationComponent } from '../../routes/account/create-organiz
             </li>
             <li nz-menu-divider></li>
 
-            <!-- 原有菜單項 -->
-            <li nz-menu-item routerLink="/pro/account/center">{{ 'menu.account.center' | i18n }}</li>
-            <li nz-menu-item routerLink="/pro/account/settings">{{ 'menu.account.settings' | i18n }}</li>
-            <li nz-menu-divider></li>
             <li nz-menu-item (click)="openCreateOrganization()">
               <i nz-icon nzType="plus-circle" class="mr-sm"></i>
               <span>建立組織</span>
