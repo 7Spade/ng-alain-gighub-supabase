@@ -155,24 +155,69 @@ export class LayoutBasicComponent {
   // 從 Supabase 獲取當前用戶
   private readonly supabaseUser = toSignal<SupabaseUser | null>(this.supabaseAuth.currentUser$, { initialValue: null });
 
-  // 將 Supabase User 映射為 ng-alain User 格式
+  // 根據當前工作區上下文計算用戶信息（現代化：使用 computed 依賴工作區上下文）
   readonly user = computed<User>(() => {
     const supabaseUser = this.supabaseUser();
+    const contextType = this.workspaceContext.contextType();
+    const contextId = this.workspaceContext.contextId();
+    const contextLabel = this.workspaceContext.contextLabel();
+    const contextIcon = this.workspaceContext.contextIcon();
 
-    if (!supabaseUser) {
-      // 如果沒有 Supabase 用戶，回退到 SettingsService 的用戶數據
-      return this.settings.user;
+    // 根據工作區上下文返回對應的用戶信息
+    switch (contextType) {
+      case ContextType.USER:
+        // 個人帳戶：使用 Supabase 用戶信息
+        if (!supabaseUser) {
+          return this.settings.user;
+        }
+        const metadata = supabaseUser.user_metadata || {};
+        const email = supabaseUser.email || '';
+        return {
+          name: metadata['full_name'] || metadata['name'] || email.split('@')[0] || 'User',
+          email: email,
+          avatar: metadata['avatar_url'] || metadata['avatar'] || './assets/tmp/img/avatar.jpg'
+        };
+
+      case ContextType.ORGANIZATION:
+        // 組織上下文：顯示組織信息
+        const org = this.workspaceContext.getOrganizationById(contextId || '');
+        return {
+          name: contextLabel || (org?.['name'] as string) || '組織',
+          email: '',
+          avatar: (org?.['avatar'] as string) || './assets/tmp/img/avatar.jpg'
+        };
+
+      case ContextType.TEAM:
+        // 團隊上下文：顯示團隊信息
+        const team = this.workspaceContext.getTeamById(contextId || '');
+        return {
+          name: contextLabel || (team?.['name'] as string) || '團隊',
+          email: '',
+          avatar: (team?.['avatar'] as string) || './assets/tmp/img/avatar.jpg'
+        };
+
+      case ContextType.BOT:
+        // 機器人上下文
+        return {
+          name: contextLabel || '機器人',
+          email: '',
+          avatar: './assets/tmp/img/avatar.jpg'
+        };
+
+      case ContextType.APP:
+      default:
+        // 應用菜單：使用 Supabase 用戶信息
+        if (!supabaseUser) {
+          return this.settings.user;
+        }
+        const defaultMetadata = supabaseUser.user_metadata || {};
+        const defaultEmail = supabaseUser.email || '';
+        return {
+          name: defaultMetadata['full_name'] || defaultMetadata['name'] || defaultEmail.split('@')[0] || 'User',
+          email: defaultEmail,
+          avatar: defaultMetadata['avatar_url'] || defaultMetadata['avatar'] || './assets/tmp/img/avatar.jpg'
+        };
     }
-
-    // 映射 Supabase User 到 ng-alain User 格式
-    const metadata = supabaseUser.user_metadata || {};
-    const email = supabaseUser.email || '';
-
-    return {
-      name: metadata['full_name'] || metadata['name'] || email.split('@')[0] || 'User',
-      email: email,
-      avatar: metadata['avatar_url'] || metadata['avatar'] || './assets/tmp/img/avatar.jpg'
-    };
   });
 
   constructor() {

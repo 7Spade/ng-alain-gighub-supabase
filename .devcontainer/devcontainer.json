@@ -1,0 +1,29 @@
+
+{
+	"name": "ng-alain-gighub-supabase Dev Container",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"angular.ng-template",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"ms-azuretools.vscode-docker",
+				"eamodio.gitlens",
+				"esbenp.prettier-vscode"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"editor.formatOnSave": true
+			}
+		}
+	},
+	"forwardPorts": [4200, 5432],
+	"postCreateCommand": "yarn install --immutable",
+	"containerEnv": {
+		"NODE_ENV": "development"
+	},
+	"remoteUser": "vscode"
+}
