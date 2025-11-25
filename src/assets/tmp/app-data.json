@@ -16,25 +16,25 @@
             "text": "儀表板",
             "i18n": "menu.user.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/user/{userId}/dashboard"
+            "link": "/account/user/{userId}/dashboard"
           },
           {
             "text": "我的待辦",
             "i18n": "menu.user.todos",
             "icon": "anticon-check-square",
-            "link": "/user/{userId}/todos"
+            "link": "/account/user/{userId}/todos"
           },
           {
             "text": "我的藍圖",
             "i18n": "menu.user.blueprints",
             "icon": "anticon-file-text",
-            "link": "/user/{userId}/blueprints"
+            "link": "/account/user/{userId}/blueprints"
           },
           {
             "text": "個人設定",
             "i18n": "menu.user.settings",
             "icon": "anticon-setting",
-            "link": "/user/{userId}/settings"
+            "link": "/account/user/{userId}/settings"
           }
         ]
       }
@@ -50,31 +50,31 @@
             "text": "組織儀表板",
             "i18n": "menu.organization.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/org/{organizationId}/dashboard"
+            "link": "/account/org/{organizationId}/dashboard"
           },
           {
             "text": "組織藍圖",
             "i18n": "menu.organization.blueprints",
             "icon": "anticon-file-text",
-            "link": "/org/{organizationId}/blueprints"
+            "link": "/account/org/{organizationId}/blueprints"
           },
           {
             "text": "團隊管理",
             "i18n": "menu.organization.teams",
             "icon": "anticon-team",
-            "link": "/org/{organizationId}/teams"
+            "link": "/account/org/{organizationId}/teams"
           },
           {
             "text": "成員管理",
             "i18n": "menu.organization.members",
             "icon": "anticon-user",
-            "link": "/org/{organizationId}/members"
+            "link": "/account/org/{organizationId}/members"
           },
           {
             "text": "組織設定",
             "i18n": "menu.organization.settings",
             "icon": "anticon-setting",
-            "link": "/org/{organizationId}/settings"
+            "link": "/account/org/{organizationId}/settings"
           }
         ]
       }
@@ -90,25 +90,25 @@
             "text": "團隊儀表板",
             "i18n": "menu.team.dashboard",
             "icon": "anticon-dashboard",
-            "link": "/team/{teamId}/dashboard"
+            "link": "/account/team/{teamId}/dashboard"
           },
           {
             "text": "團隊待辦",
             "i18n": "menu.team.todos",
             "icon": "anticon-check-square",
-            "link": "/team/{teamId}/todos"
+            "link": "/account/team/{teamId}/todos"
           },
           {
             "text": "團隊藍圖",
             "i18n": "menu.team.blueprints",
             "icon": "anticon-file-text",
-            "link": "/team/{teamId}/blueprints"
+            "link": "/account/team/{teamId}/blueprints"
           },
           {
             "text": "團隊成員",
             "i18n": "menu.team.members",
             "icon": "anticon-user",
-            "link": "/team/{teamId}/members"
+            "link": "/account/team/{teamId}/members"
           }
         ]
       }
