@@ -58,8 +58,32 @@
 - 完整的測試覆蓋
 - 安全性與效能最佳化
 
+## 額外代理（來自 awesome-copilot）
+
+本專案從 [awesome-copilot](https://github.com/github/awesome-copilot) 精選以下輔助代理：
+
+### `accessibility.agent.md`
+**名稱**: Accessibility Expert  
+**描述**: WCAG 無障礙功能專家，協助確保 UI 符合 WCAG 2.2 標準
+
+### `debug.agent.md`
+**名稱**: Debug Mode  
+**描述**: 系統性調試助手，協助識別、分析並解決 bug
+
+### `api-architect.agent.md`
+**名稱**: API Architect  
+**描述**: API 架構師，協助設計 API 連接與韌性模式
+
+### `typescript-mcp-expert.agent.md`
+**名稱**: TypeScript MCP Server Expert  
+**描述**: TypeScript MCP 伺服器專家，協助開發 Model Context Protocol 伺服器
+
 ## 維護記錄
 
+- **2025-11-25**: 從 awesome-copilot 複製有價值的 agents、prompts、instructions 和 collections
+  - 新增: `accessibility.agent.md`、`debug.agent.md`、`api-architect.agent.md`、`typescript-mcp-expert.agent.md`
+  - 新增目錄: `.github/prompts/`、`.github/collections/`
+  - 新增 instructions: `angular.instructions.md`、`a11y.instructions.md`、`typescript-mcp-server.instructions.md`、`playwright-typescript.instructions.md`
 - **2025-11-23**: 移除不適用的代理，保留最佳化的 ng-alain 專用代理
   - 移除: `ng-alain-gighub-supabase.agent.md`（SSR 專用，本專案不適用）
   - 移除: `onboarding.agent.md`、`review.agent.md`、`repo-name.agent.md`（空文件）
