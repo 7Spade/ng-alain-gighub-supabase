@@ -9,3 +9,5 @@
 export * from './blueprint.models';
 export * from './task.models';
 export * from './workspace.models';
+export * from './diary.models';
+export * from './todo.models';

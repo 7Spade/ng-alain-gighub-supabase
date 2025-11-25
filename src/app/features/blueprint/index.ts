@@ -49,7 +49,7 @@ export {
 } from './shell';
 
 // UI components (public components only)
-export { TaskListComponent, BlueprintListComponent } from './ui';
+export { TaskListComponent, BlueprintListComponent, DiaryListComponent, TodoListComponent } from './ui';
 
 // Stores (facade layer - main API for components)
-export { BlueprintStore, TaskStore } from './data-access';
+export { BlueprintStore, TaskStore, DiaryStore, TodoStore } from './data-access';
