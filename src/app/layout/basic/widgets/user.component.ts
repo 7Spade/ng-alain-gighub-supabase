@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { WorkspaceContextFacade, ContextType } from '@core';
+import { WorkspaceContextFacade, ContextType, SupabaseAuthService } from '@core';
 import { DA_SERVICE_TOKEN } from '@delon/auth';
 import { I18nPipe, SettingsService, User } from '@delon/theme';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { SupabaseAuthService } from '@core';
-import { User as SupabaseUser } from '@supabase/supabase-js';
 
 @Component({
   selector: 'header-user',

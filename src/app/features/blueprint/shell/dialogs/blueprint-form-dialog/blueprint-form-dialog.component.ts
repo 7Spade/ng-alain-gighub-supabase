@@ -38,8 +38,8 @@ export type BlueprintFormMode = 'create' | 'edit';
 export interface BlueprintFormDialogData {
   mode: BlueprintFormMode;
   blueprint?: BlueprintModel;
-  ownerId: string;
-  ownerType: OwnerType;
+  ownerId?: string;
+  ownerType?: OwnerType;
 }
 
 /**
@@ -236,6 +236,10 @@ export class BlueprintFormDialogComponent implements OnInit {
    * Handle blueprint creation
    */
   private async handleCreate(formValue: BlueprintFormValues, tags: string[]): Promise<void> {
+    if (!this.dialogData.ownerId || !this.dialogData.ownerType) {
+      throw new Error('Owner ID and Owner Type are required for creation');
+    }
+
     const request: CreateBlueprintRequest = {
       name: formValue.name,
       description: formValue.description,
