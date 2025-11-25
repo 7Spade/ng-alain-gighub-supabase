@@ -28,7 +28,7 @@ instructions: |
 
   ## 企業級開發規範（必須遵守）
 
-  **所有產出必須嚴格遵守 `.github/agents/ng-governance-v1.md` 規範**，該文件定義了完整的企業級開發標準，包含：
+  **所有產出必須嚴格遵守 `.github/agents/0-ng-governance-v1.md` 規範**，該文件定義了完整的企業級開發標準，包含：
 
   - **分層架構與單一職責原則**：
     - **橫向分層架構**（適用於 `core/`、`shared/`、`routes/`、`layout/`）：`Types → Repositories → Models → Services → Facades → Routes/Components`
@@ -45,8 +45,8 @@ instructions: |
   - **程式碼品質管理**：ESLint、Prettier、測試覆蓋率要求
 
   > **重要**：
-  > - 完成任何開發任務後，必須基於 `.github/agents/ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」進行驗收
-  > - 注意：`ng-governance-v1.md` 描述的是橫向分層架構，但實際專案在 `features/` 下採用垂直切片架構，依賴方向相同但代碼組織方式不同
+  > - 完成任何開發任務後，必須基於 `.github/agents/0-ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」進行驗收
+  > - 注意：`0-ng-governance-v1.md` 描述的是橫向分層架構，但實際專案在 `features/` 下採用垂直切片架構，依賴方向相同但代碼組織方式不同
   > - 在 `features/` 下開發時，應遵循垂直切片架構，所有相關代碼集中在同一 feature 目錄下
 
   ---
@@ -393,7 +393,7 @@ instructions: |
 
   完成任何開發任務後，必須執行以下驗收流程：
 
-  1. **檢查規範遵守**：基於 `.github/agents/ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」逐項檢查
+  1. **檢查規範遵守**：基於 `.github/agents/0-ng-governance-v1.md` 中的「Angular 企業級快速檢查清單」逐項檢查
   2. **驗證架構分層**：
      - 橫向分層：確認遵守 Types → Repositories → Models → Services → Facades → Components
      - 垂直切片：確認遵守 domain/types → data-access/repositories → domain/models → data-access/services → data-access/stores → shell/ui
@@ -410,9 +410,9 @@ instructions: |
 
   ---
 
-  ## `.github/agents/ng-governance-v1.md` 快速查詢索引
+  ## `.github/agents/0-ng-governance-v1.md` 快速查詢索引
 
-  > **使用說明**：當遇到問題時，根據當前開發階段和問題類型，快速定位到 `ng-governance-v1.md` 的相關章節。
+  > **使用說明**：當遇到問題時，根據當前開發階段和問題類型，快速定位到 `0-ng-governance-v1.md` 的相關章節。
 
   ### 📋 按開發階段查詢
 
@@ -439,7 +439,7 @@ instructions: |
   - **響應式設計** → `7.4 響應式設計規範`
 
   #### 階段 4：測試驗證
-  - **檢查清單** → `ng-governance-v1.md` 末尾「Angular 企業級快速檢查清單」
+  - **檢查清單** → `0-ng-governance-v1.md` 末尾「Angular 企業級快速檢查清單」
   - **程式碼品質** → `13. 程式碼品質管理`
   - **測試要求** → `13.2 測試要求`
 
@@ -511,7 +511,7 @@ instructions: |
   | 我要查詢資料庫，應該使用什麼工具？ | `2.3 Supabase MCP 使用規範` | 實作開發 |
   | 我不確定 API 用法，應該查詢什麼？ | `2.4 Context7 MCP 使用時機與判斷準則` | 實作開發 |
   | 我要開始一個新功能，應該怎麼規劃？ | `2.1 Sequential Thinking`、`2.2 Software Planning Tool` | 需求分析、架構設計 |
-  | 我要檢查代碼是否符合規範，應該看什麼？ | `ng-governance-v1.md` 末尾「Angular 企業級快速檢查清單」 | 代碼審查、測試驗證 |
+  | 我要檢查代碼是否符合規範，應該看什麼？ | `0-ng-governance-v1.md` 末尾「Angular 企業級快速檢查清單」 | 代碼審查、測試驗證 |
 
   ### 📚 完整章節索引（按主題）
 
@@ -568,4 +568,4 @@ instructions: |
   #### 環境與安全相關
   - **9. 環境管理與安全策略**：環境配置、安全規範
 
-  > **提示**：遇到問題時，先確定當前開發階段和問題類型，然後使用對應的索引快速定位到 `ng-governance-v1.md` 的相關章節。
+  > **提示**：遇到問題時，先確定當前開發階段和問題類型，然後使用對應的索引快速定位到 `0-ng-governance-v1.md` 的相關章節。
