@@ -203,6 +203,9 @@ export class BlueprintFormDialogComponent implements OnInit {
   triggerSubmit(): void {
     if (this.sf?.valid) {
       this.onSubmit(this.sf.value as BlueprintFormValues);
+    } else {
+      // Show validation errors
+      this.messageService.warning('請填寫所有必填欄位');
     }
   }
 

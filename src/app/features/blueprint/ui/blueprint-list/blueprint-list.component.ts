@@ -297,6 +297,7 @@ export class BlueprintListComponent implements OnInit {
   private async loadBlueprints(): Promise<void> {
     const contextId = this.contextId();
     if (!contextId) {
+      console.warn('[BlueprintList] No context ID available, skipping load');
       return;
     }
 
@@ -355,9 +356,10 @@ export class BlueprintListComponent implements OnInit {
 
   /**
    * View blueprint details
+   * Navigate to blueprint detail page using absolute path
    */
   viewBlueprint(blueprint: BlueprintModel): void {
-    this.router.navigate(['../', 'blueprint', blueprint.id], { relativeTo: this.route });
+    this.router.navigate(['/blueprint', blueprint.id]);
   }
 
   /**
