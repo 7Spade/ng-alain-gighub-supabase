@@ -8,7 +8,7 @@ import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { firstValueFrom } from 'rxjs';
 
-import { AddOrganizationMemberComponent } from '../../account/add-organization-member/add-organization-member.component';
+import { AddOrganizationMemberComponent } from '../../add-organization-member/add-organization-member.component';
 
 @Component({
   selector: 'app-org-members',

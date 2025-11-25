@@ -8,6 +8,55 @@
 
 This module contains route page components for account management, providing management interfaces for users, organizations, teams, and other account entities.
 
+## 📂 目錄結構 | Directory Structure
+
+```
+account/
+├── routes.ts                  # 主路由配置
+├── user/                      # 用戶路由
+│   ├── routes.ts
+│   ├── dashboard/
+│   ├── settings/
+│   └── todos/
+├── team/                      # 團隊路由
+│   ├── routes.ts
+│   ├── dashboard/
+│   ├── members/
+│   └── todos/
+├── org/                       # 組織路由
+│   ├── routes.ts
+│   ├── dashboard/
+│   ├── members/
+│   ├── settings/
+│   └── teams/
+├── add-organization-member/   # 添加組織成員（模態框）
+├── add-team-member/           # 添加團隊成員（模態框）
+├── create-organization/       # 創建組織（模態框）
+├── create-team/               # 創建團隊（模態框）
+├── delete-organization/       # 刪除組織（模態框）
+├── delete-team/               # 刪除團隊（模態框）
+├── update-organization/       # 更新組織（模態框）
+└── update-team/               # 更新團隊（模態框）
+```
+
+## 🛣️ 路由配置 | Route Configuration
+
+### 用戶路由 | User Routes
+- `/account/user/:userId/dashboard` - 個人儀表板
+- `/account/user/:userId/todos` - 我的待辦
+- `/account/user/:userId/settings` - 個人設定
+
+### 團隊路由 | Team Routes
+- `/account/team/:teamId/dashboard` - 團隊儀表板
+- `/account/team/:teamId/todos` - 團隊待辦
+- `/account/team/:teamId/members` - 團隊成員
+
+### 組織路由 | Organization Routes
+- `/account/org/:organizationId/dashboard` - 組織儀表板
+- `/account/org/:organizationId/teams` - 團隊管理
+- `/account/org/:organizationId/members` - 成員管理
+- `/account/org/:organizationId/settings` - 組織設定
+
 ## 🎯 職責 | Responsibilities
 
 - 提供帳號管理的使用者介面
@@ -148,6 +197,10 @@ export class CreateOrganizationComponent {
 - [ng-zorro 官方文檔](https://ng.ant.design)
 
 ## 🔄 更新日誌 | Changelog
+
+**v1.1.0** (2025-11-25)
+- 將 user、team、org 路由遷移至 account 模組下
+- 統一路由結構：`/account/user`、`/account/team`、`/account/org`
 
 **v1.0.0** (2025-01-XX)
 - 初始版本
