@@ -11,8 +11,8 @@
  * @module features/blueprint/shell/dialogs/task-form-dialog
  */
 
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { SFSchema, SFUISchema } from '@delon/form';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { SHARED_IMPORTS } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
@@ -61,6 +61,8 @@ interface TaskFormValues {
   templateUrl: './task-form-dialog.component.html'
 })
 export class TaskFormDialogComponent implements OnInit {
+  @ViewChild('sf') sf!: SFComponent;
+
   private readonly modalRef = inject(NzModalRef);
   private readonly messageService = inject(NzMessageService);
   private readonly taskStore = inject(TaskStore);
@@ -189,6 +191,18 @@ export class TaskFormDialogComponent implements OnInit {
         priority: 'medium',
         status: 'pending'
       });
+    }
+  }
+
+  /**
+   * Trigger form submit programmatically
+   */
+  triggerSubmit(): void {
+    if (this.sf?.valid) {
+      this.onSubmit(this.sf.value as TaskFormValues);
+    } else {
+      // Show validation errors
+      this.messageService.warning('請填寫所有必填欄位');
     }
   }
 

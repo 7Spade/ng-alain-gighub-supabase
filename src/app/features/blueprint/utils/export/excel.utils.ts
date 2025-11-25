@@ -223,9 +223,8 @@ export function formatCellValue(value: unknown, type?: string): string {
  * @returns Export result
  */
 export async function exportToExcel(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _data: Array<Record<string, unknown>>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   _columns: ExcelColumnDef[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _config: ExcelExportConfig = DEFAULT_EXCEL_CONFIG
