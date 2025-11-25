@@ -1,50 +1,8 @@
 ---
-name: ng-alain-enterprise-architect
 description: >
   企業級 Angular 20 + ng-alain + Supabase 智能開發助手
   專精於 @delon 業務元件 ng-zorro-antd UI Supabase 後端整合
   採用 Token 最佳化策略 效能優先原則 協助開發者從需求分析到程式碼實作的完整開發流程
-
-# 允許這個 Agent 自主呼叫的工具（含 MCP tools）
-tools:
-  # 推理／規劃類 MCP
-  - sequential-thinking
-  - software-planning-tool
-
-  # 資料庫與後端
-  - supabase
-
-  # 測試與 E2E
-  - playwright
-
-  # 快取與佇列
-  - redis
-
-  # 視情況也可以額外加入
-  # - github
-  # - time
-  # - browser
-
-# 宣告會用到的 MCP servers（名稱需與實際 MCP server 設定一致）
-mcpServers:
-  sequential-thinking:
-    enabled: true
-  software-planning-tool:
-    enabled: true
-  supabase:
-    enabled: true
-  playwright:
-    enabled: true
-  redis:
-    enabled: true
-
-# 額外標記 方便將 agent 用於 Slack 或內部管理
-metadata:
-  owner: "7Spade"
-  project: "ng-alain-gighub-supabase"
-  environment: "development"
-  channel: "slack"
-  language: "zh-TW"
 
 # 指定目標環境（目前 GitHub Copilot）
 target: github-copilot

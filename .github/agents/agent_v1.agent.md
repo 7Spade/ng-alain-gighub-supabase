@@ -34,6 +34,50 @@ tools: ['custom-agent', 'shell', 'read', 'search', 'edit', 'sequential-thinking'
 
 ---
 
+### Token 最佳化與工具決策
+
+為了在 MCP 呼叫與本地推理之間取得平衡，本專案採用以下決策與分類策略以節省資源並提升準確性：
+
+- **任務分類與處理策略**：
+	- Tier 1 輕量級任務（直接處理，0 次 MCP 呼叫）：語法修正、註解更新、單行調整、解釋已提供的程式碼片段。
+	- Tier 2 中等任務（選擇性 MCP 1-3 次）：單一元件或 service 的功能調整、樣式優化、單一檔案重構；必要時查閱本地檔案或呼叫 GitHub MCP。
+	- Tier 3 重量級任務（完整 MCP 工作流程，4+ 次）：新功能開發、架構層級變更、資料模型設計或 Supabase schema 變更；遵循標準化流程（序列化思考 → 規劃工具 → MCP 查詢 → 實作 → 驗證）。
+
+### 序列化思考（Sequential Thinking）
+
+在開始實作前必須遵守序列化思考流程，以降低返工與錯誤風險：
+- 理解需求與業務目標
+- 識別涉及的資料結構與流向
+- 確認分層架構與職責劃分
+- 規劃模組邊界與依賴關係
+- 設計錯誤處理策略與測試計畫
+- 實作、驗證並記錄決策理由
+
+避免跳躍式開發（直接寫元件而未規劃架構）、邊寫邊想或忽略依賴方向檢查。
+
+### Software Planning Tool 使用規範
+
+在非 trivial 任務開始前，使用 `software-planning-tool` 進行架構與技術設計，涵蓋：
+- 確認模組結構與邊界、資料流向與依賴關係
+- 設計公開 API 與內部實作細節
+- 選擇設計模式並評估可維護性與效能
+- 產出開發步驟清單、測試計畫與錯誤處理機制
+
+### Supabase MCP 使用規範
+
+Supabase 相關的任何變更或實作都必須以 Supabase MCP 查詢為事實來源：
+- 使用時機：查詢表結構、驗證欄位型別、檢查索引、確認 RLS (Row Level Security) 政策
+- 原則：禁止憑記憶或假設撰寫數據庫相關程式碼；所有 repository 層實作應基於 MCP 查詢結果；若發現不一致，先同步溝通再編碼。
+
+### Context7 MCP 使用判斷準則
+
+何時呼叫 Context7（或其他外部文件查詢工具）遵循以下原則：
+- 若 Agent 對 API、參數或語法具有「絕對把握」，可直接使用現有知識不查詢；
+- 若存在版本差異疑慮、不確定參數型別、或擔心 LLM 幻覺，則必須使用 Context7 MCP 進行查證；
+- 典型需要查證的案例：Angular/NG-ZORRO/NG-ALAIN 新語法或不熟悉的特性、TypeScript/RxJS 的新行為、與第三方 API 的細節相容性。
+
+---
+
 ### 技術棧 (Project Technology Stack)
 
 - **核心框架**: Angular 20.3.x (Standalone), ng-alain 20.1.0, ng-zorro-antd, TypeScript 5.8.x
@@ -43,6 +87,34 @@ tools: ['custom-agent', 'shell', 'read', 'search', 'edit', 'sequential-thinking'
 - **MCP 整合**: `sequential-thinking`, `software-planning-tool`, `github`, `supabase`
 
 ---
+
+### 專案技術棧摘要（最低相依版本 & 推薦 script 快照）
+
+以下為快速參考，讓開發者能迅速了解專案的最低相依版本與常用腳本名稱與用途（僅列命令名稱與目的，非程式碼）：
+
+- **最低相依版本（建議）**:
+	- `Node.js`: >= 20.x
+	- `yarn`: 4.9.x（或使用等效 npm）
+	- `Angular`: 20.3.x
+	- `ng-alain`: 20.1.x
+	- `ng-zorro-antd`: 20.3.x
+	- `@delon/*`: 20.x 系列（與 ng-alain 版本對齊）
+	- `TypeScript`: >= 5.8.x
+	- `RxJS`: 7.x
+	- `@supabase/supabase-js`: 2.x+（符合專案 Supabase 版本）
+
+- **推薦常用腳本（命令名與用途）**:
+	- `npm start` / `npm run start`: 啟動開發伺服器（含自動開啟瀏覽器）。
+	- `npm run hmr`: 啟用 HMR（Hot Module Replacement）開發流程。
+	- `npm run build`: 產生 production build（專案預設使用高記憶體模式）。
+	- `npm run test`: 執行單元測試（Karma / Jasmine）。
+	- `npm run test-coverage`: 產生測試覆蓋報告（非 watch 模式）。
+	- `npm run lint`: 執行 TypeScript/ESLint 與 stylelint（LESS）檢查。
+	- `npm run analyze` / `npm run analyze:view`: 產生與檢視 bundle 分析報告。
+	- `npm run color-less` / `npm run theme`: 生成主題 & 色彩相關檔案。
+	- `npm run icon`: 產生 icon 資產（若專案包含自動化 icon 任務）。
+
+備註：若你使用 `yarn`，請改以 `yarn <script>` 執行相同腳本；在 CI 或文件中建議明確標註 Node 與 yarn 最低版本以避免不一致。
 
 ### 各層級開發指南
 
