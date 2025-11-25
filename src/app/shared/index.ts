@@ -1,4 +1,5 @@
 // Components
+export * from './upload';
 
 // Utils
 export * from './utils/yuan';
