@@ -1,3 +1,4 @@
+````markdown
 # Blueprint 垂直切片架構重構 - 快速摘要
 
 > 📄 完整分析：[blueprint-vertical-slice-architecture-analysis.md](./blueprint-vertical-slice-architecture-analysis.md)
@@ -327,3 +328,5 @@ features/blueprint/
 ---
 
 **記住：** 這是一個重要的架構決策，需要團隊共識。不急於立即實施，先充分討論和評估。
+
+````
