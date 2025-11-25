@@ -2,6 +2,13 @@
 
 ## 1. 專案分層架構與單一職責原則 (SRP)
 
+**適用場景**：`需求分析` | `架構設計` | `實作開發` | `代碼審查`
+
+**關鍵問題**：
+- 我應該在哪個目錄下開發？
+- 這個功能應該用橫向分層還是垂直切片？
+- 各層之間的依賴關係是什麼？
+
 ### 1.1 架構模式說明（重要：避免混淆）
 
 本專案採用**混合架構模式**，不同目錄使用不同的架構組織方式：
@@ -76,6 +83,14 @@ domain/types → data-access/repositories → domain/models
 ---
 
 ## 2. 開發思考流程與工具使用規範
+
+**適用場景**：`需求分析` | `架構設計` | `實作開發` | `問題排查`
+
+**關鍵問題**：
+- 我應該如何開始一個新功能？
+- 什麼時候使用 Sequential Thinking？
+- 什麼時候使用 Software Planning Tool？
+- 什麼時候查詢 Supabase MCP 或 Context7 MCP？
 
 ### 2.1 Sequential Thinking (序列化思考)
 開發任何功能時必須遵循序列化思考流程:
@@ -193,6 +208,14 @@ def should_use_context7_mcp(agent_confident: bool) -> bool:
 
 ## 3. 模組邊界管理 (Module Boundary)
 
+**適用場景**：`架構設計` | `實作開發` | `代碼審查` | `重構`
+
+**關鍵問題**：
+- 這個功能應該放在哪個模組？
+- Feature Module 之間可以互相 import 嗎？
+- 如何決定是否建立新的 Feature Module？
+- Store 和 Facade 的區別是什麼？
+
 ### 3.1 Feature Module（垂直切片架構）
 - 每個業務領域建立獨立 Feature Module
 - 採用**垂直切片架構**（Vertical Slice Architecture），所有相關代碼集中在同一 feature 目錄下
@@ -270,6 +293,14 @@ domain/types → data-access/repositories → domain/models
 ---
 
 ## 4. 狀態管理標準
+
+**適用場景**：`架構設計` | `實作開發` | `代碼審查` | `問題排查`
+
+**關鍵問題**：
+- 應該在哪一層管理狀態？
+- 如何使用 Angular Signals？
+- Store 和 Service 的職責如何劃分？
+- 如何在垂直切片中管理狀態？
 
 ### 4.1 狀態管理流向（重要：區分架構模式）
 
@@ -417,6 +448,14 @@ export class BlueprintService {
 
 ## 5. 認證與授權架構
 
+**適用場景**：`架構設計` | `實作開發` | `代碼審查` | `問題排查`
+
+**關鍵問題**：
+- 如何在 Component 中取得認證狀態？
+- 如何整合 Account Context Switcher？
+- 如何在垂直切片中使用 WorkspaceContextFacade？
+- 認證流向的順序是什麼？
+
 ### 5.1 認證流向
 必須遵守以下認證鏈:
 ```
@@ -561,6 +600,13 @@ export class BlueprintStore {
 
 ## 6. NG-ALAIN 框架使用規範
 
+**適用場景**：`實作開發` | `代碼審查` | `技術選型`
+
+**關鍵問題**：
+- 應該使用哪個 @delon 模組？
+- 如何避免重複造輪子？
+- 什麼時候應該自行開發元件？
+
 ### 6.1 核心模組使用原則
 本專案基於 NG-ALAIN 企業級框架,必須優先使用以下模組以減少重複開發:
 
@@ -603,6 +649,14 @@ export class BlueprintStore {
 ---
 
 ## 7. UI 元件使用規範
+
+**適用場景**：`實作開發` | `代碼審查` | `UI 設計` | `響應式設計`
+
+**關鍵問題**：
+- 應該使用哪個 UI 元件庫？
+- 如何實現響應式設計？
+- 元件使用優先級是什麼？
+- 如何處理不同螢幕尺寸？
 
 ### 7.1 NG-ZORRO 元件庫
 - 統一使用 ng-zorro-antd 作為基礎 UI 元件庫
@@ -673,6 +727,14 @@ readonly isDesktop = this.responsiveService.isDesktop();
 ---
 
 ## 8. 錯誤處理與錯誤映射標準
+
+**適用場景**：`實作開發` | `代碼審查` | `問題排查` | `錯誤修復`
+
+**關鍵問題**：
+- 錯誤應該在哪一層處理？
+- 如何將 Supabase Error 轉換為使用者友善訊息？
+- 垂直切片中的錯誤處理流程是什麼？
+- 如何顯示錯誤訊息？
 
 ### 8.1 錯誤處理流向
 
@@ -783,6 +845,13 @@ clearError(): void {
 
 ## 9. 環境管理與安全策略
 
+**適用場景**：`環境配置` | `安全審查` | `部署上線`
+
+**關鍵問題**：
+- 如何管理不同環境的配置？
+- Supabase Key 應該如何管理？
+- 如何確保安全性？
+
 ### 9.1 環境配置管理
 - 區分 dev/staging/prod 環境
 - 各環境使用獨立的 Supabase URL 與 Key
@@ -805,6 +874,13 @@ clearError(): void {
 ---
 
 ## 10. 模組匯出規範 (Public API Boundary)
+
+**適用場景**：`架構設計` | `實作開發` | `代碼審查` | `API 設計`
+
+**關鍵問題**：
+- 哪些內容應該公開？
+- Feature Module 應該公開什麼？
+- Facade 在垂直切片中的角色是什麼？
 
 ### 10.1 Domain Module
 - 必須提供 `index.ts` 統一輸出
@@ -881,6 +957,12 @@ export class BlueprintShellComponent {
 
 ## 11. Angular 20+ 模板語法規範
 
+**適用場景**：`實作開發` | `代碼審查` | `語法遷移`
+
+**關鍵問題**：
+- 應該使用新語法還是舊語法？
+- @if/@for/@switch 的正確用法是什麼？
+
 ### 11.1 新控制流語法
 - 必須使用 `@if` / `@else` 取代 `*ngIf`
 - 必須使用 `@for` 取代 `*ngFor`
@@ -897,6 +979,12 @@ export class BlueprintShellComponent {
 
 ## 12. 套件管理規範
 
+**適用場景**：`專案設置` | `依賴管理` | `CI/CD`
+
+**關鍵問題**：
+- 應該使用 yarn 還是 npm？
+- UI 框架的優先順序是什麼？
+
 ### 12.1 套件管理器
 - 統一使用 `yarn` 作為套件管理器
 - 禁止使用 `npm` 指令
@@ -909,6 +997,13 @@ export class BlueprintShellComponent {
 ---
 
 ## 13. 程式碼品質管理
+
+**適用場景**：`代碼審查` | `測試` | `CI/CD` | `品質保證`
+
+**關鍵問題**：
+- 如何確保程式碼品質？
+- 測試覆蓋率要求是什麼？
+- Git Hooks 如何配置？
 
 ### 13.1 程式碼檢查
 - 必須通過 ESLint 檢查
@@ -925,6 +1020,13 @@ export class BlueprintShellComponent {
 ---
 
 ## 14. TypeScript 開發規範
+
+**適用場景**：`實作開發` | `代碼審查` | `型別定義`
+
+**關鍵問題**：
+- 應該使用哪個 TypeScript 版本？
+- 如何定義型別？
+- 什麼時候可以使用 any？
 
 ### 14.1 語言版本
 - 使用 TypeScript 5.9.x 以上版本
