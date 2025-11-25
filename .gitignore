@@ -63,3 +63,6 @@ yarn-error.log
 .env
 
 .playwright-mcp
+
+# Awesome Copilot source directory (extracted resources are kept in .github/)
+/awesome-copilot-main
