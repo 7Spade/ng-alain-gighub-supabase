@@ -1,0 +1,163 @@
+<!--
+  Task Table Component Template
+  
+  Displays tasks in table format with:
+  - Level indicators
+  - Status badges
+  - Task name with hierarchy indent
+  - Progress bars
+  - Counts
+  - Assignees
+  - Area
+  - Tags
+  - Actions
+-->
+
+<nz-table 
+  #taskTable 
+  [nzData]="tasks()"
+  [nzPageSize]="20"
+  [nzShowSizeChanger]="true"
+  [nzPageSizeOptions]="pageSizeOptions"
+  [nzScroll]="{ x: '1200px' }"
+  nzBordered>
+  <thead>
+    <tr>
+      <th nzWidth="70px" nzAlign="center">層級</th>
+      <th nzWidth="100px" nzAlign="center">優先級</th>
+      <th nzLeft>任務名稱</th>
+      <th nzWidth="100px" nzAlign="center">狀態</th>
+      <th nzWidth="130px">進度</th>
+      <th nzWidth="90px" nzAlign="center">完成/總數</th>
+      <th nzWidth="120px">被指派者</th>
+      <th nzWidth="100px">區域</th>
+      <th nzWidth="150px">標籤</th>
+      <th nzWidth="120px" nzRight nzAlign="center">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (task of taskTable.data; track task.id) {
+      <tr class="task-row" (click)="onRowClick(task)">
+        <!-- Level -->
+        <td nzAlign="center">
+          <nz-tag [nzColor]="getLevelColor(task.depth)">
+            {{ formatLevel(task.depth) }}
+          </nz-tag>
+        </td>
+
+        <!-- Priority -->
+        <td nzAlign="center">
+          <nz-tag [nzColor]="getPriorityColor(task.priority)">
+            {{ getPriorityText(task.priority) }}
+          </nz-tag>
+        </td>
+
+        <!-- Task Name with indent -->
+        <td nzLeft>
+          <div class="task-name-cell" [style.padding-left.px]="getIndentPadding(task.depth)">
+            @if (task.childCount > 0) {
+              <i nz-icon nzType="folder" nzTheme="outline" class="folder-icon"></i>
+            } @else {
+              <i nz-icon nzType="file" nzTheme="outline" class="file-icon"></i>
+            }
+            <span class="task-name" [class.completed]="task.status === 'completed'">
+              {{ task.name }}
+            </span>
+            @if (task.description) {
+              <i nz-icon nzType="info-circle" nzTheme="outline" 
+                 class="info-icon"
+                 nz-tooltip 
+                 [nzTooltipTitle]="task.description">
+              </i>
+            }
+            @if (task.childCount > 0) {
+              <span class="child-hint">({{ task.childCount }})</span>
+            }
+          </div>
+        </td>
+
+        <!-- Status -->
+        <td nzAlign="center">
+          <nz-badge 
+            [nzStatus]="getStatusColor(task.status)" 
+            [nzText]="getStatusText(task.status)">
+          </nz-badge>
+        </td>
+
+        <!-- Progress -->
+        <td>
+          <nz-progress 
+            [nzPercent]="task.progress" 
+            [nzSize]="'small'"
+            [nzStatus]="getProgressStatus(task.progress)"
+            [nzShowInfo]="true">
+          </nz-progress>
+        </td>
+
+        <!-- Counts -->
+        <td nzAlign="center">
+          <span class="count-text">{{ task.completedCount }} / {{ task.totalCount }}</span>
+        </td>
+
+        <!-- Assignees -->
+        <td>
+          @if (task.assigneeIds.length > 0) {
+            <nz-avatar-group>
+              @for (assigneeId of task.assigneeIds.slice(0, 3); track assigneeId) {
+                <nz-avatar 
+                  [nzText]="formatAssigneeInitials(assigneeId)"
+                  nzSize="small"
+                  nz-tooltip
+                  [nzTooltipTitle]="assigneeId">
+                </nz-avatar>
+              }
+              @if (task.assigneeIds.length > 3) {
+                <nz-avatar 
+                  [nzText]="'+' + (task.assigneeIds.length - 3)"
+                  nzSize="small">
+                </nz-avatar>
+              }
+            </nz-avatar-group>
+          } @else {
+            <span class="no-assignee">未指派</span>
+          }
+        </td>
+
+        <!-- Area -->
+        <td>
+          @if (task.area) {
+            <nz-tag nzColor="geekblue">
+              <i nz-icon nzType="environment" nzTheme="outline"></i>
+              {{ task.area }}
+            </nz-tag>
+          } @else {
+            <span class="no-area">-</span>
+          }
+        </td>
+
+        <!-- Tags -->
+        <td>
+          @for (tag of task.tags.slice(0, 2); track tag) {
+            <nz-tag nzColor="blue">{{ tag }}</nz-tag>
+          }
+          @if (task.tags.length > 2) {
+            <nz-tag nz-tooltip [nzTooltipTitle]="task.tags.slice(2).join(', ')">
+              +{{ task.tags.length - 2 }}
+            </nz-tag>
+          }
+        </td>
+
+        <!-- Actions -->
+        <td nzRight nzAlign="center">
+          <button nz-button nzType="link" nzSize="small" (click)="onEdit($event, task)">
+            <i nz-icon nzType="edit"></i>
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button nz-button nzType="link" nzSize="small" nzDanger (click)="onDelete($event, task)">
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
