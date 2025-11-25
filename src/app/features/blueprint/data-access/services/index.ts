@@ -9,3 +9,5 @@
 export * from './blueprint.service';
 export * from './task.service';
 export * from './workspace.service';
+export * from './diary.service';
+export * from './todo.service';
