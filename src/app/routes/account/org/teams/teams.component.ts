@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TeamFacade, WorkspaceContextFacade, TeamMemberRepository } from '@core';
 import { ModalHelper } from '@delon/theme';
@@ -6,10 +6,10 @@ import { SHARED_IMPORTS, TeamBusinessModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { firstValueFrom } from 'rxjs';
 
-import { AddTeamMemberComponent } from '../../account/add-team-member/add-team-member.component';
-import { CreateTeamComponent } from '../../account/create-team/create-team.component';
-import { DeleteTeamComponent } from '../../account/delete-team/delete-team.component';
-import { UpdateTeamComponent } from '../../account/update-team/update-team.component';
+import { AddTeamMemberComponent } from '../../add-team-member/add-team-member.component';
+import { CreateTeamComponent } from '../../create-team/create-team.component';
+import { DeleteTeamComponent } from '../../delete-team/delete-team.component';
+import { UpdateTeamComponent } from '../../update-team/update-team.component';
 
 @Component({
   selector: 'app-org-teams',
@@ -43,7 +43,7 @@ import { UpdateTeamComponent } from '../../account/update-team/update-team.compo
                 <td>
                   <button nz-button nzType="link" nzSize="small" (click)="addTeamMember(team)"> 添加成員 </button>
                   <nz-divider nzType="vertical"></nz-divider>
-                  <a [routerLink]="['/team', team['id'], 'members']" nz-button nzType="link" nzSize="small"> 成員列表 </a>
+                  <a [routerLink]="['/account/team', team['id'], 'members']" nz-button nzType="link" nzSize="small"> 成員列表 </a>
                   <nz-divider nzType="vertical"></nz-divider>
                   <button nz-button nzType="link" nzSize="small" (click)="editTeam(team)"> 編輯 </button>
                   <nz-divider nzType="vertical"></nz-divider>
