@@ -5,6 +5,12 @@
  * Using @delon/form for dynamic form generation
  * Following enterprise guidelines and vertical slice architecture
  *
+ * Simplified version:
+ * - Removed 分類 (category) field
+ * - Simplified 可見性 (visibility) to only public/hidden
+ * - Removed 圖示 URL (iconUrl) field
+ * - Removed 縮圖 URL (thumbnailUrl) field
+ *
  * Dependency flow:
  * Component → Store (Facade) → Service → Repository
  *
@@ -18,14 +24,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
 
 import { BlueprintStore } from '../../../data-access';
-import {
-  BlueprintModel,
-  CreateBlueprintRequest,
-  UpdateBlueprintRequest,
-  BlueprintCategory,
-  BlueprintVisibility,
-  OwnerType
-} from '../../../domain';
+import { BlueprintModel, CreateBlueprintRequest, UpdateBlueprintRequest, BlueprintVisibility, OwnerType } from '../../../domain';
 
 /**
  * Dialog mode for create/edit
@@ -43,16 +42,13 @@ export interface BlueprintFormDialogData {
 }
 
 /**
- * Form values interface
+ * Form values interface (simplified)
  */
 interface BlueprintFormValues {
   name: string;
   description: string;
-  category: BlueprintCategory;
   visibility: BlueprintVisibility;
   tags?: string;
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
@@ -85,7 +81,9 @@ export class BlueprintFormDialogComponent implements OnInit {
   readonly dialogTitle = this.isEditMode ? '編輯藍圖' : '建立藍圖';
 
   /**
-   * Form schema definition (JSON Schema)
+   * Form schema definition (JSON Schema) - Simplified
+   * Removed: category, iconUrl, thumbnailUrl
+   * Simplified: visibility to only public/hidden
    */
   readonly schema: SFSchema = {
     properties: {
@@ -100,50 +98,25 @@ export class BlueprintFormDialogComponent implements OnInit {
         title: '描述',
         maxLength: 500
       },
-      category: {
-        type: 'string',
-        title: '分類',
-        enum: [
-          { label: '軟體開發', value: 'software_development' },
-          { label: '行銷', value: 'marketing' },
-          { label: '銷售', value: 'sales' },
-          { label: '人力資源', value: 'hr' },
-          { label: '營運', value: 'operations' },
-          { label: '自訂', value: 'custom' }
-        ],
-        default: 'software_development'
-      },
       visibility: {
         type: 'string',
         title: '可見性',
         enum: [
-          { label: '私人', value: 'private' },
-          { label: '組織', value: 'organization' },
-          { label: '團隊', value: 'team' },
+          { label: '隱藏', value: 'hidden' },
           { label: '公開', value: 'public' }
         ],
-        default: 'private'
+        default: 'hidden'
       },
       tags: {
         type: 'string',
         title: '標籤'
-      },
-      iconUrl: {
-        type: 'string',
-        title: '圖示 URL',
-        format: 'uri'
-      },
-      thumbnailUrl: {
-        type: 'string',
-        title: '縮圖 URL',
-        format: 'uri'
       }
     },
-    required: ['name', 'description', 'category']
+    required: ['name', 'description']
   };
 
   /**
-   * UI schema for form layout
+   * UI schema for form layout (simplified)
    */
   readonly uiSchema: SFUISchema = {
     '*': {
@@ -159,10 +132,6 @@ export class BlueprintFormDialogComponent implements OnInit {
       placeholder: '請輸入藍圖描述',
       autosize: { minRows: 3, maxRows: 6 }
     },
-    $category: {
-      widget: 'select',
-      placeholder: '請選擇分類'
-    },
     $visibility: {
       widget: 'select',
       placeholder: '請選擇可見性'
@@ -170,14 +139,6 @@ export class BlueprintFormDialogComponent implements OnInit {
     $tags: {
       widget: 'string',
       placeholder: '輸入標籤，用逗號分隔'
-    },
-    $iconUrl: {
-      widget: 'string',
-      placeholder: '圖示 URL（選填）'
-    },
-    $thumbnailUrl: {
-      widget: 'string',
-      placeholder: '縮圖 URL（選填）'
     }
   };
 
@@ -188,11 +149,8 @@ export class BlueprintFormDialogComponent implements OnInit {
       this.formData.set({
         name: blueprint.name,
         description: blueprint.description,
-        category: blueprint.category,
         visibility: blueprint.visibility,
-        tags: blueprint.tags?.join(','),
-        iconUrl: blueprint.iconUrl,
-        thumbnailUrl: blueprint.thumbnailUrl
+        tags: blueprint.tags?.join(',')
       });
     }
   }
@@ -233,7 +191,7 @@ export class BlueprintFormDialogComponent implements OnInit {
   }
 
   /**
-   * Handle blueprint creation
+   * Handle blueprint creation (simplified)
    */
   private async handleCreate(formValue: BlueprintFormValues, tags: string[]): Promise<void> {
     if (!this.dialogData.ownerId || !this.dialogData.ownerType) {
@@ -243,13 +201,10 @@ export class BlueprintFormDialogComponent implements OnInit {
     const request: CreateBlueprintRequest = {
       name: formValue.name,
       description: formValue.description,
-      category: formValue.category,
-      visibility: formValue.visibility || 'private',
+      visibility: formValue.visibility || 'hidden',
       ownerId: this.dialogData.ownerId,
       ownerType: this.dialogData.ownerType,
-      tags,
-      iconUrl: formValue.iconUrl,
-      thumbnailUrl: formValue.thumbnailUrl
+      tags
     };
 
     const result = await this.blueprintStore.createBlueprint(request);
@@ -258,7 +213,7 @@ export class BlueprintFormDialogComponent implements OnInit {
   }
 
   /**
-   * Handle blueprint update
+   * Handle blueprint update (simplified)
    */
   private async handleUpdate(formValue: BlueprintFormValues, tags: string[]): Promise<void> {
     if (!this.dialogData.blueprint) {
@@ -268,11 +223,8 @@ export class BlueprintFormDialogComponent implements OnInit {
     const request: UpdateBlueprintRequest = {
       name: formValue.name,
       description: formValue.description,
-      category: formValue.category,
       visibility: formValue.visibility,
-      tags,
-      iconUrl: formValue.iconUrl,
-      thumbnailUrl: formValue.thumbnailUrl
+      tags
     };
 
     const result = await this.blueprintStore.updateBlueprint(this.dialogData.blueprint.id, request);

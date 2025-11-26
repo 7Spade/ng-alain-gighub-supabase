@@ -3,6 +3,7 @@
  *
  * Interface definitions for Blueprint feature contracts
  * Following enterprise development guidelines
+ * Simplified version - removed unused statistics fields
  *
  * @module features/blueprint/domain/interfaces/blueprint.interfaces
  */
@@ -25,10 +26,10 @@ export interface IBlueprintFilterOptions {
 }
 
 /**
- * Blueprint sort options interface
+ * Blueprint sort options interface (simplified - removed usage_count)
  */
 export interface IBlueprintSortOptions {
-  field: 'name' | 'created_at' | 'updated_at' | 'usage_count';
+  field: 'name' | 'created_at' | 'updated_at';
   direction: 'asc' | 'desc';
 }
 
@@ -51,7 +52,7 @@ export interface IBlueprintQueryOptions {
 }
 
 /**
- * Blueprint statistics interface
+ * Blueprint statistics interface (simplified)
  */
 export interface IBlueprintStatistics {
   total: number;
@@ -101,13 +102,12 @@ export interface IBlueprintCloneOptions {
 }
 
 /**
- * Blueprint export options interface
+ * Blueprint export options interface (simplified)
  */
 export interface IBlueprintExportOptions {
   format: 'json' | 'yaml' | 'csv';
   includeMetadata?: boolean;
   includeTasks?: boolean;
-  includeStatistics?: boolean;
 }
 
 /**

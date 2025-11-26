@@ -45,17 +45,12 @@ export class BlueprintService {
 
   readonly statistics = computed<BlueprintStatistics>(() => {
     const blueprints = this.blueprints();
-    const blueprintsWithRating = blueprints.filter(b => b.rating);
-    const averageRating =
-      blueprintsWithRating.length > 0 ? blueprintsWithRating.reduce((sum, b) => sum + (b.rating || 0), 0) / blueprintsWithRating.length : 0;
 
     return {
       totalCount: blueprints.length,
       publishedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.PUBLISHED).length,
       draftCount: blueprints.filter(b => b.status === BlueprintStatusEnum.DRAFT).length,
-      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length,
-      totalUsageCount: blueprints.reduce((sum, b) => sum + b.usageCount, 0),
-      averageRating
+      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length
     };
   });
 
@@ -118,25 +113,22 @@ export class BlueprintService {
   }
 
   /**
-   * Create new blueprint
+   * Create new blueprint (simplified - structure is optional)
    */
   async createBlueprint(request: CreateBlueprintRequest): Promise<BlueprintModel> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
     try {
+      // Build the insert object - structure is now optional
       const blueprintInsert = {
-        ...request,
-        structure: {
-          settings: {
-            allowGuestAccess: false,
-            requireApprovalForJoin: true,
-            defaultMemberRole: 'member' as const,
-            enableTaskComments: true,
-            enableFileSharing: true,
-            enableNotifications: true
-          }
-        }
+        name: request.name,
+        description: request.description,
+        category: request.category,
+        visibility: request.visibility || 'hidden',
+        ownerId: request.ownerId,
+        ownerType: request.ownerType,
+        tags: request.tags
       };
 
       const newBlueprint = await firstValueFrom(this.blueprintRepo.create(blueprintInsert));
