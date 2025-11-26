@@ -98,7 +98,7 @@ const ROOT_FOLDER = path.join(__dirname, "..");
 const INSTRUCTIONS_DIR = path.join(ROOT_FOLDER, "instructions");
 const PROMPTS_DIR = path.join(ROOT_FOLDER, "prompts");
 const AGENTS_DIR = path.join(ROOT_FOLDER, "agents");
-const COLLECTIONS_DIR = path.join(ROOT_FOLDER, ".github", "collections");
+const COLLECTIONS_DIR = path.join(ROOT_FOLDER, "collections");
 const MAX_COLLECTION_ITEMS = 50;
 
 const DOCS_DIR = path.join(ROOT_FOLDER, "docs");

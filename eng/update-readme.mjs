@@ -563,7 +563,7 @@ function generateCollectionsSection(collectionsDir) {
     const itemCount = collection.items ? collection.items.length : 0;
     const tags = collection.tags ? collection.tags.join(", ") : "";
 
-    const link = `../.github/collections/${collectionId}.md`;
+    const link = `../collections/${collectionId}.md`;
     const displayName = isFeatured ? `⭐ ${name}` : name;
 
     collectionsContent += `| [${displayName}](${link}) | ${description} | ${itemCount} items | ${tags} |\n`;
@@ -638,7 +638,7 @@ function generateFeaturedCollectionsSection(collectionsDir) {
   // Generate table rows for each featured collection
   for (const entry of featuredCollections) {
     const { collectionId, name, description, tags, itemCount } = entry;
-    const readmeLink = `.github/collections/${collectionId}.md`;
+    const readmeLink = `collections/${collectionId}.md`;
 
     featuredContent += `| [${name}](${readmeLink}) | ${description} | ${itemCount} items | ${tags} |\n`;
   }
@@ -702,7 +702,7 @@ function generateCollectionReadme(collection, collectionId) {
         : item.kind === "agent"
         ? "Agent"
         : "Prompt";
-    const link = `../../${item.path}`;
+    const link = `../${item.path}`;
 
     // Create install badges for each item
     const badges = makeBadges(
