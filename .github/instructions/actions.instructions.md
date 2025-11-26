@@ -1,4 +1,5 @@
 ---
+description: 'Best practices for GitHub Actions workflow files'
 applyTo: ".github/workflows/**/*.yml"
 ---
 
