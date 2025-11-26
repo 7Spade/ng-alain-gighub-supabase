@@ -7,6 +7,21 @@
 -- Following vertical slice architecture and Account Context integration.
 
 -- ============================================================================
+-- CREATE HELPER FUNCTION FOR UPDATED_AT TRIGGER
+-- ============================================================================
+
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION public.update_updated_at_column() IS 
+'Automatically updates the updated_at column to current timestamp on row update';
+
+-- ============================================================================
 -- CREATE BLUEPRINTS TABLE
 -- ============================================================================
 
