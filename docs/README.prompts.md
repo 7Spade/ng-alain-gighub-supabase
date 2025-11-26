@@ -2,9 +2,9 @@
 
 本文件說明本專案保留的 GitHub Copilot 提示檔案，提供可重複使用的任務導向提示。
 
-**最後更新**：2025-11-26  
+**最後更新**：2025-01-20  
 **檔案位置**：[.github/prompts/](../.github/prompts/)  
-**提示數量**：71 個
+**提示數量**：72 個
 
 ---
 
@@ -199,9 +199,10 @@
 
 ## 維護記錄
 
+- **2025-01-20**: 更新文件數量為 72 個，確保所有 prompt 文件都有介紹
 - **2025-11-26**: 更新文件以反映 Copilot 配置清理後的狀態
   - 移除：ASP.NET、Azure、C#、Cosmos DB、Spring Boot、.NET、Entity Framework、Go、Java、Kotlin、PHP、Power Apps、Power BI、Power Platform、pytest、Python、Ruby、Rust、Swift、Bicep 等專用提示
-  - 保留：71 個通用開發、文件產出、架構規劃、GitHub 整合、Playwright 測試、PostgreSQL、Prompt 工程等相關提示
+  - 保留：72 個通用開發、文件產出、架構規劃、GitHub 整合、Playwright 測試、PostgreSQL、Prompt 工程等相關提示
 - **2025-11-25**: 從 awesome-copilot 複製有價值的 prompts
 - **2025-11-23**: 初始化提示目錄
 

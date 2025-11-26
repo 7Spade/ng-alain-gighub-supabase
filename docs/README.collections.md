@@ -2,7 +2,9 @@
 
 本文件說明 GitHub Copilot Collections 的概念與使用方式。Collections 是將相關的 prompts、instructions 和 agents 組織在一起的主題化工具包。
 
-**最後更新**：2025-11-26
+**最後更新**：2025-01-20  
+**檔案位置**：[.github/collections/](../.github/collections/)  
+**集合數量**：7 個（每個包含 .collection.yml 配置檔和 .md 說明檔）
 
 ---
 
@@ -18,39 +20,52 @@ Collections 是 [awesome-copilot](https://github.com/github/awesome-copilot) 專
 
 ### 前端開發
 
-| Collection | 說明 |
-|------------|------|
-| **Frontend Web Development** | 現代前端開發工具，包含 Angular、TypeScript、CSS 等 |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [frontend-web-dev.collection.yml](../.github/collections/frontend-web-dev.collection.yml) | 前端 Web 開發集合配置 |
+| [frontend-web-dev.md](../.github/collections/frontend-web-dev.md) | 現代前端開發工具，包含 Angular、TypeScript、CSS 等 |
 
 ### 資料庫與資料管理
 
-| Collection | 說明 |
-|------------|------|
-| **Database & Data Management** | 資料庫管理、SQL 最佳化、PostgreSQL |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [database-data-management.collection.yml](../.github/collections/database-data-management.collection.yml) | 資料庫與資料管理集合配置 |
+| [database-data-management.md](../.github/collections/database-data-management.md) | 資料庫管理、SQL 最佳化、PostgreSQL |
 
 ### 測試與自動化
 
-| Collection | 說明 |
-|------------|------|
-| **Testing & Test Automation** | TDD、Playwright、單元測試、整合測試 |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [testing-automation.collection.yml](../.github/collections/testing-automation.collection.yml) | 測試自動化集合配置 |
+| [testing-automation.md](../.github/collections/testing-automation.md) | TDD、Playwright、單元測試、整合測試 |
 
 ### 專案規劃與管理
 
-| Collection | 說明 |
-|------------|------|
-| **Project Planning & Management** | 專案規劃、功能分解、實作計畫 |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [project-planning.collection.yml](../.github/collections/project-planning.collection.yml) | 專案規劃集合配置 |
+| [project-planning.md](../.github/collections/project-planning.md) | 專案規劃、功能分解、實作計畫 |
 
 ### 安全性與程式碼品質
 
-| Collection | 說明 |
-|------------|------|
-| **Security & Code Quality** | 安全框架、無障礙指南、效能最佳化 |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [security-best-practices.collection.yml](../.github/collections/security-best-practices.collection.yml) | 安全最佳實踐集合配置 |
+| [security-best-practices.md](../.github/collections/security-best-practices.md) | 安全框架、無障礙指南、效能最佳化 |
 
-### TypeScript MCP 開發
+### 技術研究
 
-| Collection | 說明 |
-|------------|------|
-| **TypeScript MCP Server Development** | Model Context Protocol 伺服器開發工具包 |
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [technical-spike.collection.yml](../.github/collections/technical-spike.collection.yml) | 技術研究集合配置 |
+| [technical-spike.md](../.github/collections/technical-spike.md) | 技術研究與驗證、技術決策文檔 |
+
+### 探索工具
+
+| Collection 檔案 | 說明 |
+|----------------|------|
+| [awesome-copilot.collection.yml](../.github/collections/awesome-copilot.collection.yml) | Awesome Copilot 集合配置 |
+| [awesome-copilot.md](../.github/collections/awesome-copilot.md) | 元提示工具，發現其他有用的 Copilot 工具 |
 
 ---
 
@@ -130,5 +145,6 @@ Collections 是 [awesome-copilot](https://github.com/github/awesome-copilot) 專
 
 ## 維護記錄
 
+- **2025-01-20**: 補上所有 collection 文件詳細介紹，包含配置檔和說明檔
 - **2025-11-26**: 更新文件以反映 Copilot 配置清理後的狀態
 - **2025-11-25**: 初始化 Collections 說明文件
