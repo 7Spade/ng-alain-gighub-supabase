@@ -1,63 +1,101 @@
-# ng-alain-gighub-supabase 專案文檔
+# ng-alain-gighub-supabase 文件
 
-此資料夾包含 ng-alain-gighub-supabase 專案的完整技術文件。
+此資料夾包含本專案的完整技術文件與 GitHub Copilot 配置說明。
 
-This folder contains the complete technical documentation for the ng-alain-gighub-supabase project.
-
----
-
-## 📚 文件結構 | Documentation Structure
-
-### 🎯 [專案任務清單](./TASK_LIST.md) **NEW!**
-
-**完整的專案任務追蹤與實施狀態** (2025-11-23 新增)
-
-- **[Project Task List](./TASK_LIST.md)** (21KB, 640 lines)
-  - ✅ 205 個任務項目完整分類
-  - ✅ 四種狀態：完成 / 實施中 / 尚未實施 / 捨棄
-  - ✅ 優先級與時程規劃 (P0-P3)
-  - ✅ 10 週實施路線圖 (4 個階段)
-  - ✅ 各模組完成度統計與分析
-  - ✅ 整體進度：22% 完成, 14% 實施中, 56% 尚未實施
-
-**涵蓋範圍**:
-- 6 大核心模組：帳號管理、工作區系統、安全性、審計日誌、API 層、可觀測性
-- 完整追蹤所有文件中記錄的功能需求
-- 清晰的實施優先級與資源估算
+**最後更新**：2025-11-26
 
 ---
 
-### ⭐ [多租戶 SaaS 核心設計](./MULTI_TENANT_SAAS_CORE_DESIGN.md)
+## 📚 文件概覽
 
-**完整的企業級多租戶 SaaS 架構設計文件**（2025-11-23 新增）
+### 核心文件
 
-- **[Multi-Tenant SaaS Core Design](./MULTI_TENANT_SAAS_CORE_DESIGN.md)** (59KB, 2266 lines)
-  - ✅ 完整的 6 大核心支柱設計
-  - ✅ 40 個資料表完整 schema
-  # ng-alain-gighub-supabase — 文件概要
+| 文件 | 說明 |
+|------|------|
+| [README.agents.md](./README.agents.md) | GitHub Copilot Custom Agents 使用指南（49 個代理）|
+| [README.instructions.md](./README.instructions.md) | GitHub Copilot Instructions 使用指南（22 個指令）|
+| [README.prompts.md](./README.prompts.md) | GitHub Copilot Prompts 使用指南（71 個提示）|
+| [README.collections.md](./README.collections.md) | GitHub Copilot Collections 使用指南 |
 
-  此資料夾包含本專案的重要技術文件與說明，供開發、部署與維運參考。
+### 專案文件
 
-  **最後更新**：2025-11-25
+| 目錄 | 說明 |
+|------|------|
+| [architecture/](./architecture/) | 系統架構圖與資料庫設計 |
+| [development/](./development/) | 開發指南與最佳實踐 |
+| [deployment/](./deployment/) | 部署指南 |
+| [guides/](./guides/) | 使用指南 |
+| [reference/](./reference/) | 參考資料 |
+| [security/](./security/) | 安全性文件 |
+| [setup/](./setup/) | 環境設定 |
+| [specs/](./specs/) | 技術規範 |
+| [standards/](./standards/) | 開發標準 |
+| [supabase/](./supabase/) | Supabase 後端整合文件 |
+| [workspace/](./workspace/) | 工作區設定 |
 
-  主要區塊（快速導覽）：
+---
 
-  - `docs/TASK_LIST.md`：專案任務清單與實作狀態
-  - `docs/MULTI_TENANT_SAAS_CORE_DESIGN.md`：多租戶 SaaS 核心設計（大型設計檔）
-  - `docs/supabase/`：Supabase 後端整合與部署文件
-  - `docs/architecture/`：系統架構圖與資料庫設計（51 張資料表）
-  - `docs/guides/`：開發指南與最佳實踐
-  - `docs/specs/`：技術規範（API、元件、測試等）
+## 🎯 快速導覽
 
-  快速連結：
+### 新手入門
 
-  - 新手入門：`docs/supabase/development/setup.md`
-  - RLS 與安全：`docs/supabase/security/rls.md`
-  - 架構概覽：`docs/architecture/01-system-architecture-mindmap.mermaid.md`
+1. **環境設定**：[docs/supabase/development/setup.md](./supabase/development/setup.md)
+2. **架構概覽**：[docs/architecture/01-system-architecture-mindmap.mermaid.md](./architecture/01-system-architecture-mindmap.mermaid.md)
+3. **RLS 與安全**：[docs/supabase/security/rls.md](./supabase/security/rls.md)
 
-  貢獻文件請遵循專案根目錄的 `CONTRIBUTING.md`，編輯時請保留中英文關鍵術語並加入更新日期。
+### GitHub Copilot 配置
 
-  需要更深入的內容（例如將某個長篇日誌拆成獨立檔案、或將 README 轉為更精簡的索引），請告訴我要保留或刪除的區段，我會幫你進一步調整。
-- **[架構設計](./supabase/architecture/)** - 系統架構、資料庫設計、認證架構
+本專案包含精心挑選的 GitHub Copilot 配置，專為 Angular / ng-alain / Supabase 企業級開發設計：
 
-- **[開發指南](./supabase/development/)** - 環境設定、開發規範、測試策略
+| 類型 | 數量 | 說明 |
+|------|------|------|
+| **Agents** | 49 | 專案專屬代理、通用開發代理、進階自主代理 |
+| **Instructions** | 22 | Angular、TypeScript、測試、安全性、CI/CD 指令 |
+| **Prompts** | 71 | 文件產出、架構規劃、GitHub 整合、PostgreSQL 提示 |
+
+---
+
+## 📁 完整目錄結構
+
+```
+docs/
+├── README.md                          # 本文件
+├── README.agents.md                   # Agents 使用指南
+├── README.collections.md              # Collections 使用指南
+├── README.instructions.md             # Instructions 使用指南
+├── README.prompts.md                  # Prompts 使用指南
+├── CHANGELOG.md                       # 變更記錄
+├── architecture/                      # 系統架構
+├── deployment/                        # 部署指南
+├── development/                       # 開發指南
+├── guides/                            # 使用指南
+├── reference/                         # 參考資料
+├── security/                          # 安全性文件
+├── setup/                             # 環境設定
+├── specs/                             # 技術規範
+├── standards/                         # 開發標準
+├── supabase/                          # Supabase 整合
+│   ├── architecture/                  # Supabase 架構
+│   ├── development/                   # 開發設定
+│   └── security/                      # 安全設定
+└── workspace/                         # 工作區設定
+```
+
+---
+
+## 🔗 相關連結
+
+- **專案 README**：[../README.md](../README.md)
+- **貢獻指南**：[../CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Copilot 配置**：[../.github/](./.github/)
+  - [Agents](../.github/agents/)
+  - [Instructions](../.github/instructions/)
+  - [Prompts](../.github/prompts/)
+
+---
+
+## 維護記錄
+
+- **2025-11-26**: 更新文件以反映 Copilot 配置清理後的狀態
+- **2025-11-25**: 從 awesome-copilot 同步有價值的配置
+- **2025-11-23**: 初始化文件結構

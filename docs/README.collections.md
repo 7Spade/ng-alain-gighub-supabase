@@ -1,46 +1,134 @@
-# 📦 Collections
+# GitHub Copilot Collections
 
-Curated collections of related prompts, instructions, and agents organized around specific themes, workflows, or use cases.
-### How to Use Collections
+本文件說明 GitHub Copilot Collections 的概念與使用方式。Collections 是將相關的 prompts、instructions 和 agents 組織在一起的主題化工具包。
 
-**Browse Collections:**
-- ⭐ Featured collections are highlighted and appear at the top of the list
-- Explore themed collections that group related customizations
-- Each collection includes prompts, instructions, and agents for specific workflows
-- Collections make it easy to adopt comprehensive toolkits for particular scenarios
+**最後更新**：2025-11-26
 
-**Install Items:**
-- Click install buttons for individual items within collections
-- Or browse to the individual files to copy content manually
-- Collections help you discover related customizations you might have missed
+---
 
-| Name | Description | Items | Tags |
-| ---- | ----------- | ----- | ---- |
-| [⭐ Awesome Copilot](../collections/awesome-copilot.md) | Meta prompts that help you discover and generate curated GitHub Copilot chat modes, collections, instructions, prompts, and agents. | 6 items | github-copilot, discovery, meta, prompt-engineering, agents |
-| [⭐ Partners](../collections/partners.md) | Custom agents that have been created by GitHub partners | 17 items | devops, security, database, cloud, infrastructure, observability, feature-flags, cicd, migration, performance |
-| [Azure & Cloud Development](../collections/azure-cloud-development.md) | Comprehensive Azure cloud development tools including Infrastructure as Code, serverless functions, architecture patterns, and cost optimization for building scalable cloud applications. | 18 items | azure, cloud, infrastructure, bicep, terraform, serverless, architecture, devops |
-| [C# .NET Development](../collections/csharp-dotnet-development.md) | Essential prompts, instructions, and chat modes for C# and .NET development including testing, documentation, and best practices. | 8 items | csharp, dotnet, aspnet, testing |
-| [C# MCP Server Development](../collections/csharp-mcp-development.md) | Complete toolkit for building Model Context Protocol (MCP) servers in C# using the official SDK. Includes instructions for best practices, a prompt for generating servers, and an expert chat mode for guidance. | 3 items | csharp, mcp, model-context-protocol, dotnet, server-development |
-| [Clojure Interactive Programming](../collections/clojure-interactive-programming.md) | Tools for REPL-first Clojure workflows featuring Clojure instructions, the interactive programming chat mode and supporting guidance. | 3 items | clojure, repl, interactive-programming |
-| [Database & Data Management](../collections/database-data-management.md) | Database administration, SQL optimization, and data management tools for PostgreSQL, SQL Server, and general database development best practices. | 8 items | database, sql, postgresql, sql-server, dba, optimization, queries, data-management |
-| [DevOps On-Call](../collections/devops-oncall.md) | A focused set of prompts, instructions, and a chat mode to help triage incidents and respond quickly with DevOps tools and Azure resources. | 5 items | devops, incident-response, oncall, azure |
-| [Frontend Web Development](../collections/frontend-web-dev.md) | Essential prompts, instructions, and chat modes for modern frontend web development including React, Angular, Vue, TypeScript, and CSS frameworks. | 11 items | frontend, web, react, typescript, javascript, css, html, angular, vue |
-| [Go MCP Server Development](../collections/go-mcp-development.md) | Complete toolkit for building Model Context Protocol (MCP) servers in Go using the official github.com/modelcontextprotocol/go-sdk. Includes instructions for best practices, a prompt for generating servers, and an expert chat mode for guidance. | 3 items | go, golang, mcp, model-context-protocol, server-development, sdk |
-| [Java Development](../collections/java-development.md) | Comprehensive collection of prompts and instructions for Java development including Spring Boot, Quarkus, testing, documentation, and best practices. | 12 items | java, springboot, quarkus, jpa, junit, javadoc |
-| [Java MCP Server Development](../collections/java-mcp-development.md) | Complete toolkit for building Model Context Protocol servers in Java using the official MCP Java SDK with reactive streams and Spring Boot integration. | 3 items | java, mcp, model-context-protocol, server-development, sdk, reactive-streams, spring-boot, reactor |
-| [Kotlin MCP Server Development](../collections/kotlin-mcp-development.md) | Complete toolkit for building Model Context Protocol (MCP) servers in Kotlin using the official io.modelcontextprotocol:kotlin-sdk library. Includes instructions for best practices, a prompt for generating servers, and an expert chat mode for guidance. | 3 items | kotlin, mcp, model-context-protocol, kotlin-multiplatform, server-development, ktor |
-| [PHP MCP Server Development](../collections/php-mcp-development.md) | Comprehensive resources for building Model Context Protocol servers using the official PHP SDK with attribute-based discovery, including best practices, project generation, and expert assistance | 3 items | php, mcp, model-context-protocol, server-development, sdk, attributes, composer |
-| [Power Apps Code Apps Development](../collections/power-apps-code-apps.md) | Complete toolkit for Power Apps Code Apps development including project scaffolding, development standards, and expert guidance for building code-first applications with Power Platform integration. | 3 items | power-apps, power-platform, typescript, react, code-apps, dataverse, connectors |
-| [Power Apps Component Framework (PCF) Development](../collections/pcf-development.md) | Complete toolkit for developing custom code components using Power Apps Component Framework for model-driven and canvas apps | 17 items | power-apps, pcf, component-framework, typescript, power-platform |
-| [Power BI Development](../collections/power-bi-development.md) | Comprehensive Power BI development resources including data modeling, DAX optimization, performance tuning, visualization design, security best practices, and DevOps/ALM guidance for building enterprise-grade Power BI solutions. | 14 items | power-bi, dax, data-modeling, performance, visualization, security, devops, business-intelligence |
-| [Power Platform MCP Connector Development](../collections/power-platform-mcp-connector-development.md) | Complete toolkit for developing Power Platform custom connectors with Model Context Protocol integration for Microsoft Copilot Studio | 4 items | power-platform, mcp, copilot-studio, custom-connector, json-rpc |
-| [Project Planning & Management](../collections/project-planning.md) | Tools and guidance for software project planning, feature breakdown, epic management, implementation planning, and task organization for development teams. | 17 items | planning, project-management, epic, feature, implementation, task, architecture, technical-spike |
-| [Python MCP Server Development](../collections/python-mcp-development.md) | Complete toolkit for building Model Context Protocol (MCP) servers in Python using the official SDK with FastMCP. Includes instructions for best practices, a prompt for generating servers, and an expert chat mode for guidance. | 3 items | python, mcp, model-context-protocol, fastmcp, server-development |
-| [Ruby MCP Server Development](../collections/ruby-mcp-development.md) | Complete toolkit for building Model Context Protocol servers in Ruby using the official MCP Ruby SDK gem with Rails integration support. | 3 items | ruby, mcp, model-context-protocol, server-development, sdk, rails, gem |
-| [Rust MCP Server Development](../collections/rust-mcp-development.md) | Build high-performance Model Context Protocol servers in Rust using the official rmcp SDK with async/await, procedural macros, and type-safe implementations. | 3 items | rust, mcp, model-context-protocol, server-development, sdk, tokio, async, macros, rmcp |
-| [Security & Code Quality](../collections/security-best-practices.md) | Security frameworks, accessibility guidelines, performance optimization, and code quality best practices for building secure, maintainable, and high-performance applications. | 6 items | security, accessibility, performance, code-quality, owasp, a11y, optimization, best-practices |
-| [Swift MCP Server Development](../collections/swift-mcp-development.md) | Comprehensive collection for building Model Context Protocol servers in Swift using the official MCP Swift SDK with modern concurrency features. | 3 items | swift, mcp, model-context-protocol, server-development, sdk, ios, macos, concurrency, actor, async-await |
-| [Tasks by microsoft/edge-ai](../collections/edge-ai-tasks.md) | Task Researcher and Task Planner for intermediate to expert users and large codebases - Brought to you by microsoft/edge-ai | 3 items | architecture, planning, research, tasks, implementation |
-| [Technical Spike](../collections/technical-spike.md) | Tools for creation, management and research of technical spikes to reduce unknowns and assumptions before proceeding to specification and implementation of solutions. | 2 items | technical-spike, assumption-testing, validation, research |
-| [Testing & Test Automation](../collections/testing-automation.md) | Comprehensive collection for writing tests, test automation, and test-driven development including unit tests, integration tests, and end-to-end testing strategies. | 11 items | testing, tdd, automation, unit-tests, integration, playwright, jest, nunit |
-| [TypeScript MCP Server Development](../collections/typescript-mcp-development.md) | Complete toolkit for building Model Context Protocol (MCP) servers in TypeScript/Node.js using the official SDK. Includes instructions for best practices, a prompt for generating servers, and an expert chat mode for guidance. | 3 items | typescript, mcp, model-context-protocol, nodejs, server-development |
+## 什麼是 Collections？
+
+Collections 是 [awesome-copilot](https://github.com/github/awesome-copilot) 專案中的概念，用於將相關的 GitHub Copilot 自訂資源（prompts、instructions、agents）組織成主題化的工具包，方便使用者針對特定工作流程或使用案例快速採用完整的配置組合。
+
+---
+
+## 本專案相關的 Collections
+
+以下是與本專案（Angular / ng-alain / Supabase）相關的 Collections 主題：
+
+### 前端開發
+
+| Collection | 說明 |
+|------------|------|
+| **Frontend Web Development** | 現代前端開發工具，包含 Angular、TypeScript、CSS 等 |
+
+### 資料庫與資料管理
+
+| Collection | 說明 |
+|------------|------|
+| **Database & Data Management** | 資料庫管理、SQL 最佳化、PostgreSQL |
+
+### 測試與自動化
+
+| Collection | 說明 |
+|------------|------|
+| **Testing & Test Automation** | TDD、Playwright、單元測試、整合測試 |
+
+### 專案規劃與管理
+
+| Collection | 說明 |
+|------------|------|
+| **Project Planning & Management** | 專案規劃、功能分解、實作計畫 |
+
+### 安全性與程式碼品質
+
+| Collection | 說明 |
+|------------|------|
+| **Security & Code Quality** | 安全框架、無障礙指南、效能最佳化 |
+
+### TypeScript MCP 開發
+
+| Collection | 說明 |
+|------------|------|
+| **TypeScript MCP Server Development** | Model Context Protocol 伺服器開發工具包 |
+
+---
+
+## 本專案的配置對照
+
+本專案保留的 Copilot 配置已針對 Angular / ng-alain / Supabase 開發進行精選，以下是主要分類：
+
+### Angular / ng-alain 開發
+
+| 類型 | 資源 |
+|------|------|
+| **Agents** | `0-ng-ArchAI-v1.agent.md`, `0-ng-governance-v1.md`, `electron-angular-native.agent.md` |
+| **Instructions** | `angular.instructions.md`, `typescript-5-es2022.instructions.md` |
+
+### PostgreSQL / Supabase 開發
+
+| 類型 | 資源 |
+|------|------|
+| **Agents** | `postgresql-dba.agent.md` |
+| **Prompts** | `postgresql-optimization.prompt.md`, `postgresql-code-review.prompt.md`, `sql-optimization.prompt.md`, `sql-code-review.prompt.md` |
+
+### 測試與自動化
+
+| 類型 | 資源 |
+|------|------|
+| **Agents** | `playwright-tester.agent.md`, `tdd-red.agent.md`, `tdd-green.agent.md`, `tdd-refactor.agent.md` |
+| **Instructions** | `playwright-typescript.instructions.md` |
+| **Prompts** | `playwright-generate-test.prompt.md`, `playwright-explore-website.prompt.md`, `playwright-automation-fill-in-form.prompt.md`, `breakdown-test.prompt.md` |
+
+### 架構與規劃
+
+| 類型 | 資源 |
+|------|------|
+| **Agents** | `arch.agent.md`, `api-architect.agent.md`, `adr-generator.agent.md`, `plan.agent.md`, `planner.agent.md`, `prd.agent.md` |
+| **Prompts** | `architecture-blueprint-generator.prompt.md`, `create-specification.prompt.md`, `create-implementation-plan.prompt.md`, `breakdown-plan.prompt.md` |
+
+### 程式碼品質與安全性
+
+| 類型 | 資源 |
+|------|------|
+| **Agents** | `wg-code-alchemist.agent.md`, `wg-code-sentinel.agent.md`, `janitor.agent.md`, `accessibility.agent.md` |
+| **Instructions** | `security-and-owasp.instructions.md`, `a11y.instructions.md`, `object-calisthenics.instructions.md` |
+| **Prompts** | `review-and-refactor.prompt.md` |
+
+---
+
+## 使用建議
+
+### 工作流程範例
+
+1. **新功能開發**
+   - 使用 `@prd` 產出需求文件
+   - 使用 `/create-implementation-plan` 建立實作計畫
+   - 使用 `@0-ng-ArchAI-v1` 進行 Angular 開發
+   - 使用 `/playwright-generate-test` 建立 E2E 測試
+
+2. **資料庫設計**
+   - 使用 `@postgresql-dba` 進行 PostgreSQL 設計
+   - 使用 `/postgresql-optimization` 最佳化查詢
+   - 使用 `/postgresql-code-review` 審查程式碼
+
+3. **程式碼品質**
+   - 使用 `@wg-code-sentinel` 進行安全性審查
+   - 使用 `@accessibility` 進行無障礙檢查
+   - 使用 `/review-and-refactor` 進行重構
+
+---
+
+## 相關資源
+
+- [本專案 Agents 列表](./README.agents.md)
+- [本專案 Instructions 列表](./README.instructions.md)
+- [本專案 Prompts 列表](./README.prompts.md)
+- [awesome-copilot Collections](https://github.com/github/awesome-copilot/tree/main/collections)
+
+---
+
+## 維護記錄
+
+- **2025-11-26**: 更新文件以反映 Copilot 配置清理後的狀態
+- **2025-11-25**: 初始化 Collections 說明文件
