@@ -2,8 +2,9 @@
 
 ## Context Switcher Modernization - Thought Chain Task Document
 
-**版本**: 1.0  
+**版本**: 2.0  
 **日期**: 2025-11-26  
+**狀態**: ✅ 完成  
 **目的**: 提供逐步執行的思考鏈，確保每個步驟都有明確的推理過程
 
 ---
@@ -11,8 +12,37 @@
 ## 思考鏈概述 (Thought Chain Overview)
 
 ```
-問題定義 → 現狀分析 → 方案探索 → 決策推理 → 步驟分解 → 執行驗證
+問題定義 → 現狀分析 → 方案探索 → 決策推理 → 步驟分解 → 執行驗證 → ✅ 根本原因發現
 ```
+
+---
+
+## 🎯 根本原因總結 (Root Cause Summary)
+
+### 發現
+按鈕不顯示的根本原因是 **@delon/abc page-header 元件的 action 模板綁定錯誤**，而非認證或上下文系統問題。
+
+### 錯誤模式
+```html
+<!-- ❌ 錯誤：內容投影方式 -->
+<page-header [title]="pageTitle()">
+  <ng-template #action>
+    <button>按鈕</button>
+  </ng-template>
+</page-header>
+```
+
+### 正確模式
+```html
+<!-- ✅ 正確：輸入綁定方式 -->
+<page-header [title]="pageTitle()" [action]="actionTpl"></page-header>
+<ng-template #actionTpl>
+  <button>按鈕</button>
+</ng-template>
+```
+
+### 關鍵學習
+@delon/abc 的 PageHeaderComponent 使用 `@Input() action: TemplateRef` 接收模板，必須使用 `[action]="templateRef"` 綁定，而非 Angular 的內容投影機制。
 
 ---
 
@@ -33,11 +63,13 @@
    - H1: `hasValidContext()` 返回 false
    - H2: Signal 更新未觸發 UI 重新渲染
    - H3: 初始化時序問題導致狀態不一致
+   - **H4: @delon 元件 API 使用錯誤** ✅ **根本原因**
 
 ### ✅ 驗證點
-- [ ] 確認 `hasValidContext()` 的返回值
-- [ ] 確認 `contextId()` 是否有有效值
-- [ ] 確認 `ready` 狀態是否為 true
+- [x] 確認 `hasValidContext()` 的返回值 - 實際為 true
+- [x] 確認 `contextId()` 是否有有效值 - 實際有值
+- [x] 確認 `ready` 狀態是否為 true - 實際為 true
+- [x] 確認 page-header 模板綁定 - **這是問題所在**
 
 ---
 
