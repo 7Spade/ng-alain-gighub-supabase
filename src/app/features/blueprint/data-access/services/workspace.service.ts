@@ -174,6 +174,16 @@ export class WorkspaceService {
         throw new Error('Blueprint not found');
       }
 
+      // Use blueprint settings or default settings
+      const defaultSettings = {
+        allowGuestAccess: false,
+        requireApprovalForJoin: true,
+        defaultMemberRole: 'member' as const,
+        enableTaskComments: true,
+        enableFileSharing: true,
+        enableNotifications: true
+      };
+
       // Create workspace with blueprint settings
       const workspaceInsert = {
         name,
@@ -182,7 +192,7 @@ export class WorkspaceService {
         tenantId,
         tenantType,
         status: 'active' as const,
-        settings: blueprint.structure.settings
+        settings: blueprint.structure?.settings ?? defaultSettings
       };
 
       const newWorkspace = await firstValueFrom(this.workspaceRepo.create(workspaceInsert));

@@ -9,12 +9,11 @@
 
 /**
  * Blueprint visibility enum for business logic
+ * Simplified: only public (公開) or hidden (隱藏/私有)
  */
 export enum BlueprintVisibilityEnum {
-  PRIVATE = 'private',
-  ORGANIZATION = 'organization',
-  TEAM = 'team',
-  PUBLIC = 'public'
+  PUBLIC = 'public',
+  HIDDEN = 'hidden'
 }
 
 /**

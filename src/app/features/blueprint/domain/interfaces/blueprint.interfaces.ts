@@ -28,7 +28,7 @@ export interface IBlueprintFilterOptions {
  * Blueprint sort options interface
  */
 export interface IBlueprintSortOptions {
-  field: 'name' | 'created_at' | 'updated_at' | 'usage_count';
+  field: 'name' | 'created_at' | 'updated_at';
   direction: 'asc' | 'desc';
 }
 
@@ -52,13 +52,13 @@ export interface IBlueprintQueryOptions {
 
 /**
  * Blueprint statistics interface
+ * Simplified: removed unused metrics
  */
 export interface IBlueprintStatistics {
   total: number;
   draft: number;
   published: number;
   archived: number;
-  byCategory: Record<BlueprintCategoryEnum, number>;
   byVisibility: Record<BlueprintVisibilityEnum, number>;
 }
 

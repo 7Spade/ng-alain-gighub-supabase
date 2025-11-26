@@ -59,12 +59,11 @@ const STATUS_CONFIG: Record<string, { text: string; color: string }> = {
 
 /**
  * Visibility badge configuration
+ * Simplified: only public/hidden
  */
 const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
-  [BlueprintVisibilityEnum.PRIVATE]: { text: '私有', color: 'default' },
   [BlueprintVisibilityEnum.PUBLIC]: { text: '公開', color: 'blue' },
-  [BlueprintVisibilityEnum.ORGANIZATION]: { text: '組織', color: 'purple' },
-  [BlueprintVisibilityEnum.TEAM]: { text: '團隊', color: 'cyan' }
+  [BlueprintVisibilityEnum.HIDDEN]: { text: '隱藏', color: 'default' }
 };
 
 @Component({
@@ -121,11 +120,9 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
             <thead>
               <tr>
                 <th nzWidth="200px">名稱</th>
-                <th nzWidth="120px">類別</th>
                 <th nzWidth="100px">狀態</th>
                 <th nzWidth="100px">可見性</th>
                 <th>描述</th>
-                <th nzWidth="120px">使用次數</th>
                 <th nzWidth="150px">操作</th>
               </tr>
             </thead>
@@ -134,9 +131,6 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
                 <tr>
                   <td>
                     <a (click)="viewBlueprint(blueprint)">{{ blueprint.name }}</a>
-                  </td>
-                  <td>
-                    <nz-tag>{{ blueprint.category || '未分類' }}</nz-tag>
                   </td>
                   <td>
                     <nz-tag [nzColor]="getStatusConfig(blueprint.status).color">
@@ -149,7 +143,6 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
                     </nz-tag>
                   </td>
                   <td>{{ blueprint.description || '-' }}</td>
-                  <td>{{ blueprint.usageCount }}</td>
                   <td>
                     <button nz-button nzType="link" nzSize="small" (click)="editBlueprint(blueprint)">
                       <i nz-icon nzType="edit" nzTheme="outline"></i>

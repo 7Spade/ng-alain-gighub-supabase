@@ -172,14 +172,9 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   create(data: TInsert): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    const snakeCaseData = this.convertToSnakeCase(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseData).select().single()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
@@ -202,13 +197,9 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   createMany(data: TInsert[]): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
+    const snakeCaseDataArray = data.map(item => this.convertToSnakeCase(item as Record<string, any>));
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any[])
-        .select()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseDataArray).select()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
@@ -232,15 +223,9 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   update(id: string, data: TUpdate): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    const snakeCaseData = this.convertToSnakeCase(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .update(data as any)
-        .eq('id', id)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).update(snakeCaseData).eq('id', id).select().single()).pipe(
       map(({ data: updated, error }) => {
         if (error) {
           throw error;
@@ -264,7 +249,8 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   updateBy(filters: Record<string, any>, data: TUpdate): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
-    let query = client.from(this.tableName).update(data as any);
+    const snakeCaseData = this.convertToSnakeCase(data as Record<string, any>);
+    let query = client.from(this.tableName).update(snakeCaseData);
 
     // 應用過濾條件
     // Apply filters
@@ -390,6 +376,25 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
       }
     });
     return query;
+  }
+
+  /**
+   * 將物件的所有 key 從 camelCase 轉換為 snake_case
+   * Convert all object keys from camelCase to snake_case
+   *
+   * @private
+   * @param {Record<string, any>} obj - Object to convert
+   * @returns {Record<string, any>} Converted object
+   */
+  private convertToSnakeCase(obj: Record<string, any>): Record<string, any> {
+    const result: Record<string, any> = {};
+    Object.entries(obj).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const snakeKey = this.toSnakeCase(key);
+        result[snakeKey] = value;
+      }
+    });
+    return result;
   }
 
   /**

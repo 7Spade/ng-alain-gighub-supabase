@@ -45,17 +45,12 @@ export class BlueprintService {
 
   readonly statistics = computed<BlueprintStatistics>(() => {
     const blueprints = this.blueprints();
-    const blueprintsWithRating = blueprints.filter(b => b.rating);
-    const averageRating =
-      blueprintsWithRating.length > 0 ? blueprintsWithRating.reduce((sum, b) => sum + (b.rating || 0), 0) / blueprintsWithRating.length : 0;
 
     return {
       totalCount: blueprints.length,
       publishedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.PUBLISHED).length,
       draftCount: blueprints.filter(b => b.status === BlueprintStatusEnum.DRAFT).length,
-      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length,
-      totalUsageCount: blueprints.reduce((sum, b) => sum + b.usageCount, 0),
-      averageRating
+      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length
     };
   });
 

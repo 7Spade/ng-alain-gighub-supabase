@@ -16,39 +16,36 @@ export type BlueprintModel = Blueprint;
 
 /**
  * Blueprint summary for list display
+ * Simplified: removed unused fields
  */
 export interface BlueprintSummary {
   id: string;
   name: string;
   description: string;
-  category: BlueprintCategory;
+  category?: BlueprintCategory;
   visibility: BlueprintVisibility;
   status: BlueprintStatus;
-  usageCount: number;
-  rating?: number;
-  tags: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
+  tags?: string[];
   createdAt: Date;
 }
 
 /**
  * Blueprint creation request
+ * Simplified: only essential fields
  */
 export interface CreateBlueprintRequest {
   name: string;
   description: string;
-  category: BlueprintCategory;
-  visibility?: BlueprintVisibility;
   ownerId: string;
   ownerType: OwnerType;
+  category?: BlueprintCategory;
+  visibility?: BlueprintVisibility;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
  * Blueprint update request
+ * Simplified: removed unused fields
  */
 export interface UpdateBlueprintRequest {
   name?: string;
@@ -57,20 +54,17 @@ export interface UpdateBlueprintRequest {
   visibility?: BlueprintVisibility;
   status?: BlueprintStatus;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
  * Blueprint statistics
+ * Simplified: removed unused metrics
  */
 export interface BlueprintStatistics {
   totalCount: number;
   publishedCount: number;
   draftCount: number;
   archivedCount: number;
-  totalUsageCount: number;
-  averageRating: number;
 }
 
 /**

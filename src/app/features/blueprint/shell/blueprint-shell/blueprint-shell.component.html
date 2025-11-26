@@ -30,30 +30,36 @@
   ></nz-alert>
 }
 
-<!-- Blueprint Info -->
+<!-- Blueprint Info - Simplified: removed usage count, rating, structure template -->
 @if (selectedBlueprint()) {
   <nz-card [nzTitle]="'藍圖資訊'" class="mb-md">
     <nz-descriptions [nzColumn]="2" nzBordered>
       <nz-descriptions-item [nzTitle]="'名稱'">
         {{ selectedBlueprint()?.name }}
       </nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'類別'">
-        {{ selectedBlueprint()?.category }}
+      <nz-descriptions-item [nzTitle]="'可見性'">
+        <nz-badge 
+          [nzStatus]="selectedBlueprint()?.visibility === 'public' ? 'success' : 'default'" 
+          [nzText]="selectedBlueprint()?.visibility === 'public' ? '公開' : '隱藏'">
+        </nz-badge>
       </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="'描述'" [nzSpan]="2">
         {{ selectedBlueprint()?.description }}
       </nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'可見性'">
-        <nz-badge 
-          [nzStatus]="selectedBlueprint()?.visibility === 'public' ? 'success' : 'default'" 
-          [nzText]="selectedBlueprint()?.visibility">
-        </nz-badge>
-      </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="'狀態'">
         <nz-badge 
           [nzStatus]="selectedBlueprint()?.status === 'published' ? 'processing' : 'default'" 
-          [nzText]="selectedBlueprint()?.status">
+          [nzText]="selectedBlueprint()?.status === 'published' ? '已發佈' : selectedBlueprint()?.status === 'draft' ? '草稿' : '已封存'">
         </nz-badge>
+      </nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="'標籤'">
+        @if (selectedBlueprint()?.tags && selectedBlueprint()!.tags!.length > 0) {
+          @for (tag of selectedBlueprint()!.tags; track tag) {
+            <nz-tag>{{ tag }}</nz-tag>
+          }
+        } @else {
+          <span class="text-grey">無標籤</span>
+        }
       </nz-descriptions-item>
     </nz-descriptions>
   </nz-card>
