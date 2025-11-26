@@ -95,14 +95,6 @@
       "detail": "建置並產生 source map 用於分析"
     },
     {
-      "label": "validate-collections",
-      "type": "shell",
-      "command": "node eng/validate-collections.mjs",
-      "problemMatcher": [],
-      "group": "build",
-      "detail": "驗證所有 collection manifest 檔案"
-    },
-    {
       "label": "create-collection",
       "type": "shell",
       "command": "node eng/create-collection.mjs",
