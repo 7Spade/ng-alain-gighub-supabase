@@ -5,10 +5,10 @@
 ### 1.1 文件標題與版本
 
 - **PRD**: 工地施工進度追蹤管理系統 (Construction Site Management System)
-- **版本**: 1.3.0
+- **版本**: 1.4.0
 - **建立日期**: 2025-11-26
 - **最後更新**: 2025-11-26
-- **修訂說明**: 新增上下文共享架構圖、資料夾結構規範、命名規範、RLS/觸發器設計指南
+- **修訂說明**: 新增技術設計補充（圖片架構、膠囊狀態、離線同步、Git-like 分支、檔案系統、財務邏輯、Realtime、權限、QA流程）
 
 ### 1.2 產品摘要
 
@@ -1330,6 +1330,319 @@ USING (
 );
 ```
 
+### 8.10 補充技術設計規範
+
+> **設計原則**：極簡方向、明確重點、避免過度設計
+
+#### 8.10.1 完工圖片架構設計
+
+**方向**：獨立表設計，避免效能瓶頸
+
+```sql
+-- task_attachments: 任務附件獨立表（支援大量圖片 + 進階查詢）
+CREATE TABLE task_attachments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  file_path TEXT NOT NULL,          -- Supabase Storage 路徑
+  file_type TEXT NOT NULL,          -- image/jpeg, image/png, etc.
+  thumbnail_path TEXT,              -- 縮圖路徑（自動生成）
+  file_size INTEGER,                -- bytes
+  exif_taken_at TIMESTAMPTZ,        -- EXIF 拍攝時間
+  exif_location POINT,              -- EXIF 經緯度
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  created_by UUID REFERENCES accounts(id)
+);
+CREATE INDEX idx_task_attachments_task ON task_attachments(task_id);
+```
+
+**縮圖顯示策略**：任務卡片顯示前 3 張縮圖 + 數量徽章（+N）
+
+---
+
+#### 8.10.2 膠囊狀態顯示與虛擬捲動
+
+**ng-zorro-antd/tree-view 現代化設計方向**：
+
+```typescript
+// 使用 nz-tree-virtual-scroll-view 處理大量任務
+import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+
+// 膠囊狀態顯示設計
+interface TaskCapsule {
+  avatar: string[];           // 負責人頭像（最多3個 + "+N"）
+  dueStatus: 'normal'|'warning'|'overdue';  // 截止日狀態
+  issueCount: number;         // 問題徽章數
+  progress: number;           // 進度百分比
+  priority: PriorityLevel;    // 優先級圖標
+}
+
+// 虛擬捲動設定（itemSize = 每行高度 px）
+<nz-tree-virtual-scroll-view [nzDataSource]="tasks" [itemSize]="48">
+  <nz-tree-node *nzTreeNodeDef="let node" [nzTreeNode]="node">
+    <app-task-capsule [task]="node.data"></app-task-capsule>
+  </nz-tree-node>
+</nz-tree-virtual-scroll-view>
+```
+
+**效能要點**：itemSize 固定、OnPush 策略、TrackBy 函數
+
+---
+
+#### 8.10.3 離線同步與衝突解決
+
+**策略**：Last-Write-Wins + 手動解決重要衝突
+
+```
+離線操作流程:
+1. 離線時操作 → IndexedDB 暫存 (帶 localTimestamp)
+2. 恢復連線 → 批次提交至 Supabase
+3. 衝突偵測 → 比較 updated_at vs localTimestamp
+4. 自動解決 → 一般欄位採 Last-Write-Wins
+5. 手動解決 → 狀態/進度等關鍵欄位提示用戶選擇
+```
+
+**衝突類型處理**：
+| 欄位類型 | 解決策略 |
+|----------|----------|
+| 描述/備註 | Last-Write-Wins |
+| 狀態/進度 | 提示用戶選擇 |
+| 照片附件 | 全部保留（合併） |
+
+---
+
+#### 8.10.4 多人協作應對
+
+**Realtime 訂閱 + 樂觀更新**：
+
+```typescript
+// 即時訂閱任務變更
+supabase.channel('tasks')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, 
+    (payload) => handleRealtimeUpdate(payload))
+  .subscribe();
+
+// 樂觀更新策略
+1. UI 立即反映變更
+2. 背景發送 API 請求
+3. 失敗時回滾 + 提示
+```
+
+**多人編輯提示**：任務詳情頁顯示「XXX 正在編輯...」
+
+---
+
+#### 8.10.5 Git-like 分支系統核心邏輯
+
+**資料表設計**（不使用 Edge Function，純 RLS + 觸發器）：
+
+```sql
+-- blueprint_branches: 藍圖分支表
+CREATE TABLE blueprint_branches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  blueprint_id UUID NOT NULL REFERENCES blueprints(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  branch_type TEXT DEFAULT 'feature' CHECK (branch_type IN ('main', 'feature', 'fork')),
+  source_branch_id UUID REFERENCES blueprint_branches(id),  -- Fork 來源
+  forked_to_org_id UUID REFERENCES accounts(id),           -- Fork 給哪個組織
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'merged', 'closed')),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- blueprint_pull_requests: PR 表
+CREATE TABLE blueprint_pull_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  blueprint_id UUID NOT NULL REFERENCES blueprints(id),
+  source_branch_id UUID NOT NULL REFERENCES blueprint_branches(id),
+  target_branch_id UUID NOT NULL REFERENCES blueprint_branches(id),
+  title VARCHAR(200) NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'open' CHECK (status IN ('open', 'merged', 'closed')),
+  created_by UUID REFERENCES accounts(id),
+  reviewed_by UUID REFERENCES accounts(id),
+  merged_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**合併策略**：手動審核 + 覆蓋承攬欄位（進度/狀態/照片）
+
+---
+
+#### 8.10.6 檔案系統存取控制
+
+**權限對應**：檔案權限繼承藍圖角色權限
+
+```sql
+-- file_permissions: 檔案權限表（細粒度控制）
+CREATE TABLE file_permissions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  file_id UUID NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+  grantee_id UUID NOT NULL REFERENCES accounts(id),  -- 授權對象
+  permission TEXT NOT NULL CHECK (permission IN ('view', 'download', 'edit', 'delete')),
+  expires_at TIMESTAMPTZ,  -- 時效性（NULL = 永久）
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**分享機制**：
+- **內部分享**：授權給特定帳戶/組織
+- **公開連結**：生成帶簽名的時效性 URL（Supabase Storage signed URL）
+
+**軟刪除**：`deleted_at TIMESTAMPTZ` + 30 天自動清理 Job
+
+**版本控制**：同名上傳時建立新版本，保留歷史（`file_versions` 表）
+
+---
+
+#### 8.10.7 財務系統最小化設計
+
+**進度計算規則**：從樹狀最後一層往上遞迴彙總
+
+```sql
+-- 遞迴計算進度：子節點加權平均 → 父節點
+WITH RECURSIVE task_progress AS (
+  -- 葉子節點（無子任務）直接取 progress
+  SELECT id, parent_id, progress, amount
+  FROM tasks WHERE id NOT IN (SELECT DISTINCT parent_id FROM tasks WHERE parent_id IS NOT NULL)
+  UNION ALL
+  -- 父節點進度 = 子節點進度加權平均
+  SELECT t.id, t.parent_id, 
+         COALESCE(AVG(tp.progress), t.progress) as progress,
+         t.amount
+  FROM tasks t JOIN task_progress tp ON t.id = tp.parent_id
+  GROUP BY t.id, t.parent_id, t.progress, t.amount
+)
+SELECT * FROM task_progress;
+```
+
+**金額綁定邏輯**：
+
+```
+規則：子節點金額總和 ≤ 父節點金額
+驗證：INSERT/UPDATE 時觸發器檢查
+      IF SUM(children.amount) > parent.amount THEN RAISE EXCEPTION
+```
+
+**請款邏輯**：`請款金額 = 任務金額 × 進度%`
+
+---
+
+#### 8.10.8 Realtime 訂閱設計
+
+**訂閱範圍**：按藍圖 ID 訂閱，避免全局廣播
+
+```typescript
+// 進入藍圖時建立訂閱
+const channel = supabase.channel(`blueprint:${blueprintId}`)
+  .on('postgres_changes', { 
+    event: '*', 
+    schema: 'public', 
+    table: 'tasks',
+    filter: `blueprint_id=eq.${blueprintId}` 
+  }, handleTaskChange)
+  .on('postgres_changes', { 
+    event: '*', 
+    schema: 'public', 
+    table: 'diaries',
+    filter: `blueprint_id=eq.${blueprintId}` 
+  }, handleDiaryChange)
+  .subscribe();
+
+// 離開藍圖時取消訂閱
+channel.unsubscribe();
+```
+
+**效能要點**：
+- 使用 filter 縮小訂閱範圍
+- 離開頁面時必須 unsubscribe
+- 批次更新使用 debounce（300ms）
+
+---
+
+#### 8.10.9 權限檢查設計
+
+**檢查流程圖**：
+
+```
+用戶操作 → 前端權限判斷（快取） → API 請求 → RLS 強制檢查 → 回傳結果
+             ↓ 無權限                    ↓ 無權限
+           顯示禁用/隱藏               返回 403 錯誤
+```
+
+**按功能的權限檢查時機**：
+
+| 功能 | 前端檢查 | 後端檢查 |
+|------|----------|----------|
+| 按鈕顯示 | 載入時 | - |
+| 表單提交 | 提交前 | RLS Policy |
+| 資料查詢 | - | RLS Policy |
+| 檔案存取 | 點擊時 | Storage Policy |
+
+**權限快取策略**：
+```typescript
+// 使用 Angular Signal 快取權限
+permissions = signal<string[]>([]);
+
+// 切換上下文時重新載入
+effect(() => {
+  const ctx = workspaceContext();
+  loadPermissions(ctx.contextType, ctx.contextId);
+});
+
+// 快取有效期：Session 內有效，登出清除
+```
+
+**權限變更同步**：Realtime 訂閱 `role_assignments` 表變更 → 刷新權限快取
+
+---
+
+#### 8.10.10 QA 測試策略與驗收流程
+
+**狀態流程**：
+
+```
+任務完成 → 日誌可提報 → 提報後可 QA → QA 完成 → 驗收
+  [DONE]     [REPORTED]    [QA_PENDING]  [QA_PASSED]  [ACCEPTED]
+     ↓           ↓              ↓            ↓
+  只能更新   觸發日誌      指派品管      通過/不通過    最終確認
+  進度照片   建立關聯      人員檢查      自動開問題     結案歸檔
+```
+
+**狀態機驗證**：
+
+```typescript
+// 狀態轉換規則（前端 + 後端雙重驗證）
+const VALID_TRANSITIONS = {
+  'DONE': ['REPORTED'],
+  'REPORTED': ['QA_PENDING'],
+  'QA_PENDING': ['QA_PASSED', 'QA_FAILED'],
+  'QA_FAILED': ['QA_PENDING'],  // 重新提交
+  'QA_PASSED': ['ACCEPTED'],
+};
+
+function canTransition(from: string, to: string): boolean {
+  return VALID_TRANSITIONS[from]?.includes(to) ?? false;
+}
+```
+
+**驗收表設計**：
+
+```sql
+CREATE TABLE task_acceptances (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id UUID NOT NULL REFERENCES tasks(id),
+  stage TEXT NOT NULL,  -- 'qa', 'final'
+  status TEXT NOT NULL CHECK (status IN ('pending', 'passed', 'failed', 'conditional')),
+  checklist_id UUID REFERENCES checklists(id),
+  checked_by UUID REFERENCES accounts(id),
+  checked_at TIMESTAMPTZ,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
 ---
 
 ## 9. 里程碑與排程
@@ -2003,6 +2316,9 @@ USING (
 |------|------|----------|------|
 | 1.0.0 | 2025-11-26 | 初版建立 | GitHub Copilot |
 | 1.1.0 | 2025-11-26 | 更新以反映專案現有基礎設施實現狀態 | GitHub Copilot |
+| 1.2.0 | 2025-11-26 | 調整角色體系、優先級依賴關係、新增檔案/財務/人資模組 | GitHub Copilot |
+| 1.3.0 | 2025-11-26 | 新增上下文架構圖、資料夾結構、命名規範、RLS/觸發器設計 | GitHub Copilot |
+| 1.4.0 | 2025-11-26 | 新增技術設計補充（圖片架構、膠囊狀態、離線同步、Git-like 分支、檔案系統、財務邏輯、Realtime、權限、QA流程） | GitHub Copilot |
 
 ---
 
