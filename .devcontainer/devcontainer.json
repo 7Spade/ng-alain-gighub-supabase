@@ -1,0 +1,8 @@
+{
+  "name": "Codespace with Copilot",
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:0-bullseye",
+  "extensions": [
+    "GitHub.copilot",
+    "GitHub.copilot-chat"
+  ]
+}
