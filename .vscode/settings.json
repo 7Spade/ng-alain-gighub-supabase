@@ -5,16 +5,12 @@
     "source.fixAll.eslint": "explicit",
     "source.fixAll.stylelint": "explicit"
   },
-  "editor.rulers": [
-    100
-  ],
   "[typescript]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "[markdown]": {
-    "editor.formatOnSave": true,
-    "files.trimTrailingWhitespace": false
+    "editor.formatOnSave": false
   },
   "[javascript]": {
     "editor.formatOnSave": false
@@ -29,9 +25,6 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
   "files.watcherExclude": {
     "**/.git/*/**": true,
     "**/node_modules/*/**": true,
@@ -40,24 +33,21 @@
   },
   "files.associations": {
     "*.json": "jsonc",
-    ".prettierrc": "jsonc",
-    "*.agent.md": "chatagent",
-    "*.instructions.md": "instructions",
-    "*.prompt.md": "prompt"
+    ".prettierrc": "jsonc"
   },
   "typescript.referencesCodeLens.enabled": true,
-  "github.copilot.chat.customOAIModels": {
-    "allowedModels": [
-      "gpt-4o",
-      "gpt-5",
-      "gpt-5-mini",
-      "gpt-5-codex",
-      "gpt-5.1",
-      "gpt-5.1-codex",
-      "gpt-5.1-codex-mini"
-    ]
-  },
-  "yaml.schemas": {
-    "./.schemas/collection.schema.json": "*.collection.yml"
-  }
+      "github.copilot.chat.customOAIModels": {
+        "allowedModels": [
+            "gpt-4o",
+            "gpt-5",
+            "gpt-5-mini",
+            "gpt-5-codex",
+            "gpt-5.1",
+            "gpt-5.1-codex",
+            "gpt-5.1-codex-mini"
+        ]
+        
+    }
+
+  
 }

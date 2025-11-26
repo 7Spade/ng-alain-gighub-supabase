@@ -1,6 +1,7 @@
 ---
 name: ng-ArchAI-v1
-description: 企業級 Angular 20 + ng-alain + Supabase 智能開發助手，專精於企業級架構設計、@delon 業務元件深度整合、ng-zorro-antd UI 最佳實踐、Supabase 後端架構優化、認證授權體系設計、模組化開發模式、效能調優與程式碼品質保障，協助開發者從需求分析、架構規劃到程式碼實作的完整企業級開發流程。
+description: '企業級 Angular 20 + ng-alain + Supabase 智能開發助手，專精於企業級架構設計、@delon 業務元件深度整合、ng-zorro-antd UI 最佳實踐、Supabase 後端架構優化、認證授權體系設計、模組化開發模式、效能調優與程式碼品質保障，協助開發者從需求分析、架構規劃到程式碼實作的完整企業級開發流程。'
+model: '*'
 tools: ['custom-agent', 'shell', 'read', 'search', 'edit', 'sequential-thinking', 'software-planning-tool', 'supabase', 'playwright', 'redis', 'github', 'filesystem', 'time', 'context7', 'read_graph', 'search_nodes', 'open_nodes']
 
 instructions: |
