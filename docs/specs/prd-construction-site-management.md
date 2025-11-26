@@ -2319,6 +2319,134 @@ CREATE TABLE task_acceptances (
 | 1.2.0 | 2025-11-26 | 調整角色體系、優先級依賴關係、新增檔案/財務/人資模組 | GitHub Copilot |
 | 1.3.0 | 2025-11-26 | 新增上下文架構圖、資料夾結構、命名規範、RLS/觸發器設計 | GitHub Copilot |
 | 1.4.0 | 2025-11-26 | 新增技術設計補充（圖片架構、膠囊狀態、離線同步、Git-like 分支、檔案系統、財務邏輯、Realtime、權限、QA流程） | GitHub Copilot |
+| 1.5.0 | 2025-11-26 | 新增完整資料表、RLS 政策、觸發器清單 | GitHub Copilot |
+
+---
+
+## 附錄 F. 資料庫物件清單
+
+### F.1 資料表清單
+
+#### 既有資料表（✅ 已完成）
+
+| 表名 | 用途 | 狀態 |
+|------|------|------|
+| `accounts` | 帳戶（含 USER/ORG/BOT 類型） | ✅ 完成 |
+| `teams` | 團隊（屬於組織） | ✅ 完成 |
+| `organization_members` | 組織成員關聯 | ✅ 完成 |
+| `team_members` | 團隊成員關聯 | ✅ 完成 |
+| `team_bots` | 團隊 Bot 關聯 | ✅ 完成 |
+
+#### 待建立資料表（⬜ 規劃中）
+
+| 表名 | 用途 | 優先級 |
+|------|------|--------|
+| `blueprints` | 藍圖主表 | 🔴 高 |
+| `blueprint_members` | 藍圖成員與角色 | 🔴 高 |
+| `blueprint_roles` | 藍圖自訂角色定義 | 🔴 高 |
+| `blueprint_branches` | Git-like 分支 | 🟡 中 |
+| `blueprint_pull_requests` | 分支合併請求 | 🟡 中 |
+| `tasks` | 任務主表（樹狀結構） | 🔴 高 |
+| `task_attachments` | 任務附件（含完工圖片） | 🔴 高 |
+| `task_comments` | 任務討論 | 🟡 中 |
+| `task_acceptances` | 任務驗收記錄 | 🔴 高 |
+| `task_budget` | 任務預算金額 | 🟡 中 |
+| `diaries` | 每日施工日誌 | 🔴 高 |
+| `diary_attachments` | 日誌附件 | 🔴 高 |
+| `files` | 檔案主表（含版本） | 🔴 高 |
+| `file_shares` | 檔案分享連結 | 🟡 中 |
+| `checklists` | 品質檢查清單模板 | 🟡 中 |
+| `checklist_items` | 檢查項目 | 🟡 中 |
+| `issues` | 問題追蹤 | 🟡 中 |
+| `notifications` | 通知中心 | 🟡 中 |
+| `payment_requests` | 請款申請（財務簡化版） | 🟢 低 |
+
+### F.2 RLS 政策清單
+
+#### 既有 RLS 政策（✅ 已完成）
+
+| 政策名稱 | 表 | 操作 |
+|----------|-----|------|
+| `users_view_own_user_account` | accounts | SELECT |
+| `users_update_own_user_account` | accounts | UPDATE |
+| `users_insert_own_user_account` | accounts | INSERT |
+| `users_view_organizations_they_belong_to` | accounts | SELECT |
+| `org_owners_update_organizations` | accounts | UPDATE |
+| `org_owners_delete_organizations` | accounts | DELETE |
+| `authenticated_users_create_organizations` | accounts | INSERT |
+| `users_view_bots_they_created` | accounts | SELECT |
+| `users_view_bots_in_their_teams` | accounts | SELECT |
+| `bot_creators_update_bots` | accounts | UPDATE |
+| `bot_creators_delete_bots` | accounts | DELETE |
+| `authenticated_users_create_bots` | accounts | INSERT |
+| `users_view_teams_in_their_organizations` | teams | SELECT |
+| `org_owners_create_teams` | teams | INSERT |
+| `org_owners_update_teams` | teams | UPDATE |
+| `org_owners_delete_teams` | teams | DELETE |
+| `Users can view organization members` | organization_members | SELECT |
+| `Allow initial organization owner on creation` | organization_members | INSERT |
+| `Organization owners can add members` | organization_members | INSERT |
+| `Organization admins can update member roles` | organization_members | UPDATE |
+| `Users can leave organizations` | organization_members | DELETE |
+| `Organization owners can remove members` | organization_members | DELETE |
+| `Users can view team members in their teams` | team_members | SELECT |
+| `Allow initial team leader` | team_members | INSERT |
+| `Team leaders can add members` | team_members | INSERT |
+| `Team leaders can update member roles` | team_members | UPDATE |
+| `Users can remove themselves from teams` | team_members | DELETE |
+| `Team leaders can remove members` | team_members | DELETE |
+| `users_view_team_bots_for_their_teams` | team_bots | SELECT |
+| `team_owners_manage_team_bots` | team_bots | ALL |
+
+#### 待建立 RLS 政策（⬜ 規劃命名）
+
+| 政策名稱 | 表 | 用途 |
+|----------|-----|------|
+| `blueprint_members_view` | blueprints | 藍圖成員可查看 |
+| `blueprint_owner_manage` | blueprints | 擁有者可管理 |
+| `tasks_blueprint_member_view` | tasks | 藍圖成員可查看任務 |
+| `tasks_assignee_update` | tasks | 被指派者可更新 |
+| `attachments_task_access` | task_attachments | 任務存取權限繼承 |
+| `files_blueprint_access` | files | 檔案權限繼承藍圖 |
+| `diaries_blueprint_member_view` | diaries | 藍圖成員可查看日誌 |
+
+### F.3 觸發器清單
+
+#### 既有觸發器（✅ 已完成）
+
+| 觸發器名稱 | 表 | 事件 | 用途 |
+|------------|-----|------|------|
+| `add_creator_as_org_owner` | accounts | AFTER INSERT | 建立組織時自動加入擁有者 |
+| `add_team_creator_as_leader_trigger` | teams | AFTER INSERT | 建立團隊時自動加入領導者 |
+
+#### 待建立觸發器（⬜ 規劃命名）
+
+| 觸發器名稱 | 表 | 事件 | 用途 |
+|------------|-----|------|------|
+| `add_blueprint_creator_as_owner` | blueprints | AFTER INSERT | 藍圖建立者自動為擁有者 |
+| `update_parent_task_progress` | tasks | AFTER UPDATE | 子任務完成時更新父進度 |
+| `validate_task_budget` | task_budget | BEFORE INSERT/UPDATE | 子金額 ≤ 父金額驗證 |
+| `auto_thumbnail_attachment` | task_attachments | AFTER INSERT | 自動生成縮圖（需 Edge Function） |
+| `soft_delete_file` | files | BEFORE DELETE | 軟刪除設定 deleted_at |
+
+### F.4 Helper Functions（✅ 既有）
+
+| 函數名稱 | 用途 |
+|----------|------|
+| `get_user_account_id()` | 取得當前用戶帳戶 ID |
+| `is_org_member(org_id)` | 檢查是否為組織成員 |
+| `is_team_member(team_id)` | 檢查是否為團隊成員 |
+| `get_user_role_in_org(org_id)` | 取得用戶在組織的角色 |
+
+### F.5 待建立 Helper Functions（⬜ 規劃命名）
+
+| 函數名稱 | 用途 |
+|----------|------|
+| `is_blueprint_member(blueprint_id)` | 檢查是否為藍圖成員 |
+| `get_user_role_in_blueprint(blueprint_id)` | 取得用戶在藍圖的角色 |
+| `can_access_task(task_id)` | 檢查任務存取權限 |
+| `calculate_task_progress(task_id)` | 遞迴計算任務進度 |
+| `get_task_ancestors(task_id)` | 取得任務所有祖先節點 |
 
 ---
 
