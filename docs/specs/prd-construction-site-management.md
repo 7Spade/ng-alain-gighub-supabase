@@ -1658,7 +1658,7 @@ CREATE TABLE task_acceptances (
 | 規則 | 數值/邏輯 |
 |------|----------|
 | 邀請連結有效期 | 7 天 |
-| 同一 Email 發送頻率限制 | 24 小時內最多 3 次 |
+| 同一 Email 發送頻率限制 | 24 小時內最多 3 次，超過時顯示錯誤「請於 {剩餘時間} 後重試」 |
 | 被邀請者已是成員時 | 顯示提示「該用戶已是成員」，不發送邀請 |
 | 邀請狀態流程 | `pending` → `accepted` / `expired` / `revoked` |
 
@@ -1707,13 +1707,17 @@ CREATE TABLE task_acceptances (
 
 ```sql
 -- 檢查 new_parent_id 是否為 task_id 的子孫節點
+-- 注意：遞迴最大深度設為 20 層（與系統限制一致），防止資料損壞時的無限迴圈
+-- 若遞迴達到深度限制，視為異常並記錄警告日誌
 WITH RECURSIVE descendants AS (
-  SELECT id FROM tasks WHERE parent_id = :task_id
+  SELECT id, 1 AS depth FROM tasks WHERE parent_id = :task_id
   UNION ALL
-  SELECT t.id FROM tasks t JOIN descendants d ON t.parent_id = d.id
+  SELECT t.id, d.depth + 1 FROM tasks t 
+  JOIN descendants d ON t.parent_id = d.id
+  WHERE d.depth < 20  -- 防止無限遞迴
 )
 SELECT EXISTS (SELECT 1 FROM descendants WHERE id = :new_parent_id) AS is_circular;
--- 若 is_circular = true，禁止移動並顯示錯誤
+-- 若 is_circular = true，禁止移動並顯示錯誤 TASK552
 ```
 
 **批次操作限制**：
@@ -1732,9 +1736,11 @@ SELECT EXISTS (SELECT 1 FROM descendants WHERE id = :new_parent_id) AS is_circul
 
 | 檔案類型 | 單檔大小限制 | 允許格式 |
 |----------|-------------|---------|
-| 圖片 | 10 MB | `.jpg`, `.jpeg`, `.png`, `.webp`, `.heic` |
+| 圖片 | 10 MB | `.jpg`, `.jpeg`, `.png`, `.webp`, `.heic`* |
 | 文件 | 50 MB | `.pdf`, `.doc`, `.docx`, `.xls`, `.xlsx` |
 | 工程圖檔 | 100 MB | `.dwg`, `.dxf` |
+
+> *HEIC 相容性說明：HEIC 格式（iPhone 拍攝）瀏覽器支援有限，上傳後由伺服器自動轉換為 JPEG 格式儲存，確保網頁顯示相容性。原始 HEIC 檔案不保留。
 
 **命名規則**：
 
@@ -1862,7 +1868,10 @@ ngOnDestroy() {
   this.realtimeChannel?.unsubscribe();
 }
 
-// ❌ 錯誤：未清理 Subscription
+// ❌ 錯誤：未清理 Subscription（造成 Memory Leak）
+// 原因：Component 銷毀後 Subscription 仍持續運行，
+//       持有對 Component 的引用導致無法被 GC 回收，
+//       可能導致重複執行回調、效能下降、記憶體持續增長
 ngOnInit() {
   this.taskStore.tasks$.subscribe(tasks => {...}); // Memory Leak!
 }
@@ -2009,10 +2018,12 @@ afterEach(async () => {
 |------|--------|----------|
 | 首次內容繪製 (FCP) | < 1.5s | Lighthouse |
 | 最大內容繪製 (LCP) | < 2.5s | Lighthouse |
-| 首次輸入延遲 (FID) | < 100ms | Web Vitals |
+| 互動至下一次繪製 (INP) | < 200ms | Web Vitals |
 | 累積佈局偏移 (CLS) | < 0.1 | Web Vitals |
 | 任務樹渲染 (1000 節點) | < 500ms | 自定義計時 |
 | 虛擬捲動滾動 | 60fps | Chrome DevTools |
+
+> 注意：INP (Interaction to Next Paint) 於 2024 年 3 月取代 FID 成為 Core Web Vitals 正式指標。
 
 **後端效能基準**：
 
