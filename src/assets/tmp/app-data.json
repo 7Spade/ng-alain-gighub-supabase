@@ -28,7 +28,7 @@
             "text": "我的藍圖",
             "i18n": "menu.user.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/user/{userId}/blueprints"
+            "link": "/blueprint/list"
           },
           {
             "text": "個人設定",
@@ -56,7 +56,7 @@
             "text": "組織藍圖",
             "i18n": "menu.organization.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/org/{organizationId}/blueprints"
+            "link": "/blueprint/list"
           },
           {
             "text": "團隊管理",
@@ -102,7 +102,7 @@
             "text": "團隊藍圖",
             "i18n": "menu.team.blueprints",
             "icon": "anticon-file-text",
-            "link": "/account/team/{teamId}/blueprints"
+            "link": "/blueprint/list"
           },
           {
             "text": "團隊成員",
