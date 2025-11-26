@@ -21,6 +21,11 @@ export const BLUEPRINT_ROUTES: Routes = [
     data: { title: '藍圖列表' }
   },
   {
+    path: ':id',
+    loadComponent: () => import('./ui/blueprint-detail/blueprint-detail.component').then(m => m.BlueprintDetailComponent),
+    data: { title: '藍圖詳情' }
+  },
+  {
     path: 'task',
     loadComponent: () => import('./ui/task/task-list/task-list.component').then(m => m.TaskListComponent),
     data: { title: '任務管理' }

@@ -8,5 +8,6 @@
 
 export * from './task';
 export * from './blueprint-list';
+export * from './blueprint-detail';
 export * from './diary';
 export * from './todo';
