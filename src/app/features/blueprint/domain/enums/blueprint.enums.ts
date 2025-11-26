@@ -4,16 +4,17 @@
  * Enum definitions for Blueprint business logic
  * Following vertical slice architecture
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * @module features/blueprint/domain/enums/blueprint.enums
  */
 
 /**
  * Blueprint visibility enum for business logic
+ * 簡化為公開/隱藏
  */
 export enum BlueprintVisibilityEnum {
   PRIVATE = 'private',
-  ORGANIZATION = 'organization',
-  TEAM = 'team',
   PUBLIC = 'public'
 }
 
@@ -24,16 +25,4 @@ export enum BlueprintStatusEnum {
   DRAFT = 'draft',
   PUBLISHED = 'published',
   ARCHIVED = 'archived'
-}
-
-/**
- * Blueprint category enum for business logic
- */
-export enum BlueprintCategoryEnum {
-  SOFTWARE_DEVELOPMENT = 'software_development',
-  MARKETING = 'marketing',
-  SALES = 'sales',
-  HR = 'hr',
-  OPERATIONS = 'operations',
-  CUSTOM = 'custom'
 }

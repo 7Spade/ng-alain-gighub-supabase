@@ -4,21 +4,21 @@
  * Constants for Blueprint business logic
  * Following enterprise development guidelines
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * @module features/blueprint/constants/blueprint.constants
  */
 
-import { BlueprintStatusEnum, BlueprintVisibilityEnum, BlueprintCategoryEnum } from '../domain';
+import { BlueprintStatusEnum, BlueprintVisibilityEnum } from '../domain';
 
 /**
- * Blueprint default values
+ * Blueprint default values (簡化)
  */
 export const BLUEPRINT_DEFAULTS = {
   /** Default status for new blueprints */
   STATUS: BlueprintStatusEnum.DRAFT,
   /** Default visibility for new blueprints */
   VISIBILITY: BlueprintVisibilityEnum.PRIVATE,
-  /** Default category for new blueprints */
-  CATEGORY: BlueprintCategoryEnum.CUSTOM,
   /** Default page size for pagination */
   PAGE_SIZE: 20,
   /** Maximum name length */
@@ -56,74 +56,20 @@ export const BLUEPRINT_STATUS_CONFIG = {
 } as const;
 
 /**
- * Blueprint visibility display configuration
+ * Blueprint visibility display configuration (簡化：只有公開/隱藏)
  */
 export const BLUEPRINT_VISIBILITY_CONFIG = {
   [BlueprintVisibilityEnum.PRIVATE]: {
-    label: '私人',
+    label: '隱藏',
     color: 'default',
     icon: 'lock',
     description: '僅建立者可見'
-  },
-  [BlueprintVisibilityEnum.ORGANIZATION]: {
-    label: '組織',
-    color: 'processing',
-    icon: 'team',
-    description: '組織成員可見'
-  },
-  [BlueprintVisibilityEnum.TEAM]: {
-    label: '團隊',
-    color: 'cyan',
-    icon: 'usergroup-add',
-    description: '團隊成員可見'
   },
   [BlueprintVisibilityEnum.PUBLIC]: {
     label: '公開',
     color: 'success',
     icon: 'global',
     description: '所有人可見'
-  }
-} as const;
-
-/**
- * Blueprint category display configuration
- */
-export const BLUEPRINT_CATEGORY_CONFIG = {
-  [BlueprintCategoryEnum.SOFTWARE_DEVELOPMENT]: {
-    label: '軟體開發',
-    color: 'blue',
-    icon: 'code',
-    description: '軟體開發相關藍圖'
-  },
-  [BlueprintCategoryEnum.MARKETING]: {
-    label: '行銷',
-    color: 'orange',
-    icon: 'fund-projection-screen',
-    description: '行銷活動相關藍圖'
-  },
-  [BlueprintCategoryEnum.SALES]: {
-    label: '銷售',
-    color: 'green',
-    icon: 'dollar',
-    description: '銷售流程相關藍圖'
-  },
-  [BlueprintCategoryEnum.HR]: {
-    label: '人力資源',
-    color: 'purple',
-    icon: 'user',
-    description: '人力資源相關藍圖'
-  },
-  [BlueprintCategoryEnum.OPERATIONS]: {
-    label: '營運',
-    color: 'cyan',
-    icon: 'setting',
-    description: '營運管理相關藍圖'
-  },
-  [BlueprintCategoryEnum.CUSTOM]: {
-    label: '自訂',
-    color: 'default',
-    icon: 'appstore',
-    description: '自訂類別藍圖'
   }
 } as const;
 
@@ -148,11 +94,10 @@ export const BLUEPRINT_VALIDATION_RULES = {
 } as const;
 
 /**
- * Blueprint sort options for UI
+ * Blueprint sort options for UI (簡化：移除 usage_count)
  */
 export const BLUEPRINT_SORT_OPTIONS = [
   { label: '名稱', value: 'name' },
   { label: '建立時間', value: 'created_at' },
-  { label: '更新時間', value: 'updated_at' },
-  { label: '使用次數', value: 'usage_count' }
+  { label: '更新時間', value: 'updated_at' }
 ] as const;

@@ -4,6 +4,8 @@
  * Business logic for Blueprint Container management
  * Following vertical slice architecture
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * Uses Angular Signals for reactive state management
  *
  * @module features/blueprint/data-access/services/blueprint.service
@@ -43,19 +45,15 @@ export class BlueprintService {
 
   readonly archivedBlueprints = computed(() => this.blueprints().filter(b => b.status === BlueprintStatusEnum.ARCHIVED));
 
+  // 簡化統計資訊：移除 totalUsageCount 和 averageRating
   readonly statistics = computed<BlueprintStatistics>(() => {
     const blueprints = this.blueprints();
-    const blueprintsWithRating = blueprints.filter(b => b.rating);
-    const averageRating =
-      blueprintsWithRating.length > 0 ? blueprintsWithRating.reduce((sum, b) => sum + (b.rating || 0), 0) / blueprintsWithRating.length : 0;
 
     return {
       totalCount: blueprints.length,
       publishedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.PUBLISHED).length,
       draftCount: blueprints.filter(b => b.status === BlueprintStatusEnum.DRAFT).length,
-      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length,
-      totalUsageCount: blueprints.reduce((sum, b) => sum + b.usageCount, 0),
-      averageRating
+      archivedCount: blueprints.filter(b => b.status === BlueprintStatusEnum.ARCHIVED).length
     };
   });
 
@@ -78,7 +76,7 @@ export class BlueprintService {
   }
 
   /**
-   * Load public blueprints (marketplace)
+   * Load public blueprints
    */
   async loadPublicBlueprints(): Promise<void> {
     this.loadingState.set(true);
@@ -218,7 +216,7 @@ export class BlueprintService {
   }
 
   /**
-   * Search blueprints
+   * Search blueprints (簡化：移除 category 搜尋)
    *
    * Note: Full-text search is not yet implemented in the repository.
    * This method falls back to client-side filtering of public blueprints.
@@ -235,7 +233,6 @@ export class BlueprintService {
         b =>
           b.name.toLowerCase().includes(term) ||
           b.description?.toLowerCase().includes(term) ||
-          b.category?.toLowerCase().includes(term) ||
           b.tags?.some(tag => tag.toLowerCase().includes(term))
       );
     } catch (error) {

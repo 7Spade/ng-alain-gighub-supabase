@@ -3,6 +3,8 @@
   
   Main container for blueprint modules
   Provides navigation and context display
+
+  適用於工地建築領域的排程規劃、進度追蹤、品質驗收
 -->
 
 <page-header [title]="'藍圖容器'">
@@ -30,15 +32,12 @@
   ></nz-alert>
 }
 
-<!-- Blueprint Info -->
+<!-- Blueprint Info (簡化：移除類別) -->
 @if (selectedBlueprint()) {
   <nz-card [nzTitle]="'藍圖資訊'" class="mb-md">
     <nz-descriptions [nzColumn]="2" nzBordered>
       <nz-descriptions-item [nzTitle]="'名稱'">
         {{ selectedBlueprint()?.name }}
-      </nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'類別'">
-        {{ selectedBlueprint()?.category }}
       </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="'描述'" [nzSpan]="2">
         {{ selectedBlueprint()?.description }}
@@ -46,7 +45,7 @@
       <nz-descriptions-item [nzTitle]="'可見性'">
         <nz-badge 
           [nzStatus]="selectedBlueprint()?.visibility === 'public' ? 'success' : 'default'" 
-          [nzText]="selectedBlueprint()?.visibility">
+          [nzText]="selectedBlueprint()?.visibility === 'public' ? '公開' : '隱藏'">
         </nz-badge>
       </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="'狀態'">

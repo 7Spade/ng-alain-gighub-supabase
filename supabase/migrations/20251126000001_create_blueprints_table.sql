@@ -5,6 +5,7 @@
 --
 -- This table stores blueprint templates that can be instantiated into workspaces.
 -- Following vertical slice architecture and Account Context integration.
+-- 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
 
 -- ============================================================================
 -- CREATE HELPER FUNCTION FOR UPDATED_AT TRIGGER
@@ -22,7 +23,7 @@ COMMENT ON FUNCTION public.update_updated_at_column() IS
 'Automatically updates the updated_at column to current timestamp on row update';
 
 -- ============================================================================
--- CREATE BLUEPRINTS TABLE
+-- CREATE BLUEPRINTS TABLE (簡化版)
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS public.blueprints (
@@ -31,8 +32,7 @@ CREATE TABLE IF NOT EXISTS public.blueprints (
     name VARCHAR(255) NOT NULL,
     description TEXT,
 
-    -- Classification
-    category TEXT NOT NULL DEFAULT 'custom',
+    -- Classification (簡化：移除 category，visibility 只有 private/public)
     visibility TEXT NOT NULL DEFAULT 'private',
     status TEXT NOT NULL DEFAULT 'draft',
 
@@ -43,27 +43,18 @@ CREATE TABLE IF NOT EXISTS public.blueprints (
     -- Blueprint structure definition (JSONB - extensible)
     structure JSONB NOT NULL DEFAULT '{"settings": {"allowGuestAccess": false, "requireApprovalForJoin": true, "defaultMemberRole": "member", "enableTaskComments": true, "enableFileSharing": true, "enableNotifications": true}}',
 
-    -- Metadata
+    -- Metadata (簡化：移除 icon_url, thumbnail_url, usage_count, rating)
     version INTEGER NOT NULL DEFAULT 1,
     tags TEXT[] DEFAULT '{}',
-    icon_url VARCHAR(500),
-    thumbnail_url VARCHAR(500),
-
-    -- Statistics
-    usage_count INTEGER NOT NULL DEFAULT 0,
-    rating DECIMAL(3,2),
 
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     published_at TIMESTAMPTZ,
 
-    -- Constraints
-    CONSTRAINT blueprints_category_check CHECK (
-        category = ANY(ARRAY['software_development', 'marketing', 'sales', 'hr', 'operations', 'custom'])
-    ),
+    -- Constraints (簡化)
     CONSTRAINT blueprints_visibility_check CHECK (
-        visibility = ANY(ARRAY['private', 'organization', 'team', 'public'])
+        visibility = ANY(ARRAY['private', 'public'])
     ),
     CONSTRAINT blueprints_status_check CHECK (
         status = ANY(ARRAY['draft', 'published', 'archived'])
@@ -71,33 +62,25 @@ CREATE TABLE IF NOT EXISTS public.blueprints (
     CONSTRAINT blueprints_owner_type_check CHECK (
         owner_type = ANY(ARRAY['user', 'organization', 'team'])
     ),
-    CONSTRAINT blueprints_rating_check CHECK (
-        rating IS NULL OR (rating >= 0 AND rating <= 5)
-    ),
     CONSTRAINT blueprints_name_length CHECK (
         char_length(name) >= 2 AND char_length(name) <= 100
     )
 );
 
 -- Table comment
-COMMENT ON TABLE public.blueprints IS 'Blueprint templates that can be instantiated into workspaces. Follows Account Context integration for multi-tenant support.';
+COMMENT ON TABLE public.blueprints IS 'Blueprint templates for construction site scheduling, progress tracking, and quality inspection. Follows Account Context integration for multi-tenant support.';
 
 -- Column comments
 COMMENT ON COLUMN public.blueprints.id IS 'Unique identifier for the blueprint';
 COMMENT ON COLUMN public.blueprints.name IS 'Blueprint name (2-100 characters)';
 COMMENT ON COLUMN public.blueprints.description IS 'Blueprint description';
-COMMENT ON COLUMN public.blueprints.category IS 'Blueprint category: software_development, marketing, sales, hr, operations, custom';
-COMMENT ON COLUMN public.blueprints.visibility IS 'Visibility level: private, organization, team, public';
+COMMENT ON COLUMN public.blueprints.visibility IS 'Visibility level: private (隱藏), public (公開)';
 COMMENT ON COLUMN public.blueprints.status IS 'Blueprint status: draft, published, archived';
 COMMENT ON COLUMN public.blueprints.owner_id IS 'Owner ID (user, organization, or team ID from accounts table)';
 COMMENT ON COLUMN public.blueprints.owner_type IS 'Owner type: user, organization, team';
 COMMENT ON COLUMN public.blueprints.structure IS 'JSONB structure containing blueprint definition (tasks, folders, settings, etc.)';
 COMMENT ON COLUMN public.blueprints.version IS 'Blueprint version number, incremented on updates';
 COMMENT ON COLUMN public.blueprints.tags IS 'Array of tags for categorization and search';
-COMMENT ON COLUMN public.blueprints.icon_url IS 'URL to blueprint icon image';
-COMMENT ON COLUMN public.blueprints.thumbnail_url IS 'URL to blueprint thumbnail image';
-COMMENT ON COLUMN public.blueprints.usage_count IS 'Number of times this blueprint has been used to create workspaces';
-COMMENT ON COLUMN public.blueprints.rating IS 'Average rating (0-5) from users';
 COMMENT ON COLUMN public.blueprints.created_at IS 'Timestamp when blueprint was created';
 COMMENT ON COLUMN public.blueprints.updated_at IS 'Timestamp when blueprint was last updated';
 COMMENT ON COLUMN public.blueprints.published_at IS 'Timestamp when blueprint was published (null if draft)';
@@ -112,11 +95,8 @@ CREATE INDEX idx_blueprints_owner ON public.blueprints(owner_id, owner_type);
 -- Index for status filtering
 CREATE INDEX idx_blueprints_status ON public.blueprints(status);
 
--- Index for visibility filtering (for marketplace/public blueprints)
+-- Index for visibility filtering
 CREATE INDEX idx_blueprints_visibility ON public.blueprints(visibility);
-
--- Index for category filtering
-CREATE INDEX idx_blueprints_category ON public.blueprints(category);
 
 -- Composite index for public marketplace queries
 CREATE INDEX idx_blueprints_public_published ON public.blueprints(visibility, status)
@@ -180,7 +160,7 @@ USING (
 COMMENT ON POLICY "team_members_view_team_blueprints" ON public.blueprints IS
 'Allows team members to view their team blueprints';
 
--- Policy: View public published blueprints (marketplace)
+-- Policy: View public published blueprints
 CREATE POLICY "anyone_view_public_blueprints" ON public.blueprints
 FOR SELECT
 TO authenticated
@@ -190,7 +170,7 @@ USING (
 );
 
 COMMENT ON POLICY "anyone_view_public_blueprints" ON public.blueprints IS
-'Allows any authenticated user to view public published blueprints (marketplace)';
+'Allows any authenticated user to view public published blueprints';
 
 -- Policy: Create blueprints for own user account
 CREATE POLICY "users_insert_own_blueprints" ON public.blueprints

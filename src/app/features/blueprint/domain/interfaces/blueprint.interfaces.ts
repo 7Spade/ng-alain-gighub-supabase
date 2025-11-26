@@ -4,18 +4,19 @@
  * Interface definitions for Blueprint feature contracts
  * Following enterprise development guidelines
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * @module features/blueprint/domain/interfaces/blueprint.interfaces
  */
 
-import { BlueprintStatusEnum, BlueprintVisibilityEnum, BlueprintCategoryEnum } from '../enums';
+import { BlueprintStatusEnum, BlueprintVisibilityEnum } from '../enums';
 
 /**
- * Blueprint filter options interface
+ * Blueprint filter options interface (簡化：移除 category)
  */
 export interface IBlueprintFilterOptions {
   status?: BlueprintStatusEnum;
   visibility?: BlueprintVisibilityEnum;
-  category?: BlueprintCategoryEnum;
   ownerId?: string;
   ownerType?: 'user' | 'organization' | 'team';
   searchTerm?: string;
@@ -25,10 +26,10 @@ export interface IBlueprintFilterOptions {
 }
 
 /**
- * Blueprint sort options interface
+ * Blueprint sort options interface (簡化：移除 usage_count)
  */
 export interface IBlueprintSortOptions {
-  field: 'name' | 'created_at' | 'updated_at' | 'usage_count';
+  field: 'name' | 'created_at' | 'updated_at';
   direction: 'asc' | 'desc';
 }
 
@@ -51,14 +52,13 @@ export interface IBlueprintQueryOptions {
 }
 
 /**
- * Blueprint statistics interface
+ * Blueprint statistics interface (簡化)
  */
 export interface IBlueprintStatistics {
   total: number;
   draft: number;
   published: number;
   archived: number;
-  byCategory: Record<BlueprintCategoryEnum, number>;
   byVisibility: Record<BlueprintVisibilityEnum, number>;
 }
 
@@ -107,7 +107,6 @@ export interface IBlueprintExportOptions {
   format: 'json' | 'yaml' | 'csv';
   includeMetadata?: boolean;
   includeTasks?: boolean;
-  includeStatistics?: boolean;
 }
 
 /**

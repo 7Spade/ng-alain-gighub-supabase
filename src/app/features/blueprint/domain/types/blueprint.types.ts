@@ -4,23 +4,21 @@
  * Base type definitions for Blueprint Container system (邏輯容器)
  * Following vertical slice architecture and enterprise guidelines
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * @module features/blueprint/domain/types/blueprint.types
  */
 
 /**
  * Blueprint visibility levels
+ * 簡化為公開/隱藏，搭配上下文可區分個人或組織建立
  */
-export type BlueprintVisibility = 'private' | 'organization' | 'team' | 'public';
+export type BlueprintVisibility = 'private' | 'public';
 
 /**
  * Blueprint status
  */
 export type BlueprintStatus = 'draft' | 'published' | 'archived';
-
-/**
- * Blueprint category
- */
-export type BlueprintCategory = 'software_development' | 'marketing' | 'sales' | 'hr' | 'operations' | 'custom';
 
 /**
  * Owner type (Account Context integration)
@@ -37,8 +35,7 @@ export interface Blueprint {
   name: string;
   description: string;
 
-  // Classification
-  category: BlueprintCategory;
+  // Classification (簡化：移除 category)
   visibility: BlueprintVisibility;
   status: BlueprintStatus;
 
@@ -52,12 +49,6 @@ export interface Blueprint {
   // Metadata
   version: number;
   tags: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
-
-  // Statistics
-  usageCount: number;
-  rating?: number;
 
   // Timestamps
   createdAt: Date;
@@ -96,15 +87,12 @@ export interface WorkspaceSettings {
 export interface BlueprintInsert {
   name: string;
   description: string;
-  category: BlueprintCategory;
   visibility?: BlueprintVisibility;
   status?: BlueprintStatus;
   ownerId: string;
   ownerType: OwnerType;
   structure: BlueprintStructure;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
@@ -113,13 +101,10 @@ export interface BlueprintInsert {
 export interface BlueprintUpdate {
   name?: string;
   description?: string;
-  category?: BlueprintCategory;
   visibility?: BlueprintVisibility;
   status?: BlueprintStatus;
   structure?: BlueprintStructure;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
   version?: number;
 }
 
@@ -131,7 +116,7 @@ export function isBlueprintStatus(value: unknown): value is BlueprintStatus {
 }
 
 export function isBlueprintVisibility(value: unknown): value is BlueprintVisibility {
-  return typeof value === 'string' && ['private', 'organization', 'team', 'public'].includes(value);
+  return typeof value === 'string' && ['private', 'public'].includes(value);
 }
 
 export function isOwnerType(value: unknown): value is OwnerType {

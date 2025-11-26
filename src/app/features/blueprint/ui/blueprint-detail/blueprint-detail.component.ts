@@ -4,6 +4,8 @@
  * 藍圖詳情元件 - 顯示和編輯單個藍圖
  * View and edit single blueprint page
  *
+ * 適用於工地建築領域的排程規劃、進度追蹤、品質驗收
+ *
  * Supports both view and edit modes based on route parameters
  * Integrates with AuthContextService for permission control
  *
@@ -19,7 +21,6 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
-import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -37,31 +38,17 @@ const STATUS_CONFIG: Record<string, { text: string; color: string }> = {
 };
 
 /**
- * Visibility badge configuration
+ * Visibility badge configuration (簡化：只有公開/隱藏)
  */
 const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
-  [BlueprintVisibilityEnum.PRIVATE]: { text: '私有', color: 'default' },
-  [BlueprintVisibilityEnum.PUBLIC]: { text: '公開', color: 'blue' },
-  [BlueprintVisibilityEnum.ORGANIZATION]: { text: '組織', color: 'purple' },
-  [BlueprintVisibilityEnum.TEAM]: { text: '團隊', color: 'cyan' }
-};
-
-/**
- * Category labels
- */
-const CATEGORY_LABELS: Record<string, string> = {
-  software_development: '軟體開發',
-  marketing: '行銷',
-  sales: '銷售',
-  hr: '人力資源',
-  operations: '營運',
-  custom: '自訂'
+  [BlueprintVisibilityEnum.PRIVATE]: { text: '隱藏', color: 'default' },
+  [BlueprintVisibilityEnum.PUBLIC]: { text: '公開', color: 'blue' }
 };
 
 @Component({
   selector: 'app-blueprint-detail',
   standalone: true,
-  imports: [SHARED_IMPORTS, DatePipe, NzTagModule, NzDescriptionsModule, NzStatisticModule, NzSkeletonModule],
+  imports: [SHARED_IMPORTS, DatePipe, NzTagModule, NzDescriptionsModule, NzSkeletonModule],
   template: `
     <page-header [title]="pageTitle()" [action]="actionTpl">
       <ng-template #breadcrumb>
@@ -132,9 +119,6 @@ const CATEGORY_LABELS: Record<string, string> = {
               {{ getVisibilityConfig(blueprint()!.visibility).text }}
             </nz-tag>
           </nz-descriptions-item>
-          <nz-descriptions-item nzTitle="分類">
-            {{ getCategoryLabel(blueprint()!.category) }}
-          </nz-descriptions-item>
           <nz-descriptions-item nzTitle="版本"> v{{ blueprint()!.version }} </nz-descriptions-item>
           <nz-descriptions-item nzTitle="描述" [nzSpan]="3">
             {{ blueprint()!.description || '無描述' }}
@@ -151,28 +135,6 @@ const CATEGORY_LABELS: Record<string, string> = {
         </nz-descriptions>
       </nz-card>
 
-      <!-- Statistics -->
-      <nz-card nzTitle="統計資訊" class="mb-md">
-        <div nz-row [nzGutter]="16">
-          <div nz-col [nzSpan]="6">
-            <nz-statistic [nzValue]="blueprint()!.usageCount" nzTitle="使用次數" [nzPrefix]="usageIcon"></nz-statistic>
-            <ng-template #usageIcon><i nz-icon nzType="deployment-unit" nzTheme="outline"></i></ng-template>
-          </div>
-          <div nz-col [nzSpan]="6">
-            <nz-statistic [nzValue]="blueprint()!.rating || 0" nzTitle="評分" [nzSuffix]="'/5'" [nzPrefix]="ratingIcon"></nz-statistic>
-            <ng-template #ratingIcon><i nz-icon nzType="star" nzTheme="outline"></i></ng-template>
-          </div>
-          <div nz-col [nzSpan]="6">
-            <nz-statistic [nzValue]="blueprint()!.version" nzTitle="版本" [nzPrefix]="versionIcon"></nz-statistic>
-            <ng-template #versionIcon><i nz-icon nzType="branches" nzTheme="outline"></i></ng-template>
-          </div>
-          <div nz-col [nzSpan]="6">
-            <nz-statistic [nzValue]="formatDate(blueprint()!.createdAt)" nzTitle="建立日期" [nzPrefix]="dateIcon"></nz-statistic>
-            <ng-template #dateIcon><i nz-icon nzType="calendar" nzTheme="outline"></i></ng-template>
-          </div>
-        </div>
-      </nz-card>
-
       <!-- Timestamps -->
       <nz-card nzTitle="時間戳記" class="mb-md">
         <nz-descriptions nzBordered [nzColumn]="3">
@@ -187,27 +149,12 @@ const CATEGORY_LABELS: Record<string, string> = {
           </nz-descriptions-item>
         </nz-descriptions>
       </nz-card>
-
-      <!-- Blueprint Structure Preview -->
-      <nz-card nzTitle="藍圖結構預覽">
-        <pre class="code-preview">{{ blueprint()!.structure | json }}</pre>
-      </nz-card>
     }
   `,
   styles: [
     `
       :host {
         display: block;
-      }
-
-      .code-preview {
-        background-color: #f5f5f5;
-        padding: 16px;
-        border-radius: 4px;
-        overflow-x: auto;
-        max-height: 400px;
-        font-size: 12px;
-        font-family: 'Consolas', 'Monaco', monospace;
       }
 
       .text-muted {
@@ -312,22 +259,6 @@ export class BlueprintDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get category label
-   */
-  getCategoryLabel(category: string): string {
-    return CATEGORY_LABELS[category] || category;
-  }
-
-  /**
-   * Format date for display
-   */
-  formatDate(date: Date | string): string {
-    if (!date) return '-';
-    const d = new Date(date);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
-
-  /**
    * Go back to list
    */
   goBack(): void {
@@ -378,7 +309,7 @@ export class BlueprintDetailComponent implements OnInit, OnDestroy {
           await this.blueprintStore.publishBlueprint(bp.id);
           this.message.success('藍圖已發佈');
           this.loadBlueprint(bp.id);
-        } catch (error) {
+        } catch {
           this.message.error('發佈失敗');
         }
       }
