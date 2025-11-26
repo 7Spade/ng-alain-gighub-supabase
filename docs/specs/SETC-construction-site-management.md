@@ -8,10 +8,10 @@
 
 | 屬性 | 值 |
 |------|-----|
-| **PRD 來源** | `prd-construction-site-management.md` v3.0 |
+| **PRD 來源** | `prd-construction-site-management.md` v1.6.0 |
 | **建立日期** | 2025-11-26 |
 | **總預估週數** | 18-20 週 |
-| **總任務數** | 76 個執行任務 |
+| **總任務數** | 83 個執行任務 |
 | **開發階段** | 6 個主要階段 + 1 個準備階段 |
 
 ---
@@ -70,7 +70,7 @@ gantt
 | P2 | 日誌系統 | 9-10 | 11 | [04-diary-system.setc.md](./setc/04-diary-system.setc.md) |
 | P3 | 進度追蹤儀表板 | 11-13 | 10 | [05-progress-dashboard.setc.md](./setc/05-progress-dashboard.setc.md) |
 | P4 | 品質驗收系統 | 14-15 | 9 | [06-quality-inspection.setc.md](./setc/06-quality-inspection.setc.md) |
-| P5 | 協作報表與上線 | 16-20 | 7 | [07-collaboration-reports-launch.setc.md](./setc/07-collaboration-reports-launch.setc.md) |
+| P5 | 協作報表與上線 | 16-20 | 14 | [07-collaboration-reports-launch.setc.md](./setc/07-collaboration-reports-launch.setc.md) |
 
 ---
 
