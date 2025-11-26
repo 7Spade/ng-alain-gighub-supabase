@@ -86,10 +86,10 @@ export class StartupService {
             this.menuManagementService
               .loadConfig()
               .then(() => {
-                // 初始化時載入預設菜單（app 菜單）
+                // 初始化時載入預設菜單（USER 菜單）
                 // 注意：LayoutBasicComponent 的 effect 會監聽上下文變化並自動更新菜單
                 // 這裡只是確保菜單配置已載入
-                this.menuManagementService.updateMenu(ContextType.APP);
+                this.menuManagementService.updateMenu(ContextType.USER);
               })
               .catch(error => {
                 console.error('[StartupService] Failed to load menu config:', error);

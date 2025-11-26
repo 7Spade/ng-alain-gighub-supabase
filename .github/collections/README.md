@@ -16,6 +16,22 @@
 - `testing-automation.collection.yml` - 集合配置
 - `testing-automation.md` - 測試自動化相關資源
 
+### TypeScript MCP Development
+- `typescript-mcp-development.collection.yml` - 集合配置
+- `typescript-mcp-development.md` - TypeScript MCP 伺服器開發相關資源
+
+### Database & Data Management
+- `database-data-management.collection.yml` - 集合配置
+- `database-data-management.md` - 資料庫管理與 SQL 優化相關資源（PostgreSQL、SQL Server）
+
+### Project Planning & Management
+- `project-planning.collection.yml` - 集合配置
+- `project-planning.md` - 專案規劃與管理相關資源
+
+### Awesome Copilot
+- `awesome-copilot.collection.yml` - 集合配置
+- `awesome-copilot.md` - 發現和生成 GitHub Copilot 資源的 Meta 工具
+
 ## 使用方式
 
 這些集合提供了相關技術領域的最佳實踐、工具和指南。開發時可參考這些集合中的資源來指導工作流程。

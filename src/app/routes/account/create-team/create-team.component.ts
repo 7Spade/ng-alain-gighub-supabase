@@ -5,14 +5,14 @@
  * Create team component
  *
  * Allows users to create a new team within an organization.
- * Integrated with TeamFacade and WorkspaceContextFacade.
+ * Integrated with TeamFacade and AuthContextService.
  *
  * @module routes/account
  */
 
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TeamFacade, WorkspaceContextFacade } from '@core';
+import { TeamFacade, AuthContextService } from '@core';
 import { SHARED_IMPORTS, CreateTeamRequest, validateForm, getTrimmedFormValue } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
@@ -26,7 +26,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 })
 export class CreateTeamComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly authContext = inject(AuthContextService);
   private readonly teamFacade = inject(TeamFacade);
   private readonly modal = inject(NzModalRef);
   private readonly msg = inject(NzMessageService);
@@ -35,8 +35,8 @@ export class CreateTeamComponent {
 
   // 從上下文自動獲取組織 ID
   readonly currentOrgId = computed<string | null>(() => {
-    const contextType = this.workspaceContext.contextType();
-    const contextId = this.workspaceContext.contextId();
+    const contextType = this.authContext.contextType();
+    const contextId = this.authContext.contextId();
     return contextType === 'organization' ? contextId : null;
   });
 
@@ -49,8 +49,8 @@ export class CreateTeamComponent {
     avatar: ['']
   });
 
-  readonly organizations = this.workspaceContext.organizations;
-  readonly loadingOrganizations = this.workspaceContext.loading;
+  readonly organizations = this.authContext.organizations;
+  readonly loadingOrganizations = this.authContext.isWorkspaceLoading;
 
   readonly organizationOptions = computed(() => {
     const orgs = this.organizations();

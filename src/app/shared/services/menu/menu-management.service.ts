@@ -84,13 +84,8 @@ export class MenuManagementService {
     const config = this.configState();
     if (!config) return;
 
-    let menu: Menu[] = [];
-
-    // APP 上下文不顯示菜單
-    if (contextType !== ContextType.APP) {
-      const baseMenu = this.getBaseMenu(contextType, config);
-      menu = this.processParams(baseMenu, params);
-    }
+    const baseMenu = this.getBaseMenu(contextType, config);
+    const menu = this.processParams(baseMenu, params);
 
     this.menuService.add(menu);
   }

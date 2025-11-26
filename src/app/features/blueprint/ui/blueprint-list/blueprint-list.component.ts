@@ -4,7 +4,7 @@
  * 藍圖列表元件 - 統一的藍圖列表頁面
  * Unified blueprint list page for all context types (user, org, team)
  *
- * Integrates with WorkspaceContextFacade to:
+ * Integrates with AuthContextService (新架構) to:
  * - Automatically load blueprints based on current context
  * - Display context-aware title and descriptions
  * - Filter data according to current tenant
@@ -14,7 +14,7 @@
 
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { WorkspaceContextFacade } from '@core';
+import { AuthContextService } from '@core';
 import { SHARED_IMPORTS } from '@shared';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -42,9 +42,9 @@ const CONTEXT_LABELS: Record<string, { title: string; description: string }> = {
     title: '團隊藍圖',
     description: '管理團隊共享的藍圖'
   },
-  app: {
-    title: '藍圖總覽',
-    description: '請選擇一個上下文以查看藍圖'
+  bot: {
+    title: '機器人藍圖',
+    description: '管理機器人的藍圖'
   }
 };
 
@@ -72,16 +72,15 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
   standalone: true,
   imports: [SHARED_IMPORTS, NzTableModule, NzTagModule, NzEmptyModule],
   template: `
-    <page-header [title]="pageTitle()">
-      <ng-template #action>
-        @if (hasValidContext()) {
-          <button nz-button nzType="primary" (click)="createBlueprint()">
-            <i nz-icon nzType="plus" nzTheme="outline"></i>
-            新增藍圖
-          </button>
-        }
-      </ng-template>
-    </page-header>
+    <page-header [title]="pageTitle()" [action]="actionTpl"></page-header>
+    <ng-template #actionTpl>
+      @if (hasValidContext()) {
+        <button nz-button nzType="primary" (click)="createBlueprint()">
+          <i nz-icon nzType="plus" nzTheme="outline"></i>
+          新增藍圖
+        </button>
+      }
+    </ng-template>
 
     <!-- Context Info Card -->
     <nz-card class="mb-md">
@@ -184,7 +183,7 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
 })
 export class BlueprintListComponent implements OnInit {
   private readonly blueprintStore = inject(BlueprintStore);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly authContext = inject(AuthContextService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly message = inject(NzMessageService);
@@ -195,20 +194,13 @@ export class BlueprintListComponent implements OnInit {
   readonly loading = this.blueprintStore.blueprintLoading;
   readonly error = this.blueprintStore.blueprintError;
 
-  // Context state
-  readonly contextType = this.workspaceContext.contextType;
-  readonly contextId = this.workspaceContext.contextId;
-  readonly contextLabel = this.workspaceContext.contextLabel;
+  // Context state (使用新的 AuthContextService)
+  readonly contextType = this.authContext.contextType;
+  readonly contextId = this.authContext.contextId;
+  readonly contextLabel = this.authContext.contextLabel;
 
-  // Local state
-  private readonly initialized = signal(false);
-
-  // Computed signals for UI
-  readonly hasValidContext = computed(() => {
-    const type = this.contextType();
-    const id = this.contextId();
-    return type !== 'app' && !!id;
-  });
+  // 直接使用 AuthContextService 的 hasValidContext
+  readonly hasValidContext = this.authContext.hasValidContext;
 
   readonly pageTitle = computed(() => {
     const type = this.contextType();
@@ -267,28 +259,34 @@ export class BlueprintListComponent implements OnInit {
   });
 
   constructor() {
-    // Watch for context changes and reload data
+    // Watch for context changes and reload data using effect()
+    // This effect monitors the AuthContextService and triggers data loading
+    // when the context changes to a valid state
     effect(() => {
       const contextType = this.contextType();
       const contextId = this.contextId();
+      const isReady = this.authContext.isReady();
 
-      // Skip if not initialized or invalid context
-      if (!this.initialized() || contextType === 'app' || !contextId) {
-        return;
+      // Debug log for context monitoring
+      console.log('[BlueprintList] 📍 Context changed:', { contextType, contextId, isReady });
+
+      // Load blueprints when context becomes valid and system is ready
+      if (isReady && contextId) {
+        console.log('[BlueprintList] ✅ Valid context detected, loading blueprints...');
+        this.loadBlueprints();
       }
-
-      // Load blueprints for the current context
-      this.loadBlueprints();
     });
   }
 
   ngOnInit(): void {
-    this.initialized.set(true);
-
-    // Initial load if context is valid
-    if (this.hasValidContext()) {
-      this.loadBlueprints();
-    }
+    // Log initialization
+    console.log('[BlueprintList] 🚀 Component initialized');
+    console.log('[BlueprintList] 📊 Current context:', {
+      type: this.contextType(),
+      id: this.contextId(),
+      hasValidContext: this.hasValidContext(),
+      isReady: this.authContext.isReady()
+    });
   }
 
   /**

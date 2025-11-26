@@ -5,14 +5,13 @@
  * Account context switcher component
  *
  * Allows users to switch between personal account, organizations, and teams.
- * Integrated with WorkspaceContextFacade for state management.
+ * Integrated with AuthContextService for state management.
  *
  * @module layout/basic/widgets
  */
 
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
-import { WorkspaceContextFacade, ContextType } from '@core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
+import { AuthContextService, ContextType } from '@core';
 import { AccountService, SHARED_IMPORTS } from '@shared';
 
 @Component({
@@ -20,20 +19,11 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
-    <!-- Application menu -->
-    @if (!hasToken()) {
-      <li nz-menu-item (click)="workspaceContext.switchToApp()" [class.ant-menu-item-selected]="isAppContext()">
-        <i nz-icon nzType="appstore" class="mr-sm"></i>
-        <span>應用菜單</span>
-      </li>
-      <li nz-menu-divider></li>
-    }
-
     <!-- Personal accounts (flat) -->
     @for (account of userAccounts(); track getAccountId(account)) {
       <li
         nz-menu-item
-        (click)="workspaceContext.switchToUser(getAccountId(account))"
+        (click)="authContext.switchToUser(getAccountId(account))"
         [class.ant-menu-item-selected]="isUserContext(getAccountId(account))"
       >
         <i nz-icon nzType="user" class="mr-sm"></i>
@@ -50,7 +40,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
             <!-- Organization itself -->
             <li
               nz-menu-item
-              (click)="workspaceContext.switchToOrganization(getAccountId(org))"
+              (click)="authContext.switchToOrganization(getAccountId(org))"
               [class.ant-menu-item-selected]="isOrganizationContext(getAccountId(org))"
             >
               <i nz-icon nzType="team" class="mr-sm"></i>
@@ -61,7 +51,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
             @for (team of teamsByOrganization().get(getAccountId(org))!; track getTeamId(team)) {
               <li
                 nz-menu-item
-                (click)="workspaceContext.switchToTeam(getTeamId(team))"
+                (click)="authContext.switchToTeam(getTeamId(team))"
                 [class.ant-menu-item-selected]="isTeamContext(getTeamId(team))"
               >
                 <i nz-icon nzType="usergroup-add" class="mr-sm"></i>
@@ -74,7 +64,7 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
         <!-- Organization without teams (flat item) -->
         <li
           nz-menu-item
-          (click)="workspaceContext.switchToOrganization(getAccountId(org))"
+          (click)="authContext.switchToOrganization(getAccountId(org))"
           [class.ant-menu-item-selected]="isOrganizationContext(getAccountId(org))"
         >
           <i nz-icon nzType="team" class="mr-sm"></i>
@@ -107,36 +97,35 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
 })
 export class HeaderContextSwitcherComponent {
   readonly accountService = inject(AccountService);
-  readonly workspaceContext = inject(WorkspaceContextFacade);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
+  readonly authContext = inject(AuthContextService);
 
   // Expose ContextType enum to template
   readonly ContextType = ContextType;
 
-  // Use WorkspaceContextFacade signals
+  // Use AuthContextService signals
   readonly userAccounts = computed<Array<Record<string, unknown>>>(() => {
     const accounts = this.accountService.userAccounts() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 👤 用戶帳戶:', accounts);
     return accounts;
   });
   readonly organizationAccounts = computed<Array<Record<string, unknown>>>(() => {
-    const orgs = this.workspaceContext.organizations() as Array<Record<string, unknown>>;
+    const orgs = this.authContext.organizations() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 🏢 組織帳戶:', orgs);
     return orgs;
   });
   readonly userTeams = computed<Array<Record<string, unknown>>>(() => {
-    const teams = this.workspaceContext.teams() as Array<Record<string, unknown>>;
+    const teams = this.authContext.teams() as Array<Record<string, unknown>>;
     console.log('[HeaderContextSwitcher] 👥 用戶團隊:', teams);
     return teams;
   });
-  readonly teamsByOrganization = this.workspaceContext.teamsByOrganization;
-  readonly contextLabel = this.workspaceContext.contextLabel;
-  readonly contextIcon = this.workspaceContext.contextIcon;
-  readonly switching = this.workspaceContext.switching;
+  readonly teamsByOrganization = this.authContext.teamsByOrganization;
+  readonly contextLabel = this.authContext.contextLabel;
+  readonly contextIcon = this.authContext.contextIcon;
+  readonly switching = this.authContext.switching;
 
   // Computed signals for type-safe comparisons
-  readonly currentContextType = this.workspaceContext.contextType;
-  readonly currentContextId = this.workspaceContext.contextId;
+  readonly currentContextType = this.authContext.contextType;
+  readonly currentContextId = this.authContext.contextId;
 
   // Helper methods for type-safe comparisons
   isContextType(type: ContextType): boolean {
@@ -155,9 +144,7 @@ export class HeaderContextSwitcherComponent {
 
   // Helper methods for template (type-safe)
   // Using method instead of computed signal for better template compatibility
-  isAppContext(): boolean {
-    return this.isContextType(ContextType.APP);
-  }
+  // Note: isAppContext() removed since APP context no longer exists
 
   // Helper methods that accept IDs
   isUserContext(id: string): boolean {
@@ -173,13 +160,9 @@ export class HeaderContextSwitcherComponent {
   }
 
   /**
-   * Check if user is logged in
-   * Used to control "Application Menu" option visibility
+   * Check if user is authenticated
    */
-  readonly hasToken = computed(() => {
-    const token = this.tokenService.get();
-    return !!token?.['user']?.['id'];
-  });
+  readonly isAuthenticated = this.authContext.isAuthenticated;
 
   /**
    * Get account ID with type safety

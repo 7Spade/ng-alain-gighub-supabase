@@ -9,7 +9,7 @@
 
 import { Directive, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceContextFacade, ContextType } from '@core';
+import { AuthContextService, ContextType } from '@core';
 
 /**
  * Context configuration for different component types
@@ -21,14 +21,13 @@ interface ContextConfig {
 }
 
 /**
- * Context type configurations mapping (excluding APP context)
- * Using Partial to allow optional ContextType.APP handling
+ * Context type configurations mapping
  */
 type ContextConfigMap = Partial<Record<ContextType, ContextConfig>>;
 
 @Directive()
 export abstract class BaseContextAwareComponent implements OnInit {
-  protected readonly workspaceContext = inject(WorkspaceContextFacade);
+  protected readonly authContext = inject(AuthContextService);
   protected readonly router = inject(Router);
 
   // Expose ContextType enum to template
@@ -47,36 +46,24 @@ export abstract class BaseContextAwareComponent implements OnInit {
 
   // Unified computed signals
   readonly pageTitle = computed(() => {
-    const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.title;
-    }
+    const type = this.authContext.contextType();
     return this.contextConfigs[type]?.title ?? this.defaultConfig.title;
   });
 
   readonly pageSubtitle = computed(() => {
-    const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.subtitle;
-    }
-    const label = this.workspaceContext.contextLabel();
+    const type = this.authContext.contextType();
+    const label = this.authContext.contextLabel();
     const subtitle = this.contextConfigs[type]?.subtitle ?? this.defaultConfig.subtitle;
     return label ? subtitle.replace('{label}', label) : subtitle;
   });
 
   readonly cardTitle = computed(() => {
-    const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.cardTitle;
-    }
+    const type = this.authContext.contextType();
     return this.contextConfigs[type]?.cardTitle ?? this.defaultConfig.cardTitle;
   });
 
   readonly contextTagColor = computed(() => {
-    const type = this.workspaceContext.contextType();
+    const type = this.authContext.contextType();
     switch (type) {
       case ContextType.USER:
         return 'blue';
@@ -91,11 +78,7 @@ export abstract class BaseContextAwareComponent implements OnInit {
     }
   });
 
-  readonly hasValidContext = computed(() => {
-    const type = this.workspaceContext.contextType();
-    const id = this.workspaceContext.contextId();
-    return type !== ContextType.APP && !!id;
-  });
+  readonly hasValidContext = this.authContext.hasValidContext;
 
   ngOnInit(): void {
     if (!this.hasValidContext()) {

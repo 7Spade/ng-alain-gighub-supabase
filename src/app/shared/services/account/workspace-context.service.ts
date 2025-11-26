@@ -28,7 +28,7 @@ export class WorkspaceContextService {
   private readonly teamService = inject(TeamService);
 
   // === 上下文狀態 Context State ===
-  private readonly contextTypeState = signal<ContextType>(ContextType.APP);
+  private readonly contextTypeState = signal<ContextType>(ContextType.USER);
   private readonly contextIdState = signal<string | null>(null);
   private readonly switchingState = signal<boolean>(false);
 
@@ -63,21 +63,19 @@ export class WorkspaceContextService {
         return this.teams().find(t => t['id'] === id)?.['name'] || '團隊';
       case ContextType.BOT:
         return '機器人';
-      case ContextType.APP:
       default:
-        return '應用選單';
+        return '個人帳戶';
     }
   });
 
   readonly contextIcon = computed(() => {
     const iconMap = {
-      [ContextType.APP]: 'appstore',
       [ContextType.USER]: 'user',
       [ContextType.ORGANIZATION]: 'team',
       [ContextType.TEAM]: 'usergroup-add',
       [ContextType.BOT]: 'robot'
     };
-    return iconMap[this.contextType()] || 'question';
+    return iconMap[this.contextType()] || 'user';
   });
 
   readonly teamsByOrganization = computed(() => {
@@ -99,10 +97,12 @@ export class WorkspaceContextService {
   private hasRestored = false;
 
   constructor() {
-    // 監聽認證狀態並自動載入資料
+    // 監聯認證狀態並自動載入資料
     effect(() => {
       const token = this.tokenService.get();
       const authUserId = token?.['user']?.['id'];
+
+      console.log('[WorkspaceContextService] 🔐 Token check:', { hasToken: !!token, authUserId });
 
       if (authUserId) {
         this.loadWorkspaceData(authUserId);
@@ -116,8 +116,11 @@ export class WorkspaceContextService {
       const isLoading = this.loading();
       const userId = this.currentUser()?.['id'];
 
+      console.log('[WorkspaceContextService] 📊 Loading state:', { isLoading, userId, hasRestored: this.hasRestored });
+
       if (!isLoading && userId && !this.hasRestored) {
         this.hasRestored = true;
+        console.log('[WorkspaceContextService] 🔄 Restoring context...');
         this.restoreContext();
       }
     });
@@ -172,10 +175,6 @@ export class WorkspaceContextService {
 
   // === 上下文切換 Context Switching ===
 
-  switchToApp(): void {
-    this.switchContext(ContextType.APP, null);
-  }
-
   switchToUser(userId: string): void {
     this.switchContext(ContextType.USER, userId);
   }
@@ -197,11 +196,13 @@ export class WorkspaceContextService {
    * Switch context (internal method, callable by Facade)
    */
   switchContext(type: ContextType, id: string | null): void {
+    console.log('[WorkspaceContextService] 🔀 Switching context:', { type, id });
     this.switchingState.set(true);
     this.contextTypeState.set(type);
     this.contextIdState.set(id);
     this.persistContext();
     this.switchingState.set(false);
+    console.log('[WorkspaceContextService] ✅ Context switched successfully');
   }
 
   // === 持久化 Persistence ===
@@ -215,9 +216,12 @@ export class WorkspaceContextService {
 
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
+      console.log('[WorkspaceContextService] 💾 Saved context:', saved);
+
       if (saved) {
         const context = JSON.parse(saved) as ContextState;
         if (context.type && context.id) {
+          console.log('[WorkspaceContextService] ✅ Restoring saved context:', context);
           this.contextTypeState.set(context.type);
           this.contextIdState.set(context.id);
           return;
@@ -226,6 +230,7 @@ export class WorkspaceContextService {
 
       // 預設使用用戶上下文
       const userId = this.currentUser()?.['id'];
+      console.log('[WorkspaceContextService] 👤 Default to user context, userId:', userId);
       if (userId) {
         this.switchToUser(userId as string);
       }
@@ -257,7 +262,8 @@ export class WorkspaceContextService {
     this.organizationsState.set([]);
     this.teamsState.set([]);
     this.errorState.set(null);
-    this.switchToApp();
+    // Reset to USER context with null ID (will be set properly after login)
+    this.switchContext(ContextType.USER, null);
     this.hasRestored = false;
   }
 }

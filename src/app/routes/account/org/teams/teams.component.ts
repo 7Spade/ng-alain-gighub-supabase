@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TeamFacade, WorkspaceContextFacade, TeamMemberRepository } from '@core';
+import { TeamFacade, AuthContextService, TeamMemberRepository } from '@core';
 import { ModalHelper } from '@delon/theme';
 import { SHARED_IMPORTS, TeamBusinessModel } from '@shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -71,7 +71,7 @@ export class OrgTeamsComponent implements OnInit {
   private readonly teamMemberRepo = inject(TeamMemberRepository);
   private readonly modal = inject(ModalHelper);
   private readonly msg = inject(NzMessageService);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly authContext = inject(AuthContextService);
 
   organizationId = signal<string | null>(null);
   teams = signal<any[]>([]); // 改為 any[] 以包含 memberCount
