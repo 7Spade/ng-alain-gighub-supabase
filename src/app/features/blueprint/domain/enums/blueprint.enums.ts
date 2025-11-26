@@ -8,12 +8,12 @@
  */
 
 /**
- * Blueprint visibility enum for business logic
+ * Blueprint visibility enum for business logic (simplified)
+ * - PUBLIC: 公開，任何人都能看到
+ * - HIDDEN: 隱藏/私有，只有擁有者和成員能看到
  */
 export enum BlueprintVisibilityEnum {
-  PRIVATE = 'private',
-  ORGANIZATION = 'organization',
-  TEAM = 'team',
+  HIDDEN = 'hidden',
   PUBLIC = 'public'
 }
 
@@ -27,7 +27,7 @@ export enum BlueprintStatusEnum {
 }
 
 /**
- * Blueprint category enum for business logic
+ * Blueprint category enum for business logic (optional)
  */
 export enum BlueprintCategoryEnum {
   SOFTWARE_DEVELOPMENT = 'software_development',
