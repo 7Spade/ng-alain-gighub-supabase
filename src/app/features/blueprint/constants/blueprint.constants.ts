@@ -3,6 +3,7 @@
  *
  * Constants for Blueprint business logic
  * Following enterprise development guidelines
+ * Simplified version - removed old visibility options
  *
  * @module features/blueprint/constants/blueprint.constants
  */
@@ -10,13 +11,13 @@
 import { BlueprintStatusEnum, BlueprintVisibilityEnum, BlueprintCategoryEnum } from '../domain';
 
 /**
- * Blueprint default values
+ * Blueprint default values (simplified)
  */
 export const BLUEPRINT_DEFAULTS = {
   /** Default status for new blueprints */
   STATUS: BlueprintStatusEnum.DRAFT,
-  /** Default visibility for new blueprints */
-  VISIBILITY: BlueprintVisibilityEnum.PRIVATE,
+  /** Default visibility for new blueprints (hidden instead of private) */
+  VISIBILITY: BlueprintVisibilityEnum.HIDDEN,
   /** Default category for new blueprints */
   CATEGORY: BlueprintCategoryEnum.CUSTOM,
   /** Default page size for pagination */
@@ -56,26 +57,14 @@ export const BLUEPRINT_STATUS_CONFIG = {
 } as const;
 
 /**
- * Blueprint visibility display configuration
+ * Blueprint visibility display configuration (simplified to public/hidden)
  */
 export const BLUEPRINT_VISIBILITY_CONFIG = {
-  [BlueprintVisibilityEnum.PRIVATE]: {
-    label: '私人',
+  [BlueprintVisibilityEnum.HIDDEN]: {
+    label: '隱藏',
     color: 'default',
     icon: 'lock',
-    description: '僅建立者可見'
-  },
-  [BlueprintVisibilityEnum.ORGANIZATION]: {
-    label: '組織',
-    color: 'processing',
-    icon: 'team',
-    description: '組織成員可見'
-  },
-  [BlueprintVisibilityEnum.TEAM]: {
-    label: '團隊',
-    color: 'cyan',
-    icon: 'usergroup-add',
-    description: '團隊成員可見'
+    description: '僅擁有者和成員可見'
   },
   [BlueprintVisibilityEnum.PUBLIC]: {
     label: '公開',
@@ -148,11 +137,10 @@ export const BLUEPRINT_VALIDATION_RULES = {
 } as const;
 
 /**
- * Blueprint sort options for UI
+ * Blueprint sort options for UI (simplified - removed usage_count)
  */
 export const BLUEPRINT_SORT_OPTIONS = [
   { label: '名稱', value: 'name' },
   { label: '建立時間', value: 'created_at' },
-  { label: '更新時間', value: 'updated_at' },
-  { label: '使用次數', value: 'usage_count' }
+  { label: '更新時間', value: 'updated_at' }
 ] as const;

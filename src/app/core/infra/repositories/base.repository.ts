@@ -172,14 +172,10 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   create(data: TInsert): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    // Convert camelCase keys to snake_case for database
+    const snakeCaseData = this.convertKeysToSnakeCase(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseData).select().single()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
@@ -202,13 +198,10 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   createMany(data: TInsert[]): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
+    // Convert camelCase keys to snake_case for database
+    const snakeCaseData = data.map(item => this.convertKeysToSnakeCase(item as Record<string, any>));
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any[])
-        .select()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseData).select()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
@@ -232,15 +225,10 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   update(id: string, data: TUpdate): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    // Convert camelCase keys to snake_case for database
+    const snakeCaseData = this.convertKeysToSnakeCase(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .update(data as any)
-        .eq('id', id)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).update(snakeCaseData).eq('id', id).select().single()).pipe(
       map(({ data: updated, error }) => {
         if (error) {
           throw error;
@@ -264,7 +252,9 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   updateBy(filters: Record<string, any>, data: TUpdate): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
-    let query = client.from(this.tableName).update(data as any);
+    // Convert camelCase keys to snake_case for database
+    const snakeCaseData = this.convertKeysToSnakeCase(data as Record<string, any>);
+    let query = client.from(this.tableName).update(snakeCaseData);
 
     // 應用過濾條件
     // Apply filters
@@ -414,5 +404,24 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   private toCamelCase(str: string): string {
     return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  }
+
+  /**
+   * 將物件的所有 key 從 camelCase 轉換為 snake_case
+   * Convert all object keys from camelCase to snake_case
+   *
+   * @private
+   * @param {Record<string, any>} obj - Object with camelCase keys
+   * @returns {Record<string, any>} Object with snake_case keys
+   */
+  private convertKeysToSnakeCase(obj: Record<string, any>): Record<string, any> {
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        const snakeKey = this.toSnakeCase(key);
+        result[snakeKey] = value;
+      }
+    }
+    return result;
   }
 }

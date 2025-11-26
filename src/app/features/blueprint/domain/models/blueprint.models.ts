@@ -15,40 +15,34 @@ import { Blueprint, BlueprintVisibility, BlueprintStatus, BlueprintCategory, Own
 export type BlueprintModel = Blueprint;
 
 /**
- * Blueprint summary for list display
+ * Blueprint summary for list display (simplified)
  */
 export interface BlueprintSummary {
   id: string;
   name: string;
   description: string;
-  category: BlueprintCategory;
+  category?: BlueprintCategory;
   visibility: BlueprintVisibility;
   status: BlueprintStatus;
-  usageCount: number;
-  rating?: number;
   tags: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
   createdAt: Date;
 }
 
 /**
- * Blueprint creation request
+ * Blueprint creation request (simplified)
  */
 export interface CreateBlueprintRequest {
   name: string;
   description: string;
-  category: BlueprintCategory;
+  category?: BlueprintCategory;
   visibility?: BlueprintVisibility;
   ownerId: string;
   ownerType: OwnerType;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
- * Blueprint update request
+ * Blueprint update request (simplified)
  */
 export interface UpdateBlueprintRequest {
   name?: string;
@@ -57,24 +51,20 @@ export interface UpdateBlueprintRequest {
   visibility?: BlueprintVisibility;
   status?: BlueprintStatus;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
- * Blueprint statistics
+ * Blueprint statistics (simplified)
  */
 export interface BlueprintStatistics {
   totalCount: number;
   publishedCount: number;
   draftCount: number;
   archivedCount: number;
-  totalUsageCount: number;
-  averageRating: number;
 }
 
 /**
- * Blueprint filter options
+ * Blueprint filter options (simplified)
  */
 export interface BlueprintFilterOptions {
   category?: BlueprintCategory;

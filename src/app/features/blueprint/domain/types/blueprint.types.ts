@@ -8,9 +8,11 @@
  */
 
 /**
- * Blueprint visibility levels
+ * Blueprint visibility levels (simplified)
+ * - public: 公開，任何人都能看到
+ * - hidden: 隱藏/私有，只有擁有者和成員能看到
  */
-export type BlueprintVisibility = 'private' | 'organization' | 'team' | 'public';
+export type BlueprintVisibility = 'public' | 'hidden';
 
 /**
  * Blueprint status
@@ -18,7 +20,7 @@ export type BlueprintVisibility = 'private' | 'organization' | 'team' | 'public'
 export type BlueprintStatus = 'draft' | 'published' | 'archived';
 
 /**
- * Blueprint category
+ * Blueprint category (optional)
  */
 export type BlueprintCategory = 'software_development' | 'marketing' | 'sales' | 'hr' | 'operations' | 'custom';
 
@@ -37,8 +39,8 @@ export interface Blueprint {
   name: string;
   description: string;
 
-  // Classification
-  category: BlueprintCategory;
+  // Classification (simplified)
+  category?: BlueprintCategory;
   visibility: BlueprintVisibility;
   status: BlueprintStatus;
 
@@ -46,18 +48,12 @@ export interface Blueprint {
   ownerId: string;
   ownerType: OwnerType;
 
-  // Blueprint structure definition (JSONB - extensible)
-  structure: BlueprintStructure;
+  // Blueprint structure definition (JSONB - extensible, optional)
+  structure?: BlueprintStructure;
 
   // Metadata
   version: number;
   tags: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
-
-  // Statistics
-  usageCount: number;
-  rating?: number;
 
   // Timestamps
   createdAt: Date;
@@ -91,24 +87,22 @@ export interface WorkspaceSettings {
 }
 
 /**
- * Blueprint insert type (for creation)
+ * Blueprint insert type (for creation - simplified)
  */
 export interface BlueprintInsert {
   name: string;
   description: string;
-  category: BlueprintCategory;
+  category?: BlueprintCategory;
   visibility?: BlueprintVisibility;
   status?: BlueprintStatus;
   ownerId: string;
   ownerType: OwnerType;
-  structure: BlueprintStructure;
+  structure?: BlueprintStructure;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
 }
 
 /**
- * Blueprint update type (for modifications)
+ * Blueprint update type (for modifications - simplified)
  */
 export interface BlueprintUpdate {
   name?: string;
@@ -118,8 +112,6 @@ export interface BlueprintUpdate {
   status?: BlueprintStatus;
   structure?: BlueprintStructure;
   tags?: string[];
-  iconUrl?: string;
-  thumbnailUrl?: string;
   version?: number;
 }
 
@@ -131,7 +123,7 @@ export function isBlueprintStatus(value: unknown): value is BlueprintStatus {
 }
 
 export function isBlueprintVisibility(value: unknown): value is BlueprintVisibility {
-  return typeof value === 'string' && ['private', 'organization', 'team', 'public'].includes(value);
+  return typeof value === 'string' && ['public', 'hidden'].includes(value);
 }
 
 export function isOwnerType(value: unknown): value is OwnerType {

@@ -4,6 +4,11 @@
  * 藍圖列表元件 - 統一的藍圖列表頁面
  * Unified blueprint list page for all context types (user, org, team)
  *
+ * Simplified version:
+ * - Removed 使用次數 (usageCount) column
+ * - Simplified visibility to only public/hidden
+ * - Removed category column
+ *
  * Integrates with AuthContextService (新架構) to:
  * - Automatically load blueprints based on current context
  * - Display context-aware title and descriptions
@@ -58,13 +63,11 @@ const STATUS_CONFIG: Record<string, { text: string; color: string }> = {
 };
 
 /**
- * Visibility badge configuration
+ * Visibility badge configuration (simplified to public/hidden)
  */
 const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
-  [BlueprintVisibilityEnum.PRIVATE]: { text: '私有', color: 'default' },
-  [BlueprintVisibilityEnum.PUBLIC]: { text: '公開', color: 'blue' },
-  [BlueprintVisibilityEnum.ORGANIZATION]: { text: '組織', color: 'purple' },
-  [BlueprintVisibilityEnum.TEAM]: { text: '團隊', color: 'cyan' }
+  [BlueprintVisibilityEnum.HIDDEN]: { text: '隱藏', color: 'default' },
+  [BlueprintVisibilityEnum.PUBLIC]: { text: '公開', color: 'blue' }
 };
 
 @Component({
@@ -121,11 +124,9 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
             <thead>
               <tr>
                 <th nzWidth="200px">名稱</th>
-                <th nzWidth="120px">類別</th>
                 <th nzWidth="100px">狀態</th>
                 <th nzWidth="100px">可見性</th>
                 <th>描述</th>
-                <th nzWidth="120px">使用次數</th>
                 <th nzWidth="150px">操作</th>
               </tr>
             </thead>
@@ -134,9 +135,6 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
                 <tr>
                   <td>
                     <a (click)="viewBlueprint(blueprint)">{{ blueprint.name }}</a>
-                  </td>
-                  <td>
-                    <nz-tag>{{ blueprint.category || '未分類' }}</nz-tag>
                   </td>
                   <td>
                     <nz-tag [nzColor]="getStatusConfig(blueprint.status).color">
@@ -149,7 +147,6 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
                     </nz-tag>
                   </td>
                   <td>{{ blueprint.description || '-' }}</td>
-                  <td>{{ blueprint.usageCount }}</td>
                   <td>
                     <button nz-button nzType="link" nzSize="small" (click)="editBlueprint(blueprint)">
                       <i nz-icon nzType="edit" nzTheme="outline"></i>
@@ -314,7 +311,7 @@ export class BlueprintListComponent implements OnInit {
   }
 
   /**
-   * Get visibility configuration for badge
+   * Get visibility configuration for badge (simplified)
    */
   getVisibilityConfig(visibility: string): { text: string; color: string } {
     return VISIBILITY_CONFIG[visibility] || { text: visibility, color: 'default' };
