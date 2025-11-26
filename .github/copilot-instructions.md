@@ -3,101 +3,271 @@ description: 'Repository-specific instructions for ng-alain enterprise applicati
 applyTo: '**/*.ts, **/*.html, **/*.scss, **/*.css, **/*.less'
 ---
 
-# ng-alain Enterprise Application - Copilot Instructions
+# GitHub Copilot Instructions
 
-This is an Angular 20 enterprise application built with ng-alain framework and Supabase backend. It provides an out-of-box UI solution for enterprise applications using ng-zorro-antd components.
+## Priority Guidelines
 
-## Project Overview
+When generating code for this repository:
 
-- **Framework**: Angular 20.3.x with standalone components
-- **UI Library**: ng-zorro-antd 20.x with @delon components
-- **Backend**: Supabase for authentication, database, and real-time features
-- **Styling**: Less preprocessor with ng-alain theming
-- **Testing**: Karma + Jasmine for unit tests, Playwright for E2E
+1. **Version Compatibility**: Always respect the exact versions of languages, frameworks, and libraries used in this project
+2. **Context Files**: Prioritize patterns and standards defined in the `.github/copilot` and `.github/instructions` directories
+3. **Codebase Patterns**: When context files don't provide specific guidance, scan the codebase for established patterns
+4. **Architectural Consistency**: Maintain our layered architectural style with vertical slice features
+5. **Code Quality**: Prioritize maintainability, performance, security, accessibility, and testability in all generated code
 
-## Development Flow
+## Technology Version Detection
 
-### Required Before Each Commit
-- Run `yarn lint` or `npm run lint` to check for linting issues
-- Run `yarn test` or `npm run test` to ensure tests pass
+### Detected Versions (Do Not Exceed)
 
-### Development Commands
-- **Install dependencies**: `yarn` (preferred) or `npm install`
-- **Start dev server**: `yarn start` or `npm start`
-- **Build**: `yarn build` or `npm run build`
-- **Lint TypeScript**: `yarn lint:ts` or `npm run lint:ts`
-- **Lint Styles**: `yarn lint:style` or `npm run lint:style`
-- **Lint All**: `yarn lint` or `npm run lint`
-- **Unit Tests**: `yarn test` or `npm test`
-- **E2E Tests**: `yarn e2e` or `npm run e2e`
-- **Test Coverage**: `yarn test-coverage` or `npm run test-coverage`
+| Technology | Version | Configuration File |
+|------------|---------|-------------------|
+| Angular | 20.3.x | package.json |
+| TypeScript | 5.9.x | package.json, tsconfig.json |
+| ng-zorro-antd | 20.3.x | package.json |
+| @delon/* | 20.1.x | package.json |
+| @supabase/supabase-js | 2.84.x | package.json |
+| RxJS | 7.8.x | package.json |
+| Node.js | See .nvmrc | .nvmrc |
+| Yarn | 4.9.x | package.json (packageManager) |
 
-## Repository Structure
-- `src/app/`: Main application source code
-- `src/assets/`: Static assets (images, icons, etc.)
-- `src/environments/`: Environment configurations
-- `src/styles/`: Global styles and theming
-- `_mock/`: Mock API data for development
-- `supabase/`: Supabase configuration and migrations
-- `docs/`: Project documentation
-- `e2e/`: End-to-end test files
-- `scripts/`: Build and utility scripts
+### Language Features
+- **TypeScript**: Target ES2022, strict mode enabled
+- **Angular**: Standalone components (default), Signals API, new control flow syntax
+- **Module System**: ES2022 modules with bundler resolution
 
-## Key Technologies
-- **@delon/abc**: Business components library
-- **@delon/acl**: Access Control List module
-- **@delon/auth**: Authentication module with JWT support
-- **@delon/cache**: Caching module
-- **@delon/chart**: Chart components
-- **@delon/form**: Dynamic form generation
-- **@delon/theme**: Theme and layout components
-- **@delon/util**: Utility functions
+## Context Files
 
-## Project Context
-- Use standalone components by default (Angular 20)
-- TypeScript strict mode is enabled
-- Follow Angular Style Guide (https://angular.dev/style-guide)
-- Use ng-zorro-antd components for UI consistency
+Prioritize the following files in `.github/` directories:
 
-## Coding Standards
+### Primary Context (`.github/copilot/`)
+- **memory.jsonl**: Session memory and context
 
-### Architecture
-- Use standalone components (Angular 20 default)
-- Implement lazy loading for feature modules
-- Use Angular's dependency injection with `inject()` function
-- Structure with smart (container) and presentational components
+### Instructions (`.github/instructions/`)
+- **angular.instructions.md**: Angular-specific patterns
+- **typescript-5-es2022.instructions.md**: TypeScript standards
+- **security-guidelines.md**: Security patterns
+- **testing-guidelines.md**: Testing approaches
+- **style-guide.md**: Code style standards
 
-### Component Design
-- Use `input()`, `output()`, `viewChild()`, `viewChildren()` functions (Angular 20)
-- Prefer `OnPush` change detection strategy for performance
-- Use Angular Signals (`signal()`, `computed()`, `effect()`) for state management
-- Keep templates clean with logic in component classes or services
+## Project Architecture
 
-### Styling
-- Use Less for styling (project convention)
-- Follow ng-alain and ng-zorro-antd theming guidelines
-- Maintain accessibility (a11y) with ARIA attributes
+### Directory Structure
+```
+src/
+├── app/
+│   ├── core/           # Singleton services, guards, interceptors
+│   │   ├── facades/    # Facade pattern for complex operations
+│   │   ├── infra/      # Infrastructure (Supabase, repositories)
+│   │   ├── services/   # Core application services
+│   │   └── startup/    # App initialization
+│   ├── features/       # Vertical slice feature modules
+│   │   └── [feature]/  # Each feature is self-contained
+│   ├── layout/         # Layout components
+│   ├── routes/         # Route components and configurations
+│   └── shared/         # Shared components, directives, pipes
+├── assets/             # Static assets
+├── environments/       # Environment configurations
+└── styles/             # Global styles and theming
+```
 
-### Data & State
-- Use `HttpClient` with Supabase client for API calls
-- Implement error handling with RxJS `catchError`
-- Use Angular Signals for reactive state in components
-- Use `@delon/cache` for caching strategies
+### Path Aliases (tsconfig.json)
+```typescript
+@shared   → src/app/shared/index
+@core     → src/app/core/index
+@features → src/app/features/index
+@features/* → src/app/features/*
+@env/*    → src/environments/*
+@_mock    → _mock/index
+```
+
+## Code Quality Standards
+
+### Maintainability
+- Write self-documenting code with clear naming
+- Follow established patterns for consistency
+- Keep functions focused on single responsibilities
+- Use JSDoc comments for public APIs
+
+### Performance
+- Use `OnPush` change detection strategy
+- Implement lazy loading for feature routes
+- Use Angular Signals for fine-grained reactivity
+- Apply `trackBy` in `@for` loops
 
 ### Security
-- Use `@delon/auth` for authentication (JWT)
-- Implement route guards with `@delon/acl` for authorization
-- Sanitize user inputs using Angular's built-in sanitization
+- Use `@delon/auth` for JWT authentication
+- Use `@delon/acl` for authorization
+- Sanitize user inputs using Angular's DomSanitizer
+- Use parameterized queries via Supabase client
 
-### Testing
-- Write unit tests with Jasmine and Karma
+### Accessibility
+- Follow WCAG 2.1 AA guidelines
+- Use semantic HTML elements
+- Add ARIA attributes where needed
+- Ensure keyboard navigation support
+
+### Testability
+- Write unit tests with Jasmine/Karma
 - Write E2E tests with Playwright
-- Mock HTTP requests using `provideHttpClientTesting`
+- Use `provideHttpClientTesting` for HTTP mocks
+- Test signal-based state with Angular testing utilities
+
+## Angular-Specific Guidelines
+
+### Component Patterns
+```typescript
+// Use inject() function for DI (Angular 20 pattern)
+private readonly router = inject(Router);
+private readonly service = inject(MyService);
+
+// Use signal-based inputs/outputs (Angular 20)
+readonly myInput = input<string>();
+readonly myOutput = output<Event>();
+
+// Use Angular Signals for state
+readonly data = signal<Data[]>([]);
+readonly filteredData = computed(() => this.data().filter(...));
+```
+
+### Template Patterns
+```html
+<!-- Use new control flow syntax (Angular 17+) -->
+@if (condition) {
+  <div>Content</div>
+} @else {
+  <div>Alternative</div>
+}
+
+@for (item of items; track item.id) {
+  <app-item [data]="item" />
+}
+
+<!-- Use ng-zorro-antd components -->
+<nz-table [nzData]="data()">...</nz-table>
+<nz-button nzType="primary">Button</nz-button>
+```
+
+### Service Patterns
+```typescript
+@Injectable({ providedIn: 'root' })
+export class MyService {
+  private readonly supabase = inject(SupabaseService);
+  
+  // Use signals for reactive state
+  private readonly _items = signal<Item[]>([]);
+  readonly items = this._items.asReadonly();
+  
+  async loadItems(): Promise<void> {
+    const { data, error } = await this.supabase
+      .getClient()
+      .from('items')
+      .select('*');
+    
+    if (error) throw error;
+    this._items.set(data);
+  }
+}
+```
+
+## @delon Component Usage
+
+### Business Components (@delon/abc)
+- `st` - Simple Table with rich features
+- `sv` - View component for displaying data
+- `se` - Edit component for forms
+- `sg` - Grid layout component
+- `page-header` - Page header with breadcrumb
+
+### Form Generation (@delon/form)
+- Use `sf` component for dynamic forms
+- Define schemas with JSON Schema
+- Use custom widgets when needed
+
+### Authentication (@delon/auth)
+- Use `JWTTokenModel` for JWT handling
+- Implement `TokenService` for token management
+- Use `@delon/auth` interceptors
+
+### Caching (@delon/cache)
+- Use `CacheService` for data caching
+- Implement TTL-based cache expiration
+
+## Supabase Integration
+
+### Client Access
+```typescript
+// Always use SupabaseService for client access
+private readonly supabase = inject(SupabaseService);
+const client = this.supabase.getClient();
+```
+
+### Data Operations
+```typescript
+// Query with type safety
+const { data, error } = await client
+  .from('table_name')
+  .select('*')
+  .eq('column', value);
+
+// Use typed database types
+import { Database } from '@core/infra/types/database.types';
+```
+
+## Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn start` | Start dev server |
+| `yarn build` | Production build |
+| `yarn lint` | Run all linters |
+| `yarn lint:ts` | Lint TypeScript |
+| `yarn lint:style` | Lint styles |
+| `yarn test` | Run unit tests |
+| `yarn test-coverage` | Test with coverage |
+| `yarn e2e` | Run E2E tests |
+
+## Import Organization
+
+Follow this order (enforced by ESLint):
+1. External imports (Angular, ng-zorro, etc.)
+2. Internal imports (@delon, etc.)
+3. Parent/sibling imports (@core, @shared, @features)
+4. Relative imports
+
+```typescript
+// External
+import { Component, inject, signal } from '@angular/core';
+import { NzTableModule } from 'ng-zorro-antd/table';
+
+// Internal libraries
+import { STModule } from '@delon/abc/st';
+
+// Application imports
+import { SupabaseService } from '@core';
+import { SharedModule } from '@shared';
+```
+
+## File Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Component | `feature.component.ts` | `user-list.component.ts` |
+| Service | `feature.service.ts` | `auth.service.ts` |
+| Guard | `feature.guard.ts` | `auth.guard.ts` |
+| Pipe | `feature.pipe.ts` | `date-format.pipe.ts` |
+| Directive | `feature.directive.ts` | `tooltip.directive.ts` |
+| Interface | `feature.interface.ts` or `feature.types.ts` | `user.types.ts` |
+| Module | `feature.module.ts` | `shared.module.ts` |
 
 ## Key Guidelines
-1. Follow Angular Style Guide and ng-alain conventions
-2. Use Angular CLI commands for scaffolding (`ng generate`)
-3. Document components and services with JSDoc comments
-4. Ensure accessibility compliance (WCAG 2.1)
-5. Use @delon components when available instead of custom implementations
-6. Leverage ng-zorro-antd components for consistent UI
+
+1. **Follow Angular Style Guide** and ng-alain conventions
+2. **Use Angular CLI** commands for scaffolding (`ng generate`)
+3. **Document with JSDoc** comments for public APIs
+4. **Ensure accessibility** compliance (WCAG 2.1)
+5. **Use @delon components** when available instead of custom implementations
+6. **Leverage ng-zorro-antd** components for consistent UI
+7. **Use Angular Signals** for reactive state management
+8. **Follow vertical slice** architecture for features
+9. **Keep services stateless** or use signals for state
+10. **Test critical paths** with appropriate coverage
