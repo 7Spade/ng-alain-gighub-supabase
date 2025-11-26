@@ -82,21 +82,21 @@ export class OrganizationTeamsContentComponent implements OnInit {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  private lastLoadedOrgId: string | null = null;
+
   constructor() {
     // React to organizationId changes
     effect(() => {
       const orgId = this.organizationId();
-      if (orgId) {
+      if (orgId && orgId !== this.lastLoadedOrgId) {
+        this.lastLoadedOrgId = orgId;
         this.loadTeams(orgId);
       }
     });
   }
 
   ngOnInit(): void {
-    const orgId = this.organizationId();
-    if (orgId) {
-      this.loadTeams(orgId);
-    }
+    // Initial load is handled by effect
   }
 
   async loadTeams(organizationId: string): Promise<void> {

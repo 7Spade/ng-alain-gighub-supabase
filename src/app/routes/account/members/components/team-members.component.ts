@@ -83,21 +83,21 @@ export class TeamMembersContentComponent implements OnInit {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  private lastLoadedTeamId: string | null = null;
+
   constructor() {
     // React to teamId changes
     effect(() => {
       const tId = this.teamId();
-      if (tId) {
+      if (tId && tId !== this.lastLoadedTeamId) {
+        this.lastLoadedTeamId = tId;
         this.loadTeamAndMembers(tId);
       }
     });
   }
 
   ngOnInit(): void {
-    const tId = this.teamId();
-    if (tId) {
-      this.loadTeamAndMembers(tId);
-    }
+    // Initial load is handled by effect
   }
 
   async loadTeamAndMembers(teamId: string): Promise<void> {

@@ -46,10 +46,20 @@ import { OrganizationTeamsContentComponent } from './components';
             <app-organization-teams-content [organizationId]="authContext.contextId()!" />
           }
           @case (ContextType.USER) {
-            <nz-alert nzType="info" nzMessage="個人工作區" nzDescription="個人工作區不支援團隊管理，請切換到組織工作區" nzShowIcon></nz-alert>
+            <nz-alert
+              nzType="info"
+              nzMessage="個人工作區"
+              nzDescription="個人工作區不支援團隊管理，請切換到組織工作區"
+              nzShowIcon
+            ></nz-alert>
           }
           @case (ContextType.TEAM) {
-            <nz-alert nzType="info" nzMessage="團隊工作區" nzDescription="您目前在團隊工作區中，請切換到組織工作區以管理團隊" nzShowIcon></nz-alert>
+            <nz-alert
+              nzType="info"
+              nzMessage="團隊工作區"
+              nzDescription="您目前在團隊工作區中，請切換到組織工作區以管理團隊"
+              nzShowIcon
+            ></nz-alert>
           }
           @case (ContextType.BOT) {
             <nz-alert nzType="info" nzMessage="機器人工作區" nzDescription="機器人工作區不支援團隊管理" nzShowIcon></nz-alert>

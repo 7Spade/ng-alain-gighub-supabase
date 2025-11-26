@@ -49,7 +49,12 @@ import { UserTodosContentComponent, TeamTodosContentComponent } from './componen
             <app-team-todos-content [teamId]="authContext.contextId()!" />
           }
           @case (ContextType.ORGANIZATION) {
-            <nz-alert nzType="info" nzMessage="組織待辦" nzDescription="組織層級不支援待辦功能，請切換到個人或團隊工作區" nzShowIcon></nz-alert>
+            <nz-alert
+              nzType="info"
+              nzMessage="組織待辦"
+              nzDescription="組織層級不支援待辦功能，請切換到個人或團隊工作區"
+              nzShowIcon
+            ></nz-alert>
           }
           @case (ContextType.BOT) {
             <nz-alert nzType="info" nzMessage="機器人待辦" nzDescription="機器人待辦功能正在開發中" nzShowIcon></nz-alert>

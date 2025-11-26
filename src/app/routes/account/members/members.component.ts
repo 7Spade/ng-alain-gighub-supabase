@@ -49,7 +49,12 @@ import { OrganizationMembersContentComponent, TeamMembersContentComponent } from
             <app-team-members-content [teamId]="authContext.contextId()!" />
           }
           @case (ContextType.USER) {
-            <nz-alert nzType="info" nzMessage="個人工作區" nzDescription="個人工作區不支援成員管理，請切換到組織或團隊工作區" nzShowIcon></nz-alert>
+            <nz-alert
+              nzType="info"
+              nzMessage="個人工作區"
+              nzDescription="個人工作區不支援成員管理，請切換到組織或團隊工作區"
+              nzShowIcon
+            ></nz-alert>
           }
           @case (ContextType.BOT) {
             <nz-alert nzType="info" nzMessage="機器人工作區" nzDescription="機器人工作區不支援成員管理" nzShowIcon></nz-alert>
