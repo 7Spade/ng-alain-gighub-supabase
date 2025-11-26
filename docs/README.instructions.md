@@ -2,9 +2,9 @@
 
 本文件說明本專案保留的 GitHub Copilot 開發指令檔案，為程式碼生成提供上下文感知的指引。
 
-**最後更新**：2025-11-26  
+**最後更新**：2025-01-20  
 **檔案位置**：[.github/instructions/](../.github/instructions/)  
-**指令數量**：22 個
+**指令數量**：25 個（含 3 個待完善的空文件）
 
 ---
 
@@ -42,6 +42,7 @@ Instructions 檔案會自動被 GitHub Copilot 讀取，並根據 `applyTo` 配�
 | 指令檔案 | 描述 | 適用場景 |
 |----------|------|----------|
 | [playwright-typescript.instructions.md](../.github/instructions/playwright-typescript.instructions.md) | Playwright 測試生成指令 | E2E 測試開發、測試結構、定位器、斷言最佳實踐 |
+| [testing-guidelines.md](../.github/instructions/testing-guidelines.md) | 測試指南 | ⚠️ 待完善（空文件）|
 
 ---
 
@@ -58,6 +59,7 @@ Instructions 檔案會自動被 GitHub Copilot 讀取，並根據 `applyTo` 配�
 | 指令檔案 | 描述 | 適用場景 |
 |----------|------|----------|
 | [security-and-owasp.instructions.md](../.github/instructions/security-and-owasp.instructions.md) | OWASP Top 10 安全編碼指引 | 安全程式碼撰寫、注入防護、驗證、加密 |
+| [security-guidelines.md](../.github/instructions/security-guidelines.md) | 安全指南 | ⚠️ 待完善（空文件）|
 
 ---
 
@@ -79,6 +81,7 @@ Instructions 檔案會自動被 GitHub Copilot 讀取，並根據 `applyTo` 配�
 |----------|------|----------|
 | [object-calisthenics.instructions.md](../.github/instructions/object-calisthenics.instructions.md) | Object Calisthenics 原則 | 業務領域程式碼的乾淨、可維護設計 |
 | [self-explanatory-code-commenting.instructions.md](../.github/instructions/self-explanatory-code-commenting.instructions.md) | 自解釋程式碼註解指引 | 撰寫少量但有效的註解，解釋「為什麼」而非「做什麼」|
+| [style-guide.md](../.github/instructions/style-guide.md) | 程式碼風格指南 | ⚠️ 待完善（空文件）|
 
 **自動套用**：`**/*.{cs,ts,java}`
 
@@ -199,9 +202,10 @@ Instructions 檔案會自動被 GitHub Copilot 讀取，並根據 `applyTo` 配�
 
 ## 維護記錄
 
+- **2025-01-20**: 補上所有指令文件介紹，包含 3 個待完善的空文件
 - **2025-11-26**: 更新文件以反映 Copilot 配置清理後的狀態
   - 移除：Joyride（Clojure）、MS SQL DBA、Node.js Vitest、PowerShell 等專用指令
-  - 保留：22 個 Angular、TypeScript、測試、安全性、CI/CD、效能等相關指令
+  - 保留：25 個 Angular、TypeScript、測試、安全性、CI/CD、效能等相關指令（含 3 個待完善文件）
 - **2025-11-25**: 從 awesome-copilot 複製有價值的 instructions
 - **2025-11-23**: 初始化指令目錄
 
