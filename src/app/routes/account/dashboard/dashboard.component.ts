@@ -21,14 +21,14 @@ import { UserDashboardComponent, OrganizationDashboardComponent, TeamDashboardCo
     <page-header [title]="pageTitle()">
       <ng-template #extra>
         <nz-tag [nzColor]="contextTagColor()">
-          <i nz-icon [nzType]="workspaceContext.contextIcon()" class="mr-xs"></i>
-          {{ workspaceContext.contextLabel() }}
+          <i nz-icon [nzType]="authContext.contextIcon()" class="mr-xs"></i>
+          {{ authContext.contextLabel() }}
         </nz-tag>
       </ng-template>
     </page-header>
 
     <nz-card [nzTitle]="cardTitle()" class="mt-md">
-      @if (workspaceContext.switching()) {
+      @if (authContext.switching()) {
         <div class="text-center py-lg">
           <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
         </div>
@@ -41,15 +41,15 @@ import { UserDashboardComponent, OrganizationDashboardComponent, TeamDashboardCo
           </button>
         </ng-template>
       } @else {
-        @switch (workspaceContext.contextType()) {
+        @switch (authContext.contextType()) {
           @case (ContextType.USER) {
-            <app-user-dashboard [userId]="workspaceContext.contextId()!" />
+            <app-user-dashboard [userId]="authContext.contextId()!" />
           }
           @case (ContextType.ORGANIZATION) {
-            <app-organization-dashboard [organizationId]="workspaceContext.contextId()!" />
+            <app-organization-dashboard [organizationId]="authContext.contextId()!" />
           }
           @case (ContextType.TEAM) {
-            <app-team-dashboard [teamId]="workspaceContext.contextId()!" />
+            <app-team-dashboard [teamId]="authContext.contextId()!" />
           }
           @case (ContextType.BOT) {
             <nz-alert nzType="info" nzMessage="機器人儀表板" nzDescription="機器人儀表板功能正在開發中" nzShowIcon></nz-alert>

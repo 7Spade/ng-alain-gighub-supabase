@@ -1,13 +1,12 @@
 import { Component, inject, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { SupabaseAuthService, WorkspaceContextFacade, ContextType } from '@core';
+import { SupabaseAuthService, AuthContextService, ContextType } from '@core';
 import { I18nPipe, ModalHelper, SettingsService, User } from '@delon/theme';
 import { LayoutDefaultModule, LayoutDefaultOptions } from '@delon/theme/layout-default';
 import { SettingDrawerModule } from '@delon/theme/setting-drawer';
 import { ThemeBtnComponent } from '@delon/theme/theme-btn';
 import { environment } from '@env/environment';
-import { MenuManagementService, ContextParams } from '@shared';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -142,8 +141,7 @@ export class LayoutBasicComponent {
   private readonly settings = inject(SettingsService);
   private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly modal = inject(ModalHelper);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
-  private readonly menuManagementService = inject(MenuManagementService);
+  private readonly authContext = inject(AuthContextService);
 
   options: LayoutDefaultOptions = {
     logoExpanded: `./assets/logo-full.svg`,
@@ -158,10 +156,10 @@ export class LayoutBasicComponent {
   // 根據當前工作區上下文計算用戶信息（現代化：使用 computed 依賴工作區上下文）
   readonly user = computed<User>(() => {
     const supabaseUser = this.supabaseUser();
-    const contextType = this.workspaceContext.contextType();
-    const contextId = this.workspaceContext.contextId();
-    const contextLabel = this.workspaceContext.contextLabel();
-    const contextIcon = this.workspaceContext.contextIcon();
+    const contextType = this.authContext.contextType();
+    const contextId = this.authContext.contextId();
+    const contextLabel = this.authContext.contextLabel();
+    const contextIcon = this.authContext.contextIcon();
 
     // 根據工作區上下文返回對應的用戶信息
     switch (contextType) {
@@ -180,7 +178,7 @@ export class LayoutBasicComponent {
 
       case ContextType.ORGANIZATION:
         // 組織上下文：顯示組織信息
-        const org = this.workspaceContext.getOrganizationById(contextId || '');
+        const org = this.authContext.getOrganizationById(contextId || '');
         return {
           name: contextLabel || (org?.['name'] as string) || '組織',
           email: '',
@@ -189,7 +187,7 @@ export class LayoutBasicComponent {
 
       case ContextType.TEAM:
         // 團隊上下文：顯示團隊信息
-        const team = this.workspaceContext.getTeamById(contextId || '');
+        const team = this.authContext.getTeamById(contextId || '');
         return {
           name: contextLabel || (team?.['name'] as string) || '團隊',
           email: '',
@@ -220,59 +218,14 @@ export class LayoutBasicComponent {
   });
 
   constructor() {
-    // 載入菜單配置（使用 async/await 現代化模式）
-    this.menuManagementService.loadConfig().catch(error => {
-      console.error('[LayoutBasicComponent] Failed to load menu config:', error);
-    });
-
-    // 監聽上下文變化並更新菜單
+    // 監聯上下文變化並更新菜單（AuthContextService 內部會自動同步菜單）
     effect(() => {
-      const contextType = this.workspaceContext.contextType();
-      const contextId = this.workspaceContext.contextId();
+      const contextType = this.authContext.contextType();
+      const contextId = this.authContext.contextId();
 
-      // Don't update menu if waiting for context restoration
-      if (!contextId) {
-        // Check if we have a saved context that needs to be restored
-        if (typeof localStorage !== 'undefined') {
-          const saved = localStorage.getItem('workspace_context');
-          if (saved) {
-            // Skip menu update, let context restoration happen first
-            return;
-          }
-        }
-      }
-
-      // 構建菜單參數
-      const params = this.buildMenuParams(contextType, contextId);
-
-      // 更新菜單
-      this.menuManagementService.updateMenu(contextType, params);
+      // 日誌記錄上下文變化
+      console.log('[LayoutBasicComponent] Context changed:', { contextType, contextId });
     });
-  }
-
-  /**
-   * 構建菜單參數
-   * Build menu parameters from context
-   */
-  private buildMenuParams(contextType: ContextType, contextId: string | null): ContextParams {
-    const params: ContextParams = {};
-
-    switch (contextType) {
-      case ContextType.USER:
-        params.userId = contextId || undefined;
-        break;
-      case ContextType.ORGANIZATION:
-        params.organizationId = contextId || undefined;
-        break;
-      case ContextType.TEAM:
-        params.teamId = contextId || undefined;
-        break;
-      case ContextType.BOT:
-        params.botId = contextId || undefined;
-        break;
-    }
-
-    return params;
   }
 
   /**
@@ -283,7 +236,8 @@ export class LayoutBasicComponent {
     this.modal.create(CreateOrganizationComponent, {}, { size: 'md' }).subscribe(result => {
       if (result) {
         console.log('組織創建成功:', result);
-        // 組織創建成功後，WorkspaceContextFacade 會自動重新載入數據
+        // 組織創建成功後，重新載入工作區資料
+        this.authContext.reloadWorkspaceData();
       }
     });
   }

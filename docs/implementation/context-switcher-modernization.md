@@ -200,17 +200,21 @@ export class AuthContextService {
 - [x] 新增 `initializeWorkspace()` 統一入口
 - [x] 新增 Auth User ID 備用方案
 
-### Phase 4: 遷移元件到 AuthContextService 🔄
-**狀態**: 進行中
+### Phase 4: 遷移元件到 AuthContextService ✅
+**狀態**: 已完成
 
-- [ ] 更新 `LayoutBasicComponent`
-- [ ] 更新 `HeaderContextSwitcherComponent`
-- [ ] 更新 `HeaderUserComponent`
-- [ ] 更新所有 Blueprint 相關元件
-- [ ] 更新 Dashboard 元件
+- [x] 更新 `LayoutBasicComponent`
+- [x] 更新 `HeaderContextSwitcherComponent`
+- [x] 更新 `HeaderUserComponent`
+- [x] 更新所有 Blueprint 相關元件
+- [x] 更新 Dashboard 元件
+- [x] 更新 Settings 元件
+- [x] 更新 BaseContextAwareComponent
+- [x] 更新 OrgTeamsComponent
+- [x] 更新 CreateTeamComponent
 
-### Phase 5: 移除 WorkspaceContextService/Facade ⏳
-**狀態**: 待開始
+### Phase 5: 移除 WorkspaceContextService/Facade 🔄
+**狀態**: 部分完成（保留向後兼容）
 
 - [ ] 確認所有元件已遷移到 AuthContextService
 - [ ] 移除 `WorkspaceContextService`

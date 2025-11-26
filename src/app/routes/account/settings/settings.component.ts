@@ -21,14 +21,14 @@ import { UserSettingsComponent, OrganizationSettingsComponent } from './componen
     <page-header [title]="pageTitle()">
       <ng-template #extra>
         <nz-tag [nzColor]="contextTagColor()">
-          <i nz-icon [nzType]="workspaceContext.contextIcon()" class="mr-xs"></i>
-          {{ workspaceContext.contextLabel() }}
+          <i nz-icon [nzType]="authContext.contextIcon()" class="mr-xs"></i>
+          {{ authContext.contextLabel() }}
         </nz-tag>
       </ng-template>
     </page-header>
 
     <nz-card [nzTitle]="cardTitle()" class="mt-md">
-      @if (workspaceContext.switching()) {
+      @if (authContext.switching()) {
         <div class="text-center py-lg">
           <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
         </div>
@@ -41,12 +41,12 @@ import { UserSettingsComponent, OrganizationSettingsComponent } from './componen
           </button>
         </ng-template>
       } @else {
-        @switch (workspaceContext.contextType()) {
+        @switch (authContext.contextType()) {
           @case (ContextType.USER) {
-            <app-user-settings [userId]="workspaceContext.contextId()!" />
+            <app-user-settings [userId]="authContext.contextId()!" />
           }
           @case (ContextType.ORGANIZATION) {
-            <app-organization-settings [organizationId]="workspaceContext.contextId()!" />
+            <app-organization-settings [organizationId]="authContext.contextId()!" />
           }
           @case (ContextType.TEAM) {
             <nz-alert nzType="info" nzMessage="團隊設定" nzDescription="團隊設定功能正在開發中,敬請期待" nzShowIcon></nz-alert>

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { WorkspaceContextFacade, ContextType, SupabaseAuthService } from '@core';
-import { DA_SERVICE_TOKEN } from '@delon/auth';
+import { AuthContextService, ContextType, SupabaseAuthService } from '@core';
 import { I18nPipe, SettingsService, User } from '@delon/theme';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -45,8 +44,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 export class HeaderUserComponent {
   private readonly settings = inject(SettingsService);
   private readonly router = inject(Router);
-  private readonly tokenService = inject(DA_SERVICE_TOKEN);
-  private readonly workspaceContext = inject(WorkspaceContextFacade);
+  private readonly authContext = inject(AuthContextService);
   private readonly supabaseAuth = inject(SupabaseAuthService);
 
   // 從 Supabase 獲取當前用戶
@@ -55,9 +53,9 @@ export class HeaderUserComponent {
   // 根據當前工作區上下文計算用戶信息（現代化：使用 computed 依賴工作區上下文）
   readonly user = computed<User>(() => {
     const supabaseUser = this.supabaseUser();
-    const contextType = this.workspaceContext.contextType();
-    const contextId = this.workspaceContext.contextId();
-    const contextLabel = this.workspaceContext.contextLabel();
+    const contextType = this.authContext.contextType();
+    const contextId = this.authContext.contextId();
+    const contextLabel = this.authContext.contextLabel();
 
     // 根據工作區上下文返回對應的用戶信息
     switch (contextType) {
@@ -76,7 +74,7 @@ export class HeaderUserComponent {
 
       case ContextType.ORGANIZATION:
         // 組織上下文：顯示組織信息
-        const org = this.workspaceContext.getOrganizationById(contextId || '');
+        const org = this.authContext.getOrganizationById(contextId || '');
         return {
           name: contextLabel || (org?.['name'] as string) || '組織',
           email: '',
@@ -85,7 +83,7 @@ export class HeaderUserComponent {
 
       case ContextType.TEAM:
         // 團隊上下文：顯示團隊信息
-        const team = this.workspaceContext.getTeamById(contextId || '');
+        const team = this.authContext.getTeamById(contextId || '');
         return {
           name: contextLabel || (team?.['name'] as string) || '團隊',
           email: '',
@@ -115,8 +113,8 @@ export class HeaderUserComponent {
     }
   });
 
-  logout(): void {
-    this.tokenService.clear();
-    this.router.navigateByUrl(this.tokenService.login_url!);
+  async logout(): Promise<void> {
+    await this.supabaseAuth.signOut();
+    this.router.navigateByUrl('/passport/login');
   }
 }

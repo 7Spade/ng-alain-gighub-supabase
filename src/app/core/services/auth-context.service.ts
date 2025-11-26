@@ -17,7 +17,7 @@
 
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AccountService, OrganizationService, TeamService } from '@shared';
+import { AccountService, OrganizationService, TeamService, MenuManagementService, ContextParams } from '@shared';
 import type { OrganizationModel, TeamModel } from '@shared';
 
 import { SupabaseService } from '../infra/supabase';
@@ -76,6 +76,7 @@ export class AuthContextService {
   private readonly accountService = inject(AccountService);
   private readonly organizationService = inject(OrganizationService);
   private readonly teamService = inject(TeamService);
+  private readonly menuManagementService = inject(MenuManagementService);
   private readonly router = inject(Router);
 
   // ============================================================================
@@ -111,9 +112,15 @@ export class AuthContextService {
   /** 初始化標記 */
   private _initialized = false;
 
+  /** 上下文切換中標記 */
+  private readonly _switching = signal(false);
+
   // ============================================================================
   // 公開狀態 (Public Readonly Signals)
   // ============================================================================
+
+  /** 是否正在切換上下文 */
+  readonly switching = this._switching.asReadonly();
 
   // --- 認證相關 ---
 
@@ -339,7 +346,13 @@ export class AuthContextService {
     this._initialized = true;
 
     try {
+      // 1. 載入菜單配置
+      await this.menuManagementService.loadConfig();
+
+      // 2. 載入工作區資料
       await this.loadWorkspaceData(authUserId);
+
+      // 3. 恢復上一次的上下文
       this.restoreContext();
     } catch (error) {
       console.error('[AuthContextService] Workspace initialization failed:', error);
@@ -459,6 +472,8 @@ export class AuthContextService {
   switchContext(type: ContextType, id: string | null): void {
     console.log('[AuthContextService] 🔀 Switching context:', { type, id });
 
+    this._switching.set(true);
+
     const label = this.getContextLabel(type, id);
     const icon = this.getContextIcon(type);
 
@@ -471,7 +486,46 @@ export class AuthContextService {
     });
 
     this.persistContext();
+    this.syncMenu();
+
+    this._switching.set(false);
     console.log('[AuthContextService] ✅ Context switched:', { type, id, label });
+  }
+
+  /**
+   * 同步菜單 (根據當前上下文)
+   */
+  syncMenu(): void {
+    const type = this.contextType();
+    const id = this.contextId();
+
+    if (!id) {
+      // No valid context ID, use USER menu as default
+      this.menuManagementService.updateMenu(ContextType.USER);
+      return;
+    }
+
+    // 根據不同上下文類型準備參數
+    const params = this.buildMenuParams(type, id);
+    this.menuManagementService.updateMenu(type, params);
+  }
+
+  /**
+   * 構建菜單參數
+   */
+  private buildMenuParams(type: ContextType, id: string): ContextParams {
+    switch (type) {
+      case ContextType.USER:
+        return { userId: id };
+      case ContextType.ORGANIZATION:
+        return { organizationId: id };
+      case ContextType.TEAM:
+        return { teamId: id };
+      case ContextType.BOT:
+        return { botId: id };
+      default:
+        return {};
+    }
   }
 
   /**
@@ -546,12 +600,12 @@ export class AuthContextService {
     const accountId = this._workspaceData().currentUser?.['id'];
     // 備用：使用 Auth 用戶的 ID
     const authUserId = this._authState().user?.id;
-    
+
     const userId = accountId || authUserId;
-    console.log('[AuthContextService] 👤 Setting default context:', { 
-      accountId, 
-      authUserId, 
-      finalUserId: userId 
+    console.log('[AuthContextService] 👤 Setting default context:', {
+      accountId,
+      authUserId,
+      finalUserId: userId
     });
 
     if (userId) {
@@ -617,6 +671,21 @@ export class AuthContextService {
     const org = this.getOrganizationById(organizationId);
     const userId = this.currentAccount()?.['id'];
     return (org as any)?.['creator_id'] === userId;
+  }
+
+  /**
+   * 重新載入工作區資料
+   * 用於在創建組織/團隊後刷新數據
+   */
+  async reloadWorkspaceData(): Promise<void> {
+    const authUserId = this._authState().user?.id;
+    if (!authUserId) {
+      console.warn('[AuthContextService] Cannot reload: no auth user');
+      return;
+    }
+
+    console.log('[AuthContextService] 🔄 Reloading workspace data');
+    await this.loadWorkspaceData(authUserId);
   }
 
   // ============================================================================
