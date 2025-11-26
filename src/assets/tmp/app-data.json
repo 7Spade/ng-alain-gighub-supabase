@@ -22,7 +22,7 @@
             "text": "我的待辦",
             "i18n": "menu.user.todos",
             "icon": "anticon-check-square",
-            "link": "/account/user/{userId}/todos"
+            "link": "/account/todos"
           },
           {
             "text": "我的藍圖",
@@ -62,13 +62,13 @@
             "text": "團隊管理",
             "i18n": "menu.organization.teams",
             "icon": "anticon-team",
-            "link": "/account/org/{organizationId}/teams"
+            "link": "/account/teams"
           },
           {
             "text": "成員管理",
             "i18n": "menu.organization.members",
             "icon": "anticon-user",
-            "link": "/account/org/{organizationId}/members"
+            "link": "/account/members"
           },
           {
             "text": "組織設定",
@@ -96,7 +96,7 @@
             "text": "團隊待辦",
             "i18n": "menu.team.todos",
             "icon": "anticon-check-square",
-            "link": "/account/team/{teamId}/todos"
+            "link": "/account/todos"
           },
           {
             "text": "團隊藍圖",
@@ -108,7 +108,7 @@
             "text": "團隊成員",
             "i18n": "menu.team.members",
             "icon": "anticon-user",
-            "link": "/account/team/{teamId}/members"
+            "link": "/account/members"
           }
         ]
       }
