@@ -72,16 +72,15 @@ const VISIBILITY_CONFIG: Record<string, { text: string; color: string }> = {
   standalone: true,
   imports: [SHARED_IMPORTS, NzTableModule, NzTagModule, NzEmptyModule],
   template: `
-    <page-header [title]="pageTitle()">
-      <ng-template #action>
-        @if (hasValidContext()) {
-          <button nz-button nzType="primary" (click)="createBlueprint()">
-            <i nz-icon nzType="plus" nzTheme="outline"></i>
-            新增藍圖
-          </button>
-        }
-      </ng-template>
-    </page-header>
+    <page-header [title]="pageTitle()" [action]="actionTpl"></page-header>
+    <ng-template #actionTpl>
+      @if (hasValidContext()) {
+        <button nz-button nzType="primary" (click)="createBlueprint()">
+          <i nz-icon nzType="plus" nzTheme="outline"></i>
+          新增藍圖
+        </button>
+      }
+    </ng-template>
 
     <!-- Context Info Card -->
     <nz-card class="mb-md">
