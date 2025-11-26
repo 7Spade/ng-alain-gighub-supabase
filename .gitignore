@@ -48,9 +48,8 @@ Thumbs.db
 
 /delon-builds
 
-# Database exports
+# Database exports - SQL files should not be committed
 *.sql
-database_export_*.sql
 
 # Yarn
 # yarn.lock
