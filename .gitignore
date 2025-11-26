@@ -48,6 +48,10 @@ Thumbs.db
 
 /delon-builds
 
+# Database exports
+*.sql
+database_export_*.sql
+
 # Yarn
 # yarn.lock
 yarn-error.log
