@@ -1,90 +1,192 @@
 # GitHub Copilot Custom Agents
 
-## 專案代理
+本目錄包含 GitHub Copilot 自訂代理配置檔案，專為 Angular / ng-alain / Supabase 企業級開發設計。
 
-本專案使用一個最佳化的自訂 GitHub Copilot 代理，專門為 ng-alain 企業級應用開發設計。
+## 如何使用 GitHub Copilot Agent
 
-### 主要代理：`agent.agent.md`
+在 VS Code 或 GitHub Copilot Chat 中，您可以透過 `@` 符號呼叫特定代理。例如：
+- `@0-ng-ArchAI-v1` - 呼叫 ng-alain 企業級架構師
+- `@accessibility` - 呼叫無障礙專家
 
-**名稱**: `ng-alain-enterprise-architect`
+---
 
+## 專案專屬代理（Project-Specific Agents）
+
+### `0-ng-ArchAI-v1.agent.md`
+**名稱**: ng-alain Enterprise Architect  
 **描述**: 企業級 Angular 20 + ng-alain + Supabase 智能開發助手
 
-**核心功能**:
-- 專精於 @delon 業務元件、ng-zorro-antd UI 整合
-- Supabase 後端整合與資料建模
-- Token 最佳化策略（三級任務分類系統）
-- 企業級程式碼品質保證
-- 完整的開發流程支援（需求分析 → 架構設計 → 程式碼實作 → 驗證）
+**適用場景**:
+- Angular 20+ 企業級應用開發
+- ng-alain 框架與 @delon 業務元件整合
+- ng-zorro-antd UI 元件最佳實踐
+- Supabase 後端整合（認證、資料庫、Storage）
+- 需求分析 → 架構設計 → 程式碼實作的完整流程
+- Token 最佳化與效能調優
+
+---
+
+### `0-ng-governance-v1.md`
+**名稱**: ng-alain Governance Rules  
+**描述**: ng-alain 企業級開發規範文件
 
 **適用場景**:
-- Angular 20 + ng-alain 框架專案
-- 使用 @delon 業務元件庫
-- ng-zorro-antd UI 元件
-- Supabase 後端服務
-- Less 樣式預處理器
-- 企業級管理系統開發
+- 作為 `0-ng-ArchAI-v1` 的規範參考文件
+- 檢查程式碼是否符合企業級標準
+- 架構審查與程式碼品質驗證
 
-**技術棧匹配**:
-- ✅ Angular 20.3.x
-- ✅ ng-alain 20.1.0
-- ✅ @delon 業務元件
-- ✅ ng-zorro-antd UI 庫
-- ✅ TypeScript 5.9.x
-- ✅ Less 樣式
-- ✅ Supabase 整合
-- ✅ Karma + Jasmine 測試
+---
 
-## 使用方式
+## 通用開發代理（General Development Agents）
 
-此代理已自動整合至 GitHub Copilot，無需額外配置。在使用 Copilot 時，它會自動應用本專案的最佳實踐和開發規範。
+### 架構與規劃類
 
-## 代理特色
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `arch.agent.md` | Senior Cloud Architect | 現代架構設計模式、NFR 需求分析、架構圖與文件產出 |
+| `api-architect.agent.md` | API Architect | API 設計、連接模式、韌性設計 |
+| `adr-generator.agent.md` | ADR Generator | 建立架構決策記錄（ADR），結構化格式便於 AI 理解 |
+| `hlbpa.agent.md` | HLBPA | 高階架構文件撰寫與審查、遺留系統研究 |
 
-### 1. Token 最佳化策略
-- **Tier 1**: 輕量級任務（直接處理，不呼叫 MCP）
-- **Tier 2**: 中等任務（選擇性 MCP，1-3 次呼叫）
-- **Tier 3**: 重量級任務（完整 MCP 工作流程）
+### 規劃與研究類
 
-### 2. MCP 整合
-- sequential-thinking: 複雜任務推論
-- software-planning-tool: 架構設計
-- github MCP: 程式碼查詢與 PR 管理
-- supabase MCP: 資料庫操作
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `plan.agent.md` | Plan Mode | 策略規劃與架構分析，實作前的深思熟慮 |
+| `planner.agent.md` | Planning Mode | 功能開發或重構的實作計畫產出 |
+| `implementation-plan.agent.md` | Implementation Plan | 新功能或重構的實作計畫產出 |
+| `task-planner.agent.md` | Task Planner | 可執行的任務規劃（by microsoft/edge-ai）|
+| `task-researcher.agent.md` | Task Researcher | 專案分析的深度研究（by microsoft/edge-ai）|
+| `research-technical-spike.agent.md` | Technical Spike Research | 技術驗證與深度研究 |
+| `prd.agent.md` | PRD Generator | 產品需求文件（PRD）產出，含使用者故事、驗收標準 |
+| `specification.agent.md` | Specification | 規格文件產出與更新 |
+| `refine-issue.agent.md` | Refine Issue | 需求精煉：驗收標準、技術考量、邊界案例、NFR |
 
-### 3. 企業級品質標準
-- TypeScript 嚴格型別檢查
-- ng-alain 與 @delon 最佳實踐
-- 完整的測試覆蓋
-- 安全性與效能最佳化
+### 程式碼品質類
 
-## 額外代理（來自 awesome-copilot）
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `wg-code-alchemist.agent.md` | WG Code Alchemist | Clean Code 原則與 SOLID 設計轉換 |
+| `wg-code-sentinel.agent.md` | WG Code Sentinel | 程式碼安全性審查 |
+| `janitor.agent.md` | Janitor | 程式碼清理、簡化、技術債務處理 |
+| `tech-debt-remediation-plan.agent.md` | Tech Debt Plan | 技術債務修復計畫產出 |
+| `gilfoyle.agent.md` | Gilfoyle | 毒舌但精準的程式碼審查（Silicon Valley 風格）|
 
-本專案從 [awesome-copilot](https://github.com/github/awesome-copilot) 精選以下輔助代理：
+### 除錯與測試類
 
-### `accessibility.agent.md`
-**名稱**: Accessibility Expert  
-**描述**: WCAG 無障礙功能專家，協助確保 UI 符合 WCAG 2.2 標準
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `debug.agent.md` | Debug Mode | 系統性除錯，識別、分析並解決 bug |
+| `playwright-tester.agent.md` | Playwright Tester | Playwright E2E 測試開發 |
+| `tdd-red.agent.md` | TDD Red | TDD 紅燈階段：撰寫失敗測試 |
+| `tdd-green.agent.md` | TDD Green | TDD 綠燈階段：最小實作讓測試通過 |
+| `tdd-refactor.agent.md` | TDD Refactor | TDD 重構階段：提升品質與安全性 |
 
-### `debug.agent.md`
-**名稱**: Debug Mode  
-**描述**: 系統性調試助手，協助識別、分析並解決 bug
+### 無障礙與 SEO 類
 
-### `api-architect.agent.md`
-**名稱**: API Architect  
-**描述**: API 架構師，協助設計 API 連接與韌性模式
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `accessibility.agent.md` | Accessibility Expert | WCAG 2.1/2.2 無障礙功能、包容性 UX、a11y 測試 |
+| `search-ai-optimization-expert.agent.md` | SEO/AEO/GEO Expert | 現代搜尋優化：SEO、AI 答案引擎優化、生成式引擎優化 |
 
-### `typescript-mcp-expert.agent.md`
-**名稱**: TypeScript MCP Server Expert  
-**描述**: TypeScript MCP 伺服器專家，協助開發 Model Context Protocol 伺服器
+### 文件與教學類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `code-tour.agent.md` | CodeTour Expert | VSCode CodeTour 檔案建立與維護 |
+| `technical-content-evaluator.agent.md` | Content Evaluator | 技術訓練教材、文件、教學內容評估 |
+| `mentor.agent.md` | Mentor | 工程師指導與支援 |
+| `demonstrate-understanding.agent.md` | Demonstrate Understanding | 透過引導式問答驗證對程式碼的理解 |
+
+### PR 與 Issue 管理類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `address-comments.agent.md` | Address Comments | 回應 PR 評論 |
+| `critical-thinking.agent.md` | Critical Thinking | 挑戰假設，確保最佳解決方案 |
+
+### Prompt 工程類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `prompt-builder.agent.md` | Prompt Builder | 高品質 Prompt 工程（by microsoft/edge-ai）|
+| `prompt-engineer.agent.md` | Prompt Engineer | Prompt 分析與改進（基於 OpenAI 最佳實踐）|
+
+### 資料庫類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `postgresql-dba.agent.md` | PostgreSQL DBA | PostgreSQL 資料庫管理（適用於 Supabase）|
+
+### TypeScript / MCP 類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `typescript-mcp-expert.agent.md` | TypeScript MCP Expert | TypeScript Model Context Protocol 伺服器開發 |
+| `context7.agent.md` | Context7 Expert | 使用最新文件查詢函式庫版本與最佳實踐 |
+
+### Angular / Electron 類
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `electron-angular-native.agent.md` | Electron Angular Review | Electron + Angular + 原生整合層的程式碼審查 |
+
+---
+
+## 進階自主代理（Advanced Autonomous Agents）
+
+這些代理具備較高的自主性，適合複雜任務或需要較少監督的場景：
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `4.1-Beast.agent.md` | GPT 4.1 Beast | 頂級程式碼代理，強大自主能力 |
+| `gpt-5-beast-mode.agent.md` | Beast Mode 2.0 | GPT-5 專屬強大自主代理 |
+| `Thinking-Beast-Mode.agent.md` | Thinking Beast Mode | 量子認知架構與對抗式智慧 |
+| `Ultimate-Transparent-Thinking-Beast-Mode.agent.md` | Ultimate Beast Mode | 終極透明思維模式 |
+| `voidbeast-gpt41enhanced.agent.md` | VoidBeast Enhanced | 進階全端開發代理（多模式）|
+| `software-engineer-agent-v1.agent.md` | Software Engineer v1 | 專家級軟體工程代理 |
+| `principal-software-engineer.agent.md` | Principal Engineer | 首席工程師級指導 |
+
+---
+
+## 工作流程代理（Workflow Agents）
+
+| 代理檔案 | 名稱 | 適用場景 |
+|----------|------|----------|
+| `blueprint-mode.agent.md` | Blueprint Mode | 結構化工作流程執行（Debug/Express/Main/Loop）|
+| `blueprint-mode-codex.agent.md` | Blueprint Mode Codex | 最小工具使用的結構化工作流程 |
+| `meta-agentic-project-scaffold.agent.md` | Project Scaffold | 專案工作流程建立與管理 |
+| `simple-app-idea-generator.agent.md` | App Idea Generator | 透過互動問答腦力激盪應用程式創意 |
+
+---
+
+## 使用建議
+
+### 開發流程推薦
+
+1. **需求階段**: `prd.agent.md` → `refine-issue.agent.md`
+2. **規劃階段**: `plan.agent.md` → `implementation-plan.agent.md`
+3. **開發階段**: `0-ng-ArchAI-v1.agent.md`（Angular 專案）
+4. **測試階段**: `tdd-red.agent.md` → `tdd-green.agent.md` → `tdd-refactor.agent.md`
+5. **審查階段**: `wg-code-sentinel.agent.md` → `accessibility.agent.md`
+6. **重構階段**: `janitor.agent.md` → `tech-debt-remediation-plan.agent.md`
+
+### 特定任務推薦
+
+- **Angular/ng-alain 開發**: `0-ng-ArchAI-v1.agent.md`
+- **架構設計**: `arch.agent.md` + `adr-generator.agent.md`
+- **程式碼審查**: `gilfoyle.agent.md`（直接）或 `wg-code-alchemist.agent.md`（建設性）
+- **除錯**: `debug.agent.md`
+- **E2E 測試**: `playwright-tester.agent.md`
+- **無障礙**: `accessibility.agent.md`
+- **資料庫**: `postgresql-dba.agent.md`
+
+---
 
 ## 維護記錄
 
-- **2025-11-25**: 從 awesome-copilot 複製有價值的 agents、prompts、instructions 和 collections
-  - 新增: `accessibility.agent.md`、`debug.agent.md`、`api-architect.agent.md`、`typescript-mcp-expert.agent.md`
-  - 新增目錄: `.github/prompts/`、`.github/collections/`
-  - 新增 instructions: `angular.instructions.md`、`a11y.instructions.md`、`typescript-mcp-server.instructions.md`、`playwright-typescript.instructions.md`
+- **2025-11-26**: 清理非 Angular/通用目的的代理，建立完整 README 文件
+  - 移除：AEM、Amplitude、Apify、ARM、Atlassian、Comet、Diffblue、Droid、Drupal、Dynatrace、Elasticsearch、C++、Next.js、React、JFrog、Kusto、Laravel、LaunchDarkly、Microsoft Learn、Monday、MongoDB、MS SQL、Neo4j、Neon、Octopus、PagerDuty、Pimcore、Power BI、Power Platform、Shopify、StackHawk 等專用代理
+  - 保留：Angular、TypeScript、通用開發、架構、測試、無障礙等相關代理
+- **2025-11-25**: 從 awesome-copilot 複製有價值的 agents
 - **2025-11-23**: 移除不適用的代理，保留最佳化的 ng-alain 專用代理
-  - 移除: `ng-alain-gighub-supabase.agent.md`（SSR 專用，本專案不適用）
-  - 移除: `onboarding.agent.md`、`review.agent.md`、`repo-name.agent.md`（空文件）
-  - 保留: `agent.agent.md`（ng-alain 企業架構師）
