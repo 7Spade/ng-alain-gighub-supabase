@@ -2,38 +2,110 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "npm install",
+      "label": "yarn install",
       "type": "shell",
-      "command": "npm ci",
+      "command": "yarn install",
       "problemMatcher": [],
       "group": "build",
-      "detail": "Installs all npm dependencies."
+      "detail": "安裝所有 Yarn 依賴套件"
     },
     {
-      "label": "generate-readme",
+      "label": "yarn: start",
       "type": "shell",
-      "command": "npm run build",
+      "command": "yarn start",
       "problemMatcher": [],
+      "isBackground": true,
+      "detail": "啟動 Angular 開發伺服器 (ng serve -o)"
+    },
+    {
+      "label": "yarn: hmr",
+      "type": "shell",
+      "command": "yarn hmr",
+      "problemMatcher": [],
+      "isBackground": true,
+      "detail": "啟動 Angular 開發伺服器 (HMR 模式)"
+    },
+    {
+      "label": "yarn: build",
+      "type": "shell",
+      "command": "yarn build",
+      "problemMatcher": "$tsc",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "detail": "Generates the README.md file using npm build run-script.",
-      "dependsOn": "npm install"
+      "detail": "建置生產版本 (使用高記憶體模式)"
+    },
+    {
+      "label": "yarn: test",
+      "type": "shell",
+      "command": "yarn test",
+      "problemMatcher": [],
+      "isBackground": true,
+      "detail": "執行單元測試 (Karma + Jasmine, watch 模式)"
+    },
+    {
+      "label": "yarn: test-coverage",
+      "type": "shell",
+      "command": "yarn test-coverage",
+      "problemMatcher": [],
+      "group": "test",
+      "detail": "執行單元測試並產生覆蓋率報告"
+    },
+    {
+      "label": "yarn: lint",
+      "type": "shell",
+      "command": "yarn lint",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "group": "test",
+      "detail": "執行 ESLint 和 Stylelint 檢查"
+    },
+    {
+      "label": "yarn: lint:ts",
+      "type": "shell",
+      "command": "yarn lint:ts",
+      "problemMatcher": "$eslint-stylish",
+      "group": "test",
+      "detail": "執行 TypeScript ESLint 檢查"
+    },
+    {
+      "label": "yarn: lint:style",
+      "type": "shell",
+      "command": "yarn lint:style",
+      "problemMatcher": [],
+      "group": "test",
+      "detail": "執行 Stylelint 檢查 (Less 檔案)"
+    },
+    {
+      "label": "yarn: e2e",
+      "type": "shell",
+      "command": "yarn e2e",
+      "problemMatcher": [],
+      "group": "test",
+      "detail": "執行 E2E 測試 (Playwright)"
+    },
+    {
+      "label": "yarn: analyze",
+      "type": "shell",
+      "command": "yarn analyze",
+      "problemMatcher": [],
+      "group": "build",
+      "detail": "建置並產生 source map 用於分析"
     },
     {
       "label": "validate-collections",
       "type": "shell",
-      "command": "npm run collection:validate",
+      "command": "node eng/validate-collections.mjs",
       "problemMatcher": [],
       "group": "build",
-      "detail": "Validates all collection manifest files.",
-      "dependsOn": "npm install"
+      "detail": "驗證所有 collection manifest 檔案"
     },
     {
       "label": "create-collection",
       "type": "shell",
-      "command": "npm run collection:create",
+      "command": "node eng/create-collection.mjs",
       "args": [
         "--id",
         "${input:collectionId}",
@@ -42,20 +114,19 @@
       ],
       "problemMatcher": [],
       "group": "build",
-      "detail": "Creates a new collection manifest template.",
-      "dependsOn": "npm install"
+      "detail": "建立新的 collection manifest 模板"
     }
   ],
   "inputs": [
     {
       "id": "collectionId",
-      "description": "Collection ID (lowercase, hyphen-separated)",
+      "description": "Collection ID (小寫，使用連字號分隔)",
       "default": "my-collection",
       "type": "promptString"
     },
     {
       "id": "tags",
-      "description": "Comma separated list of tags",
+      "description": "逗號分隔的標籤列表",
       "default": "tag1,tag2",
       "type": "promptString"
     }
