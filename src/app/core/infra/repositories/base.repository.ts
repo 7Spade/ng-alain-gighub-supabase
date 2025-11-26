@@ -85,7 +85,7 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
         if (error) {
           throw error;
         }
-        return (data || []) as TEntity[];
+        return (data || []).map(item => this.toCamelCaseObject(item)) as TEntity[];
       }),
       catchError(error => {
         console.error(`Error in findAll for ${this.tableName}:`, error);
@@ -120,7 +120,7 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
           }
           throw error;
         }
-        return data as TEntity;
+        return this.toCamelCaseObject(data) as TEntity;
       }),
       catchError(error => {
         console.error(`Error in findById for ${this.tableName}:`, error);
@@ -154,7 +154,7 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
           }
           throw error;
         }
-        return data as TEntity;
+        return this.toCamelCaseObject(data) as TEntity;
       }),
       catchError(error => {
         console.error(`Error in findOne for ${this.tableName}:`, error);
@@ -172,19 +172,14 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   create(data: TInsert): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    const snakeCaseData = this.toSnakeCaseObject(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseData).select().single()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
         }
-        return inserted as TEntity;
+        return this.toCamelCaseObject(inserted) as TEntity;
       }),
       catchError(error => {
         console.error(`Error in create for ${this.tableName}:`, error);
@@ -202,18 +197,14 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   createMany(data: TInsert[]): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
+    const snakeCaseData = data.map(item => this.toSnakeCaseObject(item as Record<string, any>));
 
-    return from(
-      client
-        .from(this.tableName)
-        .insert(data as any[])
-        .select()
-    ).pipe(
+    return from(client.from(this.tableName).insert(snakeCaseData).select()).pipe(
       map(({ data: inserted, error }) => {
         if (error) {
           throw error;
         }
-        return (inserted || []) as TEntity[];
+        return (inserted || []).map(item => this.toCamelCaseObject(item)) as TEntity[];
       }),
       catchError(error => {
         console.error(`Error in createMany for ${this.tableName}:`, error);
@@ -232,20 +223,14 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   update(id: string, data: TUpdate): Observable<TEntity> {
     const client = this.supabaseService.getClient();
+    const snakeCaseData = this.toSnakeCaseObject(data as Record<string, any>);
 
-    return from(
-      client
-        .from(this.tableName)
-        .update(data as any)
-        .eq('id', id)
-        .select()
-        .single()
-    ).pipe(
+    return from(client.from(this.tableName).update(snakeCaseData).eq('id', id).select().single()).pipe(
       map(({ data: updated, error }) => {
         if (error) {
           throw error;
         }
-        return updated as TEntity;
+        return this.toCamelCaseObject(updated) as TEntity;
       }),
       catchError(error => {
         console.error(`Error in update for ${this.tableName}:`, error);
@@ -264,7 +249,8 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   updateBy(filters: Record<string, any>, data: TUpdate): Observable<TEntity[]> {
     const client = this.supabaseService.getClient();
-    let query = client.from(this.tableName).update(data as any);
+    const snakeCaseData = this.toSnakeCaseObject(data as Record<string, any>);
+    let query = client.from(this.tableName).update(snakeCaseData);
 
     // 應用過濾條件
     // Apply filters
@@ -275,7 +261,7 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
         if (error) {
           throw error;
         }
-        return (updated || []) as TEntity[];
+        return (updated || []).map(item => this.toCamelCaseObject(item)) as TEntity[];
       }),
       catchError(error => {
         console.error(`Error in updateBy for ${this.tableName}:`, error);
@@ -414,5 +400,57 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
    */
   private toCamelCase(str: string): string {
     return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  }
+
+  /**
+   * 將物件的所有鍵從 camelCase 轉換為 snake_case
+   * Convert all object keys from camelCase to snake_case
+   *
+   * @private
+   * @param {Record<string, any>} obj - Object to convert
+   * @returns {Record<string, any>} Converted object
+   */
+  private toSnakeCaseObject(obj: Record<string, any>): Record<string, any> {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const snakeKey = this.toSnakeCase(key);
+      // Recursively convert nested objects, but preserve arrays and primitives
+      if (value !== null && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+        result[snakeKey] = this.toSnakeCaseObject(value);
+      } else {
+        result[snakeKey] = value;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 將物件的所有鍵從 snake_case 轉換為 camelCase
+   * Convert all object keys from snake_case to camelCase
+   *
+   * @private
+   * @param {Record<string, any>} obj - Object to convert
+   * @returns {Record<string, any>} Converted object
+   */
+  private toCamelCaseObject(obj: Record<string, any>): Record<string, any> {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const camelKey = this.toCamelCase(key);
+      // Recursively convert nested objects, but preserve arrays and primitives
+      if (value !== null && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+        result[camelKey] = this.toCamelCaseObject(value);
+      } else {
+        result[camelKey] = value;
+      }
+    }
+    return result;
   }
 }
