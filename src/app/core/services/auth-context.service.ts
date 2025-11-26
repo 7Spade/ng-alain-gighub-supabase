@@ -542,13 +542,22 @@ export class AuthContextService {
    * 設定預設上下文（用戶上下文）
    */
   private setDefaultContext(): void {
-    const userId = this._workspaceData().currentUser?.['id'];
-    console.log('[AuthContextService] 👤 Setting default context, userId:', userId);
+    // 優先使用 Account 表的 ID
+    const accountId = this._workspaceData().currentUser?.['id'];
+    // 備用：使用 Auth 用戶的 ID
+    const authUserId = this._authState().user?.id;
+    
+    const userId = accountId || authUserId;
+    console.log('[AuthContextService] 👤 Setting default context:', { 
+      accountId, 
+      authUserId, 
+      finalUserId: userId 
+    });
 
     if (userId) {
       this.switchToUser(userId as string);
     } else {
-      // 標記為準備就緒，即使沒有用戶
+      // 標記為準備就緒，即使沒有用戶（未登入情況）
       this._contextState.update(state => ({
         ...state,
         ready: true
