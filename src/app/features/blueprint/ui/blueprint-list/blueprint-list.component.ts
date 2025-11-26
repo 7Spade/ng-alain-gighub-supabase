@@ -267,28 +267,34 @@ export class BlueprintListComponent implements OnInit {
   });
 
   constructor() {
-    // Watch for context changes and reload data
+    // Watch for context changes and reload data using effect()
+    // This effect monitors the workspace context and triggers data loading
+    // when the context changes to a valid state
     effect(() => {
       const contextType = this.contextType();
       const contextId = this.contextId();
 
-      // Skip if not initialized or invalid context
-      if (!this.initialized() || contextType === 'app' || !contextId) {
-        return;
-      }
+      // Debug log for context monitoring
+      console.log('[BlueprintList] 📍 Context changed:', { contextType, contextId });
 
-      // Load blueprints for the current context
-      this.loadBlueprints();
+      // Load blueprints when context becomes valid
+      if (contextType !== 'app' && contextId) {
+        console.log('[BlueprintList] ✅ Valid context detected, loading blueprints...');
+        this.loadBlueprints();
+      }
     });
   }
 
   ngOnInit(): void {
     this.initialized.set(true);
 
-    // Initial load if context is valid
-    if (this.hasValidContext()) {
-      this.loadBlueprints();
-    }
+    // Log initialization
+    console.log('[BlueprintList] 🚀 Component initialized');
+    console.log('[BlueprintList] 📊 Current context:', {
+      type: this.contextType(),
+      id: this.contextId(),
+      hasValidContext: this.hasValidContext()
+    });
   }
 
   /**
