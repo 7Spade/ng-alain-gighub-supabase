@@ -5,10 +5,10 @@
 ### 1.1 文件標題與版本
 
 - **PRD**: 工地施工進度追蹤管理系統 (Construction Site Management System)
-- **版本**: 1.2.0
+- **版本**: 1.3.0
 - **建立日期**: 2025-11-26
 - **最後更新**: 2025-11-26
-- **修訂說明**: 調整角色體系、優先級依賴關係、新增檔案/財務/人資模組規劃
+- **修訂說明**: 新增上下文共享架構圖、資料夾結構規範、命名規範、RLS/觸發器設計指南
 
 ### 1.2 產品摘要
 
@@ -16,10 +16,17 @@
 
 系統基於現代化的技術架構（Angular 20 + ng-alain + Supabase），採用 Git-like 的藍圖分支模式，支援多組織協作的承攬模式。
 
+**🎯 開發理念（奧卡姆剃刀原則）：**
+- **功能最小化**：每個功能只做必要的事，避免過度設計
+- **企業標準**：雖然簡潔但符合企業級品質要求
+- **易於擴展**：預留擴展接口但不預先實現
+- **避免冗餘**：資料表只建立必要欄位，程式碼只寫必要邏輯
+
 **🏗️ 核心架構理念：**
 - **藍圖是邏輯容器**：提供資料隔離、上下文共享、多模組擴展的基礎架構
 - **任務是主核心模組**：工地管理的一切操作都圍繞任務展開
 - **其他模組依附任務**：進度追蹤、品質驗收、日誌、檔案等皆以任務為主體開發
+- **上下文層層傳遞**：平台 → 藍圖 → 模組，避免重複查詢
 
 **✅ 已完成的核心基礎設施：**
 - **工作區上下文切換器**：支援個人、組織、團隊、Bot 工作區的無縫切換
@@ -968,6 +975,360 @@ Bot（自動化工作流程）可設定以下所屬關係：
 | 即時同步效能 | 中 | Realtime 訂閱優化、訊息聚合、節流機制 |
 | 報表生成效能 | 中 | Materialized Views、預計算快取、報表排程 |
 | 多組織協作衝突 | 中 | PR 機制、衝突偵測、合併策略 |
+
+### 8.6 上下文共享架構
+
+> **奧卡姆剃刀原則**：上下文設計以「最小必要共享」為原則，避免過度耦合
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        平台層級（Platform Context）                       │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │  WorkspaceContextFacade                                             │ │
+│  │  • currentContext: Signal<WorkspaceContext>                        │ │
+│  │  • contextType: USER | ORGANIZATION | TEAM | BOT                   │ │
+│  │  • contextId: string (account_id)                                   │ │
+│  │  • permissions: Signal<string[]>                                    │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      藍圖層級（Blueprint Context）                        │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │  BlueprintShellComponent (邏輯容器)                                  │ │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │ │
+│  │  │  BlueprintStore (Facade)                                       │  │ │
+│  │  │  • blueprintId: Signal<string>                                 │  │ │
+│  │  │  • workspaceId: Signal<string>                                 │  │ │
+│  │  │  • ownerContext: inherited from Platform                       │  │ │
+│  │  │  • blueprintRole: Signal<BlueprintRole>                        │  │ │
+│  │  └──────────────────────────────────────────────────────────────┘  │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                    ┌───────────────┼───────────────┐
+                    ▼               ▼               ▼
+┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+│   模組層級           │ │   模組層級           │ │   模組層級           │
+│   TaskStore         │ │   DiaryStore        │ │   TodoStore         │
+│   • 繼承藍圖上下文    │ │   • 繼承藍圖上下文    │ │   • 繼承藍圖上下文    │
+│   • blueprintId     │ │   • blueprintId     │ │   • blueprintId     │
+│   • ownerContext    │ │   • ownerContext    │ │   • ownerContext    │
+└─────────────────────┘ └─────────────────────┘ └─────────────────────┘
+```
+
+**上下文傳遞規則**：
+
+| 層級 | 提供者 | 消費者 | 傳遞方式 |
+|------|--------|--------|----------|
+| 平台 → 藍圖 | WorkspaceContextFacade | BlueprintShellComponent | `inject()` DI |
+| 藍圖 → 模組 | BlueprintStore | TaskStore, DiaryStore... | Route Params + inject() |
+| 模組 → UI | XxxStore | XxxComponent | Angular Signals |
+
+**已完成標記**：
+- ✅ `WorkspaceContextFacade` - 平台層上下文切換
+- ✅ `BlueprintShellComponent` - 藍圖邏輯容器
+- ✅ `BlueprintStore` - 藍圖狀態管理
+- ✅ 模組層 Store 基礎結構（Task, Diary, Todo）
+
+### 8.7 專案資料夾結構規範
+
+> **奧卡姆剃刀原則**：每個資料夾職責單一、命名清晰、結構扁平
+
+```
+src/app/
+├── core/                           # ✅ 已完成
+│   ├── facades/                    # Facade 模式統一 API
+│   │   └── account/
+│   │       └── workspace-context.facade.ts  ✅
+│   ├── guards/                     # 路由守衛
+│   ├── interceptors/               # HTTP 攔截器
+│   └── services/                   # 全域服務
+│
+├── shared/                         # 🔶 部分完成
+│   ├── components/                 # 共用元件
+│   ├── directives/                 # 共用指令
+│   ├── pipes/                      # 共用管道
+│   └── utils/                      # 共用工具
+│
+└── features/                       # 功能模組（Vertical Slice）
+    ├── blueprint/                  # ✅ 核心功能區
+    │   ├── blueprint.routes.ts     # 路由配置
+    │   │
+    │   ├── shell/                  # 邏輯容器層
+    │   │   ├── blueprint-shell/    # ✅ 藍圖外殼元件
+    │   │   └── dialogs/            # 對話框元件
+    │   │
+    │   ├── domain/                 # 領域層
+    │   │   ├── enums/              # ✅ 枚舉定義
+    │   │   ├── interfaces/         # ✅ 介面定義
+    │   │   ├── models/             # ✅ 領域模型
+    │   │   └── types/              # ✅ 類型定義
+    │   │
+    │   ├── data-access/            # 資料存取層
+    │   │   ├── stores/             # ✅ 狀態管理 (Facade)
+    │   │   │   ├── blueprint.store.ts
+    │   │   │   ├── task.store.ts
+    │   │   │   ├── diary.store.ts
+    │   │   │   └── todo.store.ts
+    │   │   ├── services/           # ✅ 業務服務
+    │   │   └── repositories/       # 資料倉儲 (Supabase)
+    │   │
+    │   ├── ui/                     # 展示層
+    │   │   ├── task/               # 🔶 任務模組
+    │   │   │   ├── task-tree/      # ✅ 樹狀圖
+    │   │   │   ├── task-table/     # ✅ 表格
+    │   │   │   └── shared/         # 共用元件
+    │   │   ├── diary/              # 🔶 日誌模組
+    │   │   │   └── diary-list/     # ✅ 列表
+    │   │   ├── todo/               # 🔶 待辦模組
+    │   │   │   └── todo-list/      # ✅ 列表
+    │   │   ├── file/               # ⬜ 檔案模組（待建立）
+    │   │   ├── progress/           # ⬜ 進度模組（待建立）
+    │   │   └── quality/            # ⬜ 品質模組（待建立）
+    │   │
+    │   ├── guards/                 # 功能守衛
+    │   ├── pipes/                  # 功能管道
+    │   └── utils/                  # ✅ 工具函數
+    │
+    └── dashboard/                  # ⬜ 儀表板（待建立）
+```
+
+### 8.8 命名規範
+
+> **奧卡姆剃刀原則**：命名簡潔、語意明確、一致性優先
+
+#### 8.8.1 檔案命名（kebab-case）
+
+| 類型 | 命名格式 | 範例 | 狀態 |
+|------|----------|------|------|
+| Component | `{name}.component.ts` | `task-tree.component.ts` | ✅ |
+| Store | `{name}.store.ts` | `blueprint.store.ts` | ✅ |
+| Service | `{name}.service.ts` | `workspace.service.ts` | ✅ |
+| Interface | `{name}.interface.ts` | `task.interface.ts` | ✅ |
+| Model | `{name}.model.ts` | `blueprint.model.ts` | ✅ |
+| Enum | `{name}.enum.ts` | `task-status.enum.ts` | ✅ |
+| Guard | `{name}.guard.ts` | `blueprint-access.guard.ts` | ✅ |
+| Pipe | `{name}.pipe.ts` | `duration-format.pipe.ts` | ✅ |
+| Utils | `{name}.utils.ts` | `date-calculator.ts` | ✅ |
+| Validator | `{name}.validators.ts` | `task.validators.ts` | ✅ |
+
+#### 8.8.2 函數前綴規範
+
+| 前綴 | 用途 | 範例 |
+|------|------|------|
+| `load` | 載入資料 | `loadBlueprintsByOwner()` |
+| `create` | 建立資源 | `createBlueprint()` |
+| `update` | 更新資源 | `updateTask()` |
+| `delete` | 刪除資源 | `deleteTask()` |
+| `get` | 取得單一值 | `getUserAccountId()` |
+| `find` | 查詢多筆 | `findTasksByStatus()` |
+| `is` | 布林判斷 | `isOrgAdmin()` |
+| `has` | 存在判斷 | `hasPermission()` |
+| `can` | 權限判斷 | `canEditBlueprint()` |
+| `on` | 事件處理 | `onTaskSelect()` |
+| `handle` | 處理器 | `handleError()` |
+| `switch` | 切換狀態 | `switchToOrganization()` |
+
+#### 8.8.3 資料表命名（snake_case）
+
+| 命名規則 | 範例 | 說明 |
+|----------|------|------|
+| 主表 | `accounts`, `tasks`, `blueprints` | 複數名詞 |
+| 關聯表 | `organization_members`, `team_bots` | `{parent}_{children}` |
+| 中間表 | `task_assignees`, `blueprint_tags` | `{entity}_{relation}` |
+
+**已完成資料表**：
+
+| 表名 | 用途 | 狀態 |
+|------|------|------|
+| `accounts` | 帳戶（User/Organization/Bot） | ✅ |
+| `organization_members` | 組織成員關聯 | ✅ |
+| `teams` | 團隊 | ✅ |
+| `team_members` | 團隊成員關聯 | ✅ |
+| `team_bots` | 團隊機器人關聯 | ✅ |
+| `blueprints` | 藍圖 | ⬜ 待建立 |
+| `workspaces` | 工作區 | ⬜ 待建立 |
+| `tasks` | 任務 | ⬜ 待建立 |
+| `task_attachments` | 任務附件 | ⬜ 待建立 |
+| `diaries` | 日誌 | ⬜ 待建立 |
+| `diary_photos` | 日誌照片 | ⬜ 待建立 |
+
+#### 8.8.4 欄位命名規範（最小必要欄位）
+
+> **奧卡姆剃刀原則**：只建立必要欄位，避免「以防萬一」的冗餘
+
+**通用欄位**：
+```sql
+-- 必要欄位（所有表）
+id            UUID PRIMARY KEY DEFAULT gen_random_uuid()
+created_at    TIMESTAMPTZ DEFAULT now() NOT NULL
+updated_at    TIMESTAMPTZ DEFAULT now() NOT NULL
+
+-- 關聯欄位（按需）
+{parent}_id   UUID REFERENCES {parent}(id) ON DELETE CASCADE
+
+-- 擁有權欄位（按需）
+owner_id      UUID REFERENCES accounts(id)
+owner_type    TEXT CHECK (owner_type IN ('User', 'Organization'))
+
+-- 狀態欄位（按需，限制選項）
+status        TEXT CHECK (status IN ('active', 'archived', 'deleted'))
+```
+
+**避免的反模式**：
+- ❌ 預留未使用欄位（如 `reserved_1`, `extra_data`）
+- ❌ 過度細分的時間戳（如 `viewed_at`, `touched_at`）
+- ❌ 冗餘的計數欄位（應使用 `COUNT()` 查詢）
+- ❌ 過長的 JSON 欄位（應正規化為關聯表）
+
+### 8.9 RLS 與觸發器設計規範
+
+> **設計原則**：安全第一、效能優化、避免遞迴
+
+#### 8.9.1 RLS 政策架構
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           RLS 政策層級架構                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Layer 1: Helper Functions (SECURITY DEFINER)                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  get_user_account_id()     → 取得當前用戶 account_id           │   │
+│  │  is_org_member(org_id)     → 檢查是否為組織成員                 │   │
+│  │  is_org_admin(org_id)      → 檢查是否為組織管理員               │   │
+│  │  is_team_member(team_id)   → 檢查是否為團隊成員                 │   │
+│  │  is_team_leader(team_id)   → 檢查是否為團隊領導                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                    │                                    │
+│                                    ▼                                    │
+│  Layer 2: RLS Policies (調用 Helper Functions)                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  accounts_select_policy    → 可查看自己、所屬組織、所屬團隊     │   │
+│  │  accounts_insert_policy    → 僅可建立自己的帳戶                 │   │
+│  │  accounts_update_policy    → 僅可更新自己的資料                 │   │
+│  │  organizations_policy      → 組織成員可查看、管理員可編輯       │   │
+│  │  teams_policy              → 團隊成員可查看、領導可編輯         │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**已完成的 RLS Helper Functions**：
+
+| 函數名 | 用途 | 狀態 |
+|--------|------|------|
+| `get_user_account_id()` | 取得當前用戶 account_id（防遞迴） | ✅ |
+| `is_org_member(org_id)` | 檢查組織成員身份 | ✅ |
+| `is_org_admin(org_id)` | 檢查組織管理員身份 | ✅ |
+| `is_team_member(team_id)` | 檢查團隊成員身份 | ✅ |
+| `is_team_leader(team_id)` | 檢查團隊領導身份 | ✅ |
+
+**RLS 設計要點**：
+
+1. **避免無限遞迴**
+   ```sql
+   -- ✅ 正確：使用 SECURITY DEFINER + row_security = off
+   CREATE FUNCTION get_user_account_id() RETURNS UUID
+   LANGUAGE plpgsql SECURITY DEFINER SET row_security = off
+   AS $$ ... $$;
+   
+   -- ❌ 錯誤：在 RLS 政策中直接查詢受保護的表
+   CREATE POLICY "..." ON accounts
+   USING (id IN (SELECT account_id FROM organization_members WHERE ...));
+   ```
+
+2. **使用 Helper Function 封裝複雜邏輯**
+   ```sql
+   -- ✅ 正確：調用預定義函數
+   CREATE POLICY "org_members_select" ON organizations
+   FOR SELECT USING (is_org_member(id));
+   
+   -- ❌ 錯誤：內聯複雜查詢
+   CREATE POLICY "..." ON organizations
+   FOR SELECT USING (EXISTS (SELECT 1 FROM ... WHERE ...));
+   ```
+
+#### 8.9.2 觸發器設計
+
+**已完成的觸發器**：
+
+| 觸發器 | 表 | 事件 | 用途 | 狀態 |
+|--------|-----|------|------|------|
+| `handle_new_user` | `auth.users` | INSERT | 自動建立 accounts 記錄 | ✅ |
+| `add_creator_as_org_owner` | `accounts` | INSERT | 組織建立者自動成為 owner | ✅ |
+| `auto_add_team_creator` | `teams` | INSERT | 團隊建立者自動成為 leader | ✅ |
+
+**待建立的觸發器**：
+
+| 觸發器 | 表 | 事件 | 用途 | 狀態 |
+|--------|-----|------|------|------|
+| `update_task_progress` | `tasks` | UPDATE | 子任務完成時更新父任務進度 | ⬜ |
+| `auto_create_activity_log` | `*` | INSERT/UPDATE/DELETE | 自動記錄操作日誌 | ⬜ |
+| `notify_task_assignee` | `task_assignees` | INSERT | 任務指派時發送通知 | ⬜ |
+
+**觸發器設計原則**：
+
+1. **單一職責**：一個觸發器只做一件事
+2. **效能考量**：避免在觸發器中執行耗時操作
+3. **錯誤處理**：使用 `BEGIN ... EXCEPTION ... END` 包裹
+4. **日誌記錄**：重要操作記錄到審計日誌
+
+#### 8.9.3 藍圖相關資料表設計（待建立）
+
+```sql
+-- blueprints: 藍圖主表
+CREATE TABLE blueprints (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  owner_id UUID NOT NULL REFERENCES accounts(id),
+  owner_type TEXT NOT NULL CHECK (owner_type IN ('User', 'Organization')),
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+  settings JSONB DEFAULT '{}',  -- 工作日曆、通知規則等
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 藍圖 RLS: 擁有者可完全操作，公開藍圖可被所有人查看
+CREATE POLICY "blueprints_select" ON blueprints FOR SELECT
+USING (
+  owner_id = get_user_account_id()
+  OR status = 'published'
+  OR is_org_member(owner_id)
+);
+
+-- tasks: 任務主表（藍圖內）
+CREATE TABLE tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  blueprint_id UUID NOT NULL REFERENCES blueprints(id) ON DELETE CASCADE,
+  parent_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
+  name VARCHAR(500) NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'review', 'completed', 'cancelled')),
+  priority TEXT DEFAULT 'medium' CHECK (priority IN ('lowest', 'low', 'medium', 'high', 'highest')),
+  task_type TEXT DEFAULT 'task' CHECK (task_type IN ('task', 'milestone', 'bug', 'feature', 'improvement')),
+  progress INTEGER DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
+  start_date DATE,
+  due_date DATE,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 任務 RLS: 繼承藍圖權限
+CREATE POLICY "tasks_select" ON tasks FOR SELECT
+USING (
+  blueprint_id IN (
+    SELECT id FROM blueprints 
+    WHERE owner_id = get_user_account_id()
+      OR status = 'published'
+      OR is_org_member(owner_id)
+  )
+);
+```
 
 ---
 
