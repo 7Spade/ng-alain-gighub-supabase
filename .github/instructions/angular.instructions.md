@@ -1,104 +1,428 @@
 ---
-description: 'Angular-specific coding standards and best practices'
-applyTo: '**/*.ts, **/*.html, **/*.scss, **/*.css'
+description: 'Angular-specific coding standards and best practices for ng-alain with Supabase'
+applyTo: '**/*.ts, **/*.html, **/*.scss, **/*.css, **/*.less'
 ---
 
 # Angular Development Instructions
 
-Instructions for generating high-quality Angular applications with TypeScript, using Angular Signals for state management, adhering to Angular best practices as outlined at https://angular.dev.
+Instructions for generating high-quality Angular 20 code with ng-alain framework, ng-zorro-antd components, and Supabase backend integration.
 
 ## Project Context
-- Latest Angular version (use standalone components by default)
-- TypeScript for type safety
-- Angular CLI for project setup and scaffolding
-- Follow Angular Style Guide (https://angular.dev/style-guide)
-- Use Angular Material or other modern UI libraries for consistent styling (if specified)
+
+| Setting | Value |
+|---------|-------|
+| Angular Version | 20.3.x |
+| TypeScript Version | 5.9.x |
+| UI Framework | ng-zorro-antd 20.3.x |
+| Business Components | @delon/* 20.1.x |
+| Backend | Supabase 2.84.x |
+| Styling | Less preprocessor |
+| Unit Testing | Karma + Jasmine |
+| E2E Testing | Playwright |
 
 ## Development Standards
 
 ### Architecture
-- Use standalone components unless modules are explicitly required
-- Organize code by standalone feature modules or domains for scalability
-- Implement lazy loading for feature modules to optimize performance
-- Use Angular's built-in dependency injection system effectively
-- Structure components with a clear separation of concerns (smart vs. presentational components)
 
-### TypeScript
-- Enable strict mode in `tsconfig.json` for type safety
-- Define clear interfaces and types for components, services, and models
-- Use type guards and union types for robust type checking
-- Implement proper error handling with RxJS operators (e.g., `catchError`)
-- Use typed forms (e.g., `FormGroup`, `FormControl`) for reactive forms
+- **Standalone Components**: Use standalone components by default (Angular 20)
+- **Lazy Loading**: Implement lazy loading for feature routes
+- **Dependency Injection**: Use `inject()` function for DI
+- **Component Structure**: Separate smart (container) and presentational components
+- **Vertical Slices**: Organize features as self-contained modules in `src/app/features/`
+
+### TypeScript Standards
+
+```typescript
+// tsconfig.json settings (enforced)
+{
+  "strict": true,
+  "noImplicitOverride": true,
+  "noPropertyAccessFromIndexSignature": true,
+  "noImplicitReturns": true,
+  "target": "ES2022",
+  "module": "ES2022"
+}
+```
+
+- Enable strict mode compliance
+- Define clear interfaces and types
+- Use type guards and union types
+- Implement proper error handling
 
 ### Component Design
-- Follow Angular's component lifecycle hooks best practices
-- When using Angular >= 19, Use `input()` `output()`, `viewChild()`, `viewChildren()`, `contentChild()` and `contentChildren()` functions instead of decorators; otherwise use decorators
-- Leverage Angular's change detection strategy (default or `OnPush` for performance)
-- Keep templates clean and logic in component classes or services
-- Use Angular directives and pipes for reusable functionality
+
+```typescript
+import { Component, inject, signal, computed, input, output } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [/* required imports */],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `...`
+})
+export class ExampleComponent {
+  // Dependency injection
+  private readonly service = inject(MyService);
+  
+  // Signal-based inputs (Angular 20)
+  readonly title = input<string>();
+  readonly data = input.required<Data[]>();
+  
+  // Signal-based outputs
+  readonly itemSelected = output<Item>();
+  
+  // Internal state with signals
+  readonly loading = signal(false);
+  readonly filteredItems = computed(() => 
+    this.data().filter(item => item.active)
+  );
+}
+```
+
+### Template Patterns
+
+```html
+<!-- New control flow syntax (Angular 17+) -->
+@if (loading()) {
+  <nz-spin nzSimple />
+} @else {
+  @for (item of items(); track item.id) {
+    <app-item [data]="item" (selected)="onSelect($event)" />
+  } @empty {
+    <nz-empty nzNotFoundContent="No items found" />
+  }
+}
+
+<!-- Conditional rendering -->
+@switch (status()) {
+  @case ('loading') { <nz-spin /> }
+  @case ('error') { <nz-alert nzType="error" [nzMessage]="error()" /> }
+  @case ('success') { <div>Content</div> }
+}
+
+<!-- Deferred loading -->
+@defer (on viewport) {
+  <app-heavy-component />
+} @placeholder {
+  <nz-skeleton />
+}
+```
 
 ### Styling
-- Use Angular's component-level CSS encapsulation (default: ViewEncapsulation.Emulated)
-- Prefer SCSS for styling with consistent theming
-- Implement responsive design using CSS Grid, Flexbox, or Angular CDK Layout utilities
-- Follow Angular Material's theming guidelines if used
-- Maintain accessibility (a11y) with ARIA attributes and semantic HTML
+
+- **Preprocessor**: Use Less (project convention)
+- **Encapsulation**: Default ViewEncapsulation.Emulated
+- **Theming**: Follow ng-alain theming guidelines
+- **Responsive**: Use ng-zorro-antd grid system
+
+```less
+// Component styles
+:host {
+  display: block;
+}
+
+.container {
+  padding: @padding-md;
+  
+  @media (max-width: @screen-sm) {
+    padding: @padding-sm;
+  }
+}
+```
 
 ### State Management
-- Use Angular Signals for reactive state management in components and services
-- Leverage `signal()`, `computed()`, and `effect()` for reactive state updates
-- Use writable signals for mutable state and computed signals for derived state
-- Handle loading and error states with signals and proper UI feedback
-- Use Angular's `AsyncPipe` to handle observables in templates when combining signals with RxJS
 
-### Data Fetching
-- Use Angular's `HttpClient` for API calls with proper typing
-- Implement RxJS operators for data transformation and error handling
-- Use Angular's `inject()` function for dependency injection in standalone components
-- Implement caching strategies (e.g., `shareReplay` for observables)
-- Store API response data in signals for reactive updates
-- Handle API errors with global interceptors for consistent error handling
+```typescript
+// Use Angular Signals for reactive state
+@Injectable({ providedIn: 'root' })
+export class DataService {
+  // Private writable signal
+  private readonly _items = signal<Item[]>([]);
+  private readonly _loading = signal(false);
+  private readonly _error = signal<string | null>(null);
+  
+  // Public readonly signals
+  readonly items = this._items.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
+  
+  // Computed signals
+  readonly activeItems = computed(() => 
+    this._items().filter(item => item.isActive)
+  );
+  
+  // Effects for side effects
+  constructor() {
+    effect(() => {
+      console.log('Items changed:', this._items().length);
+    });
+  }
+}
+```
+
+### Data Fetching with Supabase
+
+```typescript
+import { inject } from '@angular/core';
+import { SupabaseService } from '@core';
+
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private readonly supabase = inject(SupabaseService);
+  private readonly _users = signal<User[]>([]);
+  
+  readonly users = this._users.asReadonly();
+
+  async loadUsers(): Promise<void> {
+    const client = this.supabase.getClient();
+    
+    const { data, error } = await client
+      .from('users')
+      .select('id, name, email, created_at')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error loading users:', error);
+      throw error;
+    }
+    
+    this._users.set(data ?? []);
+  }
+  
+  async createUser(user: CreateUserDto): Promise<User> {
+    const client = this.supabase.getClient();
+    
+    const { data, error } = await client
+      .from('users')
+      .insert(user)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    this._users.update(users => [...users, data]);
+    return data;
+  }
+}
+```
+
+### @delon Component Usage
+
+#### Simple Table (ST)
+```typescript
+import { STColumn, STModule } from '@delon/abc/st';
+
+@Component({
+  imports: [STModule],
+  template: `
+    <st [data]="users()" [columns]="columns" [loading]="loading()">
+    </st>
+  `
+})
+export class UserListComponent {
+  columns: STColumn[] = [
+    { title: 'Name', index: 'name' },
+    { title: 'Email', index: 'email' },
+    { title: 'Created', index: 'created_at', type: 'date' },
+    {
+      title: 'Actions',
+      buttons: [
+        { text: 'Edit', click: (item) => this.edit(item) },
+        { text: 'Delete', type: 'del', click: (item) => this.delete(item) }
+      ]
+    }
+  ];
+}
+```
+
+#### Dynamic Forms (SF)
+```typescript
+import { SFModule, SFSchema } from '@delon/form';
+
+@Component({
+  imports: [SFModule],
+  template: `
+    <sf [schema]="schema" (formSubmit)="onSubmit($event)"></sf>
+  `
+})
+export class UserFormComponent {
+  schema: SFSchema = {
+    properties: {
+      name: { type: 'string', title: 'Name', minLength: 2 },
+      email: { type: 'string', title: 'Email', format: 'email' },
+      role: {
+        type: 'string',
+        title: 'Role',
+        enum: ['admin', 'user', 'guest'],
+        default: 'user'
+      }
+    },
+    required: ['name', 'email']
+  };
+}
+```
 
 ### Security
-- Sanitize user inputs using Angular's built-in sanitization
-- Implement route guards for authentication and authorization
-- Use Angular's `HttpInterceptor` for CSRF protection and API authentication headers
-- Validate form inputs with Angular's reactive forms and custom validators
-- Follow Angular's security best practices (e.g., avoid direct DOM manipulation)
 
-### Performance
-- Enable production builds with `ng build --prod` for optimization
-- Use lazy loading for routes to reduce initial bundle size
-- Optimize change detection with `OnPush` strategy and signals for fine-grained reactivity
-- Use trackBy in `ngFor` loops to improve rendering performance
-- Implement server-side rendering (SSR) or static site generation (SSG) with Angular Universal (if specified)
+```typescript
+// Authentication with @delon/auth
+import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private readonly tokenService = inject(DA_SERVICE_TOKEN);
+  
+  setToken(token: string): void {
+    this.tokenService.set({ token });
+  }
+  
+  getToken(): string | null {
+    return this.tokenService.get()?.token ?? null;
+  }
+  
+  logout(): void {
+    this.tokenService.clear();
+  }
+}
+
+// Authorization with @delon/acl
+import { ACLService } from '@delon/acl';
+
+@Component({
+  template: `
+    @if (acl.can('admin')) {
+      <button nz-button>Admin Action</button>
+    }
+  `
+})
+export class AdminComponent {
+  readonly acl = inject(ACLService);
+}
+```
+
+### Performance Optimization
+
+1. **OnPush Change Detection**: Use for all components
+2. **Track Functions**: Use in @for loops
+3. **Lazy Loading**: Load features on demand
+4. **Signal-based State**: Avoid unnecessary re-renders
+
+```typescript
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    @for (item of items(); track item.id) {
+      <app-item [data]="item" />
+    }
+  `
+})
+export class ListComponent {}
+```
 
 ### Testing
-- Write unit tests for components, services, and pipes using Jasmine and Karma
-- Use Angular's `TestBed` for component testing with mocked dependencies
-- Test signal-based state updates using Angular's testing utilities
-- Write end-to-end tests with Cypress or Playwright (if specified)
-- Mock HTTP requests using `provideHttpClientTesting`
-- Ensure high test coverage for critical functionality
 
-## Implementation Process
-1. Plan project structure and feature modules
-2. Define TypeScript interfaces and models
-3. Scaffold components, services, and pipes using Angular CLI
-4. Implement data services and API integrations with signal-based state
-5. Build reusable components with clear inputs and outputs
-6. Add reactive forms and validation
-7. Apply styling with SCSS and responsive design
-8. Implement lazy-loaded routes and guards
-9. Add error handling and loading states using signals
-10. Write unit and end-to-end tests
-11. Optimize performance and bundle size
+#### Unit Tests
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-## Additional Guidelines
-- Follow the Angular Style Guide for file naming conventions (see https://angular.dev/style-guide), e.g., use `feature.ts` for components and `feature-service.ts` for services. For legacy codebases, maintain consistency with existing pattern.
-- Use Angular CLI commands for generating boilerplate code
-- Document components and services with clear JSDoc comments
-- Ensure accessibility compliance (WCAG 2.1) where applicable
-- Use Angular's built-in i18n for internationalization (if specified)
-- Keep code DRY by creating reusable utilities and shared modules
-- Use signals consistently for state management to ensure reactive updates
+describe('UserService', () => {
+  let service: UserService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClientTesting(),
+        UserService
+      ]
+    });
+    service = TestBed.inject(UserService);
+  });
+
+  it('should load users', async () => {
+    await service.loadUsers();
+    expect(service.users().length).toBeGreaterThan(0);
+  });
+});
+```
+
+#### Component Tests
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+
+describe('UserListComponent', () => {
+  let component: UserListComponent;
+  let fixture: ComponentFixture<UserListComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [UserListComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(UserListComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should display users', () => {
+    fixture.componentRef.setInput('users', [
+      { id: '1', name: 'Test User' }
+    ]);
+    fixture.detectChanges();
+    
+    const items = fixture.nativeElement.querySelectorAll('.user-item');
+    expect(items.length).toBe(1);
+  });
+});
+```
+
+## Import Organization
+
+Follow this order (enforced by ESLint):
+
+```typescript
+// 1. External imports (Angular, RxJS, etc.)
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+// 2. Third-party libraries (ng-zorro-antd)
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzTableModule } from 'ng-zorro-antd/table';
+
+// 3. @delon libraries
+import { STModule } from '@delon/abc/st';
+import { SFModule } from '@delon/form';
+
+// 4. Application imports with path aliases
+import { SupabaseService } from '@core';
+import { SharedModule } from '@shared';
+
+// 5. Relative imports
+import { UserService } from './user.service';
+```
+
+## File Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Component | `name.component.ts` | `user-list.component.ts` |
+| Service | `name.service.ts` | `user.service.ts` |
+| Guard | `name.guard.ts` | `auth.guard.ts` |
+| Pipe | `name.pipe.ts` | `date-format.pipe.ts` |
+| Directive | `name.directive.ts` | `highlight.directive.ts` |
+| Interface/Type | `name.types.ts` | `user.types.ts` |
+| Test | `name.spec.ts` | `user.service.spec.ts` |
+
+## Key Guidelines Summary
+
+1. ✅ Use standalone components (Angular 20 default)
+2. ✅ Use `inject()` function for dependency injection
+3. ✅ Use Angular Signals for state management
+4. ✅ Use new control flow syntax (@if, @for, @switch)
+5. ✅ Use OnPush change detection strategy
+6. ✅ Use ng-zorro-antd components for UI
+7. ✅ Use @delon components for business logic
+8. ✅ Use SupabaseService for database operations
+9. ✅ Follow ESLint import ordering rules
+10. ✅ Write tests with Jasmine/Karma and Playwright
