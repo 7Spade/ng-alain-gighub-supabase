@@ -26,7 +26,7 @@ import { Observable, from, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { SupabaseService } from '../supabase/supabase.service';
-import { QueryOptions, PaginatedResponse } from '../types/supabase.types';
+import { QueryOptions } from '../types/supabase.types';
 
 /**
  * 基礎 Repository 抽象類
@@ -432,8 +432,16 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
   }
 
   /**
+   * JSONB 欄位列表（這些欄位不需要轉換內部 key，因為它們是 PostgreSQL JSONB 類型）
+   * List of JSONB column names that should NOT have their nested keys converted
+   */
+  private readonly jsonbColumns = ['structure', 'metadata', 'settings', 'config', 'data'];
+
+  /**
    * 將對象的所有 key 從 camelCase 轉換為 snake_case
    * Convert all keys in an object from camelCase to snake_case
+   *
+   * 注意：JSONB 欄位（如 structure）的內部 key 不會被轉換，因為 PostgreSQL 會原樣存儲
    *
    * @private
    * @param {Record<string, unknown>} obj - Object to convert
@@ -443,8 +451,13 @@ export abstract class BaseRepository<TEntity, TInsert, TUpdate> {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
       const snakeKey = this.toSnakeCase(key);
-      // Recursively convert nested objects, but not arrays or primitives
-      if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+
+      // Check if this is a JSONB column - if so, don't convert nested keys
+      if (this.jsonbColumns.includes(key) || this.jsonbColumns.includes(snakeKey)) {
+        // Keep JSONB columns as-is (don't convert nested keys)
+        result[snakeKey] = value;
+      } else if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+        // Recursively convert nested objects (but not JSONB columns)
         result[snakeKey] = this.convertKeysToSnakeCase(value as Record<string, unknown>);
       } else {
         result[snakeKey] = value;

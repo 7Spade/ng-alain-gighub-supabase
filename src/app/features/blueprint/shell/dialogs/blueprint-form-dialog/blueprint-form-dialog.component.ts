@@ -177,12 +177,56 @@ export class BlueprintFormDialogComponent implements OnInit {
       } else {
         await this.handleCreate(formValue, tags);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Blueprint form error:', error);
-      this.messageService.error('操作失敗，請稍後再試');
+
+      // Extract meaningful error message
+      const errorMessage = this.extractErrorMessage(error);
+      this.messageService.error(errorMessage);
     } finally {
       this.loading.set(false);
     }
+  }
+
+  /**
+   * Extract meaningful error message from error object
+   */
+  private extractErrorMessage(error: unknown): string {
+    // Check for Supabase error object
+    if (error && typeof error === 'object') {
+      const supabaseError = error as { code?: string; message?: string; details?: string; hint?: string };
+
+      // Handle common RLS errors
+      if (supabaseError.code === '42501' || supabaseError.message?.includes('RLS')) {
+        return '權限不足：請確認您有建立藍圖的權限。如果您使用組織或團隊上下文，請確認您是管理員或領導者。';
+      }
+
+      // Handle relation does not exist error
+      if (supabaseError.code === '42P01' || supabaseError.message?.includes('does not exist')) {
+        return '系統錯誤：資料表尚未建立。請聯繫管理員執行資料庫遷移。';
+      }
+
+      // Handle constraint violation
+      if (supabaseError.code === '23505') {
+        return '名稱重複：已存在相同名稱的藍圖。';
+      }
+
+      // Use message if available
+      if (supabaseError.message) {
+        // Check for new row violates row-level security policy
+        if (supabaseError.message.includes('row-level security policy')) {
+          return '權限不足：無法建立藍圖。請確認帳戶已正確設置。';
+        }
+        return `操作失敗：${supabaseError.message}`;
+      }
+    }
+
+    // Default error message
+    if (error instanceof Error) {
+      return `操作失敗：${error.message}`;
+    }
+
+    return '操作失敗，請稍後再試';
   }
 
   /**
