@@ -9,7 +9,7 @@
 
                           ┌─────────────────────────┐
                           │   Identity Provider     │
-                          │   (Firebase Auth)       │
+                          │   (Supabase Auth)       │
                           │  • Email/Password       │
                           │  • OAuth (Google/MS)    │
                           │  • SSO (Enterprise)     │
