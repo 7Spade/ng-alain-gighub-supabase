@@ -15,13 +15,12 @@
  * @module core/services/auth-context
  */
 
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService, OrganizationService, TeamService } from '@shared';
 import type { OrganizationModel, TeamModel } from '@shared';
 
-import { SupabaseAuthService, SupabaseService } from '../infra/supabase';
+import { SupabaseService } from '../infra/supabase';
 import { ContextType, ContextState, Account } from '../infra/types/account';
 import { User, Session } from '../infra/types/supabase.types';
 
@@ -73,7 +72,6 @@ const STORAGE_KEY = 'auth_context_state';
   providedIn: 'root'
 })
 export class AuthContextService {
-  private readonly supabaseAuth = inject(SupabaseAuthService);
   private readonly supabaseService = inject(SupabaseService);
   private readonly accountService = inject(AccountService);
   private readonly organizationService = inject(OrganizationService);
@@ -221,7 +219,7 @@ export class AuthContextService {
   }));
 
   // ============================================================================
-  // 建構子 - 初始化監聽
+  // 建構子 - 初始化監聯
   // ============================================================================
 
   constructor() {
@@ -233,51 +231,9 @@ export class AuthContextService {
    * 初始化認證監聽器
    */
   private initializeAuthListener(): void {
-    // 訂閱 Supabase Auth 狀態
-    const authState$ = this.supabaseAuth.authState$;
-    const currentUser$ = this.supabaseAuth.currentUser$;
-
-    // 使用 effect 監聽認證變化
-    effect(async () => {
-      // 取得當前 session
-      const session = await this.supabaseService.getSession();
-      const user = session?.user || null;
-
-      console.log('[AuthContextService] 🔐 Auth state check:', {
-        hasSession: !!session,
-        userId: user?.id
-      });
-
-      if (session && user) {
-        // 已認證
-        this._authState.set({
-          status: 'authenticated',
-          user,
-          session,
-          error: null
-        });
-
-        // 載入工作區資料
-        if (!this._initialized) {
-          this._initialized = true;
-          await this.loadWorkspaceData(user.id);
-          this.restoreContext();
-        }
-      } else {
-        // 未認證
-        this._authState.set({
-          status: 'unauthenticated',
-          user: null,
-          session: null,
-          error: null
-        });
-        this.reset();
-      }
-    });
-
-    // 監聽 Supabase 認證事件
+    // 監聽 Supabase 認證事件（這是主要的認證觸發點）
     this.supabaseService.getClient().auth.onAuthStateChange(async (event, session) => {
-      console.log('[AuthContextService] 🔄 Auth event:', event);
+      console.log('[AuthContextService] 🔄 Auth event:', event, { hasSession: !!session });
 
       const user = session?.user || null;
 
@@ -289,11 +245,8 @@ export class AuthContextService {
           error: null
         });
 
-        if (!this._initialized) {
-          this._initialized = true;
-          await this.loadWorkspaceData(user!.id);
-          this.restoreContext();
-        }
+        // 載入工作區資料並恢復上下文
+        await this.initializeWorkspace(user!.id);
       } else if (event === 'SIGNED_OUT') {
         this._authState.set({
           status: 'unauthenticated',
@@ -307,8 +260,95 @@ export class AuthContextService {
           ...state,
           session
         }));
+      } else if (event === 'INITIAL_SESSION') {
+        // 初始 session 載入
+        if (session && user) {
+          this._authState.set({
+            status: 'authenticated',
+            user,
+            session,
+            error: null
+          });
+          await this.initializeWorkspace(user.id);
+        } else {
+          this._authState.set({
+            status: 'unauthenticated',
+            user: null,
+            session: null,
+            error: null
+          });
+        }
       }
     });
+
+    // 同時檢查當前 session（處理頁面刷新的情況）
+    this.checkCurrentSession();
+  }
+
+  /**
+   * 檢查當前 session（頁面刷新時使用）
+   */
+  private async checkCurrentSession(): Promise<void> {
+    try {
+      const session = await this.supabaseService.getSession();
+      const user = session?.user || null;
+
+      console.log('[AuthContextService] 🔐 Current session check:', {
+        hasSession: !!session,
+        userId: user?.id,
+        initialized: this._initialized
+      });
+
+      if (session && user && !this._initialized) {
+        this._authState.set({
+          status: 'authenticated',
+          user,
+          session,
+          error: null
+        });
+        await this.initializeWorkspace(user.id);
+      } else if (!session) {
+        this._authState.set({
+          status: 'unauthenticated',
+          user: null,
+          session: null,
+          error: null
+        });
+      }
+    } catch (error) {
+      console.error('[AuthContextService] Session check failed:', error);
+      this._authState.set({
+        status: 'error',
+        user: null,
+        session: null,
+        error: 'Failed to check session'
+      });
+    }
+  }
+
+  /**
+   * 初始化工作區（統一入口）
+   */
+  private async initializeWorkspace(authUserId: string): Promise<void> {
+    if (this._initialized) {
+      console.log('[AuthContextService] ⏭️ Already initialized, skipping');
+      return;
+    }
+
+    console.log('[AuthContextService] 🚀 Initializing workspace for:', authUserId);
+    this._initialized = true;
+
+    try {
+      await this.loadWorkspaceData(authUserId);
+      this.restoreContext();
+    } catch (error) {
+      console.error('[AuthContextService] Workspace initialization failed:', error);
+      // 即使失敗也標記為 ready，讓 UI 可以顯示錯誤
+      this._contextState.update(state => ({
+        ...state,
+        ready: true
+      }));
+    }
   }
 
   // ============================================================================
