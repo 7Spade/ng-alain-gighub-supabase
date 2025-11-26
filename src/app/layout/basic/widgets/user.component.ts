@@ -100,9 +100,8 @@ export class HeaderUserComponent {
           avatar: './assets/tmp/img/avatar.jpg'
         };
 
-      case ContextType.APP:
       default:
-        // 應用菜單：使用 Supabase 用戶信息
+        // 預設使用 Supabase 用戶信息
         if (!supabaseUser) {
           return this.settings.user;
         }

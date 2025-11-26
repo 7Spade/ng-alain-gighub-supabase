@@ -28,7 +28,7 @@ export class WorkspaceContextService {
   private readonly teamService = inject(TeamService);
 
   // === 上下文狀態 Context State ===
-  private readonly contextTypeState = signal<ContextType>(ContextType.APP);
+  private readonly contextTypeState = signal<ContextType>(ContextType.USER);
   private readonly contextIdState = signal<string | null>(null);
   private readonly switchingState = signal<boolean>(false);
 
@@ -63,21 +63,19 @@ export class WorkspaceContextService {
         return this.teams().find(t => t['id'] === id)?.['name'] || '團隊';
       case ContextType.BOT:
         return '機器人';
-      case ContextType.APP:
       default:
-        return '應用選單';
+        return '個人帳戶';
     }
   });
 
   readonly contextIcon = computed(() => {
     const iconMap = {
-      [ContextType.APP]: 'appstore',
       [ContextType.USER]: 'user',
       [ContextType.ORGANIZATION]: 'team',
       [ContextType.TEAM]: 'usergroup-add',
       [ContextType.BOT]: 'robot'
     };
-    return iconMap[this.contextType()] || 'question';
+    return iconMap[this.contextType()] || 'user';
   });
 
   readonly teamsByOrganization = computed(() => {
@@ -177,10 +175,6 @@ export class WorkspaceContextService {
 
   // === 上下文切換 Context Switching ===
 
-  switchToApp(): void {
-    this.switchContext(ContextType.APP, null);
-  }
-
   switchToUser(userId: string): void {
     this.switchContext(ContextType.USER, userId);
   }
@@ -268,7 +262,8 @@ export class WorkspaceContextService {
     this.organizationsState.set([]);
     this.teamsState.set([]);
     this.errorState.set(null);
-    this.switchToApp();
+    // Reset to USER context with null ID (will be set properly after login)
+    this.switchContext(ContextType.USER, null);
     this.hasRestored = false;
   }
 }

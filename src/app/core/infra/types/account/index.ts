@@ -57,10 +57,9 @@ export type AccountUpdate = Database['public']['Tables']['accounts']['Update'];
  * Context type enumeration
  *
  * Defines the different workspace context types available in the application
+ * Note: APP context has been removed - default context is now USER
  */
 export enum ContextType {
-  /** 應用菜單（未登入） | Application menu (not logged in) */
-  APP = 'app',
   /** 個人帳戶上下文 | User account context */
   USER = 'user',
   /** 組織上下文 | Organization context */
@@ -80,7 +79,7 @@ export enum ContextType {
 export interface ContextState {
   /** 上下文類型 | Context type */
   type: ContextType;
-  /** 上下文 ID（app 類型時為 null） | Context ID (null for app type) */
+  /** 上下文 ID | Context ID */
   id: string | null;
   /** 上下文標籤（顯示名稱） | Context label (display name) */
   label: string;

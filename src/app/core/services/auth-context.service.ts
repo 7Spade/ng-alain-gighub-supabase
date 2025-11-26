@@ -94,10 +94,10 @@ export class AuthContextService {
 
   /** 上下文狀態 */
   private readonly _contextState = signal<ContextStateData>({
-    type: ContextType.APP,
+    type: ContextType.USER,
     id: null,
-    label: '應用選單',
-    icon: 'appstore',
+    label: '個人帳戶',
+    icon: 'user',
     ready: false
   });
 
@@ -159,11 +159,11 @@ export class AuthContextService {
 
   /**
    * 是否有有效的工作區上下文
-   * 核心檢查：type 不是 APP 且有有效 ID
+   * 核心檢查：有有效 ID 且系統準備就緒
    */
   readonly hasValidContext = computed(() => {
     const state = this._contextState();
-    return state.type !== ContextType.APP && !!state.id && state.ready;
+    return !!state.id && state.ready;
   });
 
   // --- 工作區資料 ---
@@ -386,13 +386,6 @@ export class AuthContextService {
   // ============================================================================
 
   /**
-   * 切換到應用菜單（無上下文）
-   */
-  switchToApp(): void {
-    this.switchContext(ContextType.APP, null);
-  }
-
-  /**
    * 切換到用戶上下文
    */
   switchToUser(userId: string): void {
@@ -454,9 +447,8 @@ export class AuthContextService {
         return (this._workspaceData().teams.find(t => t['id'] === id)?.['name'] as string) || '團隊';
       case ContextType.BOT:
         return '機器人';
-      case ContextType.APP:
       default:
-        return '應用選單';
+        return '個人帳戶';
     }
   }
 
@@ -465,13 +457,12 @@ export class AuthContextService {
    */
   private getContextIcon(type: ContextType): string {
     const iconMap = {
-      [ContextType.APP]: 'appstore',
       [ContextType.USER]: 'user',
       [ContextType.ORGANIZATION]: 'team',
       [ContextType.TEAM]: 'usergroup-add',
       [ContextType.BOT]: 'robot'
     };
-    return iconMap[type] || 'question';
+    return iconMap[type] || 'user';
   }
 
   // ============================================================================
@@ -598,10 +589,10 @@ export class AuthContextService {
     });
 
     this._contextState.set({
-      type: ContextType.APP,
+      type: ContextType.USER,
       id: null,
-      label: '應用選單',
-      icon: 'appstore',
+      label: '個人帳戶',
+      icon: 'user',
       ready: false
     });
 

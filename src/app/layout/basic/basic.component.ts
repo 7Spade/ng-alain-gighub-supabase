@@ -204,9 +204,8 @@ export class LayoutBasicComponent {
           avatar: './assets/tmp/img/avatar.jpg'
         };
 
-      case ContextType.APP:
       default:
-        // 應用菜單：使用 Supabase 用戶信息
+        // 預設使用 Supabase 用戶信息
         if (!supabaseUser) {
           return this.settings.user;
         }
@@ -227,14 +226,12 @@ export class LayoutBasicComponent {
     });
 
     // 監聽上下文變化並更新菜單
-    // Only update menu when context is actually changed (not initial APP state)
     effect(() => {
       const contextType = this.workspaceContext.contextType();
       const contextId = this.workspaceContext.contextId();
 
-      // Don't update menu if we're in initial APP state and waiting for context restoration
-      // This prevents the flash of "主導航" before the correct context is restored
-      if (contextType === ContextType.APP && !contextId) {
+      // Don't update menu if waiting for context restoration
+      if (!contextId) {
         // Check if we have a saved context that needs to be restored
         if (typeof localStorage !== 'undefined') {
           const saved = localStorage.getItem('workspace_context');

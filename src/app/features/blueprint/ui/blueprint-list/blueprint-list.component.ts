@@ -42,9 +42,9 @@ const CONTEXT_LABELS: Record<string, { title: string; description: string }> = {
     title: '團隊藍圖',
     description: '管理團隊共享的藍圖'
   },
-  app: {
-    title: '藍圖總覽',
-    description: '請選擇一個上下文以查看藍圖'
+  bot: {
+    title: '機器人藍圖',
+    description: '管理機器人的藍圖'
   }
 };
 
@@ -272,7 +272,7 @@ export class BlueprintListComponent implements OnInit {
       console.log('[BlueprintList] 📍 Context changed:', { contextType, contextId, isReady });
 
       // Load blueprints when context becomes valid and system is ready
-      if (isReady && contextType !== 'app' && contextId) {
+      if (isReady && contextId) {
         console.log('[BlueprintList] ✅ Valid context detected, loading blueprints...');
         this.loadBlueprints();
       }

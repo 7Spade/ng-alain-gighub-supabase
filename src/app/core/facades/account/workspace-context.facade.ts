@@ -109,9 +109,8 @@ export class WorkspaceContextFacade {
 
   /** 是否有有效的工作區上下文 */
   readonly hasValidContext = computed(() => {
-    const type = this.contextType();
     const id = this.contextId();
-    return type !== ContextType.APP && !!id;
+    return !!id;
   });
 
   /** 可用的工作區數量統計 */
@@ -169,14 +168,6 @@ export class WorkspaceContextFacade {
   // ============================================================================
   // 高階 API - 上下文切換 (帶業務邏輯)
   // ============================================================================
-
-  /**
-   * 切換到應用菜單
-   * Switch to app menu
-   */
-  switchToApp(): void {
-    this.contextService.switchContext(ContextType.APP, null);
-  }
 
   /**
    * 切換到用戶工作區
@@ -242,7 +233,8 @@ export class WorkspaceContextFacade {
     const id = this.contextId();
 
     if (!id) {
-      this.menuService.updateMenu(ContextType.APP);
+      // No valid context ID, use USER menu as default
+      this.menuService.updateMenu(ContextType.USER);
       return;
     }
 
@@ -327,7 +319,7 @@ export class WorkspaceContextFacade {
    */
   reset(): void {
     this.dataService.reset();
-    this.contextService.switchContext(ContextType.APP, null);
+    this.contextService.switchContext(ContextType.USER, null);
     this.hasInitialized = false;
   }
 }

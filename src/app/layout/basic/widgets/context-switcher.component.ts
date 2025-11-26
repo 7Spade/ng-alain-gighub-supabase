@@ -20,15 +20,6 @@ import { AccountService, SHARED_IMPORTS } from '@shared';
   standalone: true,
   imports: [SHARED_IMPORTS],
   template: `
-    <!-- Application menu -->
-    @if (!hasToken()) {
-      <li nz-menu-item (click)="workspaceContext.switchToApp()" [class.ant-menu-item-selected]="isAppContext()">
-        <i nz-icon nzType="appstore" class="mr-sm"></i>
-        <span>應用菜單</span>
-      </li>
-      <li nz-menu-divider></li>
-    }
-
     <!-- Personal accounts (flat) -->
     @for (account of userAccounts(); track getAccountId(account)) {
       <li
@@ -155,9 +146,7 @@ export class HeaderContextSwitcherComponent {
 
   // Helper methods for template (type-safe)
   // Using method instead of computed signal for better template compatibility
-  isAppContext(): boolean {
-    return this.isContextType(ContextType.APP);
-  }
+  // Note: isAppContext() removed since APP context no longer exists
 
   // Helper methods that accept IDs
   isUserContext(id: string): boolean {

@@ -21,8 +21,7 @@ interface ContextConfig {
 }
 
 /**
- * Context type configurations mapping (excluding APP context)
- * Using Partial to allow optional ContextType.APP handling
+ * Context type configurations mapping
  */
 type ContextConfigMap = Partial<Record<ContextType, ContextConfig>>;
 
@@ -48,19 +47,11 @@ export abstract class BaseContextAwareComponent implements OnInit {
   // Unified computed signals
   readonly pageTitle = computed(() => {
     const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.title;
-    }
     return this.contextConfigs[type]?.title ?? this.defaultConfig.title;
   });
 
   readonly pageSubtitle = computed(() => {
     const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.subtitle;
-    }
     const label = this.workspaceContext.contextLabel();
     const subtitle = this.contextConfigs[type]?.subtitle ?? this.defaultConfig.subtitle;
     return label ? subtitle.replace('{label}', label) : subtitle;
@@ -68,10 +59,6 @@ export abstract class BaseContextAwareComponent implements OnInit {
 
   readonly cardTitle = computed(() => {
     const type = this.workspaceContext.contextType();
-    // Handle APP context explicitly
-    if (type === ContextType.APP) {
-      return this.defaultConfig.cardTitle;
-    }
     return this.contextConfigs[type]?.cardTitle ?? this.defaultConfig.cardTitle;
   });
 
@@ -92,9 +79,8 @@ export abstract class BaseContextAwareComponent implements OnInit {
   });
 
   readonly hasValidContext = computed(() => {
-    const type = this.workspaceContext.contextType();
     const id = this.workspaceContext.contextId();
-    return type !== ContextType.APP && !!id;
+    return !!id;
   });
 
   ngOnInit(): void {
