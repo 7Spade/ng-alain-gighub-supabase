@@ -757,12 +757,12 @@ A: 檢查是否有不必要的資料查詢，考慮實作快取機制。
 ## 相關資源 (References)
 
 ### 架構設計
-- [architecture/20-complete-architecture-flowchart.mermaid.md](../architecture/20-complete-architecture-flowchart.mermaid.md) - Git-like 分支模型
-- [architecture/21-architecture-review-report.md](../architecture/21-architecture-review-report.md) - 架構審查
+- [architecture/03-architecture-overview.md](../architecture/03-architecture-overview.md) - Git-like 分支模型
+- [architecture/61-architecture-review.md](../architecture/61-architecture-review.md) - 架構審查
 
 ### 資料庫設計
 - [reference/sql-schema-definition.md](../reference/sql-schema-definition.md) - 工作區相關表結構
-- [architecture/09-security-rls-permission-matrix.md](../architecture/09-security-rls-permission-matrix.md) - RLS 權限矩陣
+- [architecture/40-security-rls-matrix.md](../architecture/40-security-rls-matrix.md) - RLS 權限矩陣
 
 ### 開發指南
 - [guides/frontend-state-management-guide.md](../guides/frontend-state-management-guide.md) - 狀態管理

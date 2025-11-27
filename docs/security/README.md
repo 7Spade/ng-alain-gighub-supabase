@@ -59,7 +59,7 @@
 
 ### 架構安全
 
-- [architecture/09-security-rls-permission-matrix.md](../architecture/09-security-rls-permission-matrix.md) - 安全與 RLS 權限矩陣
+- [architecture/40-security-rls-matrix.md](../architecture/40-security-rls-matrix.md) - 安全與 RLS 權限矩陣
 
 ### 開發指南
 

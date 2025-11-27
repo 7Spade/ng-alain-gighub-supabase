@@ -214,8 +214,8 @@
 - [specs/00-naming-standards.md](../specs/00-naming-standards.md) - 命名規範
 
 ### 架構設計
-- [architecture/20-complete-architecture-flowchart.mermaid.md](../architecture/20-complete-architecture-flowchart.mermaid.md)
-- [architecture/21-architecture-review-report.md](../architecture/21-architecture-review-report.md)
+- [architecture/03-architecture-overview.md](../architecture/03-architecture-overview.md)
+- [architecture/61-architecture-review.md](../architecture/61-architecture-review.md)
 
 ---
 
