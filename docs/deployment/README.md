@@ -90,7 +90,7 @@
 
 ### 架構設計
 
-- [architecture/18-deployment-infrastructure-view.mermaid.md](../architecture/18-deployment-infrastructure-view.mermaid.md) - 部署基礎設施視圖
+- [architecture/51-deployment-diagram.md](../architecture/51-deployment-diagram.md) - 部署基礎設施視圖
 
 ---
 

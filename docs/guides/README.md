@@ -250,7 +250,7 @@
 ## 相關資源 (References)
 
 ### 核心架構
-- [architecture/20-complete-architecture-flowchart.mermaid.md](../architecture/20-complete-architecture-flowchart.mermaid.md) - Git-like 分支模型
+- [architecture/03-architecture-overview.md](../architecture/03-architecture-overview.md) - Git-like 分支模型
 - [reference/sql-schema-definition.md](../reference/sql-schema-definition.md) - 資料庫結構
 
 ### 開發規範
