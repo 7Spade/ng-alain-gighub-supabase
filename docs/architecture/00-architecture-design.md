@@ -11,7 +11,7 @@
                           │   Identity Provider     │
                           │   (Supabase Auth)       │
                           │  • Email/Password       │
-                          │  • OAuth (Google/MS)    │
+                          │  • OAuth (Supabase/MS)    │
                           │  • SSO (Enterprise)     │
                           └────────────┬────────────┘
                                        │
